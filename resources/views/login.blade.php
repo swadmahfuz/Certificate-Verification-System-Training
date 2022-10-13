@@ -30,7 +30,7 @@
             }
         </style>
     </head>
-    <body background="https://www.wiesner-hager.com/cache-buster-7/Referenzfotos/T%C3%9CV%20Austria/328/image-thumb__328__startpageHeader/T%C3%9CV-Empfang.jpg">
+    <body background="images/tuv-login-background1.jpg">
         <div class="login-form">
             <form action="{{ route('certificate.login') }}" method="POST">
                 @csrf

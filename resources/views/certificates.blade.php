@@ -17,14 +17,14 @@
                             <div class="card-header" ><center><h3>TÜV Austria BIC Certificate DB</h3></center>
                                 <table>
                                     <tr>
-                                        <td style="width: 16%"><a href="/add-certificate" class="btn btn-success">Add New Certificate</a></td>
+                                        <td ><a href="add-certificate" class="btn btn-success">Add New Certificate</a></td>
                                         <form action="{{ route('certificate.adminSearch') }}">
-                                        <td style="width: 50%"><input type="text" name="search" class="form-control" placeholder="Search Certificate ID or Student Name"></td>
-                                        <td style="width: 8%"><button type="submit"  class="btn btn-success">Search</button></td>
+                                        <td style="width: 40%"><input type="text" name="search" class="form-control" placeholder="Search by Certificate ID or Participant Name"></td>
+                                        <td ><button type="submit"  class="btn btn-success">Search</button></td>
                                         </form>
-                                        <td style="width: 8%"><a href="/admin" class="btn btn-primary">Refresh</a></td>
-                                        <td style="width: 10%"><a href="/imports-exports" class="btn btn-warning">Bulk Im/Ex</a></td>
-                                        <td style="width: 8%"><a href="/logout" class="btn btn-danger">Log Out</a></td>
+                                        <td ><a href="admin" class="btn btn-primary">Refresh</a></td>
+                                        <td ><a href="imports-exports" class="btn btn-warning">Bulk Im/Ex</a></td>
+                                        <td ><a href="logout" class="btn btn-danger">Log Out</a></td>
                                     </tr>
 
                                 </table>
@@ -39,25 +39,37 @@
                                 <table class="table table-striped">
                                 <thead>
                                     <tr>
+                                        <th>Sl.</th>
                                         <th>Certificate ID</th>
                                         <th>Name</th>
-                                        <th>Student ID</th>
-                                        <th>Course Code</th>
-                                        <th>Final Result</th>
+                                        <th>Company</th>
+                                        <th>Training</th>
+                                        <th>Trainer</th>
+                                        <th>Date</th>
+                                        <th>Issue Date</th>
+                                        <th>Exp. Date</th>
+                                        <th>Passport/NID</th>
+                                        <th>DL</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach ($certificates as $certificate)
                                         <tr>
-                                            <td>{{ $certificate->certificate_id }}</td>
-                                            <td>{{ $certificate->st_name }}</td>
-                                            <td>{{ $certificate->st_id }}</td>
-                                            <td>{{ $certificate->course_code }}</td>
-                                            <td>{{ $certificate->course_result }}</td>
+                                            <td>{{$loop->iteration}}.</td>
+                                            <td>{{ $certificate->certificate_number }}</td>
+                                            <td>{{ $certificate->participant_name }}</td>
+                                            <td>{{ $certificate->company }}</td>
+                                            <td>{{ $certificate->training_name }}</td>
+                                            <td>{{ $certificate->trainer }}</td>
+                                            <td>{{ $certificate->training_date }}</td>
+                                            <td>{{ $certificate->issue_date }}</td>
+                                            <td>{{ $certificate->expiry_date }}</td>
+                                            <td>{{ $certificate->passport_nid }}</td>
+                                            <td>{{ $certificate->driving_license }}</td>
                                             <td>
-                                                <a href="/delete-certificate/{{ $certificate->id }}" class="btn btn-danger">Delete</a>
-                                                <a href="/edit-certificate/{{ $certificate->id }}" class="btn btn-success">Edit</a>
+                                                <a href="delete-certificate/{{ $certificate->id }}" class="btn btn-danger">Delete</a>
+                                                <a href="edit-certificate/{{ $certificate->id }}" class="btn btn-success">Edit</a>
                                             </td>
                                         </tr>
                                     @endforeach

@@ -11,7 +11,7 @@
     <title>TÜV Austria BIC Certificate Verification</title>
     <meta content="width=device-width, initial-scale=1" name="viewport" />
     <link
-      href=<?php echo e(URL::asset('main.css')); ?> 
+      href=<?php echo e(URL::asset('public/main.css')); ?> 
       rel="stylesheet"
       type="text/css"
     />
@@ -22,16 +22,15 @@
   <body>
     <div class="section wf-section">
       <img
-        src="https://cdn.pixabay.com/photo/2020/08/05/13/07/eco-5465409_1280.png"
+        src="images/TUV Austria Logo.png"
         loading="lazy"
         alt=""
         class="image"
         width="250"
       />
-      <h1 class="heading">Verify Your Certificate</h1>
+      <h1 class="heading">Verify Training Certificate</h1>
       <p class="paragraph">
-        Enter the "Certificate ID"
-        of your certificate and click the "Verify"&nbsp;button.
+        Enter the Certificate Number and click the "Verify"&nbsp;button.
       </p>
       <div class="form-block w-form">
         <form
@@ -76,16 +75,19 @@
       <?php if(isset($certificates)): ?>
       <div>
       <?php if($certificates->count() < 1): ?>
-        <h3>The Certificate ID You Entered is Invalid</h3>
+        <h3>The Certificate You Entered is Invalid or Manipulated. Please contact TUV Austria for futher inquiry</h3>
       <?php endif; ?>
       <?php $__currentLoopData = $certificates; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $certificate): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-        <h3>Certificate ID:&nbsp;<?php echo e($certificate->certificate_id); ?></h3>
-        <h3>Student ID:&nbsp;<?php echo e($certificate->st_id); ?></h3>
-        <h3>Student Name:&nbsp;<?php echo e($certificate->st_name); ?></h3>
-        <h3>Course Code:&nbsp;<?php echo e($certificate->course_code); ?></h3>
-        <h3>Course Name:&nbsp;<?php echo e($certificate->course_name); ?></h3>
-        <h3>Course Period:&nbsp;<?php echo e($certificate->course_period); ?></h3>
-        <h3>Final Result:&nbsp;<?php echo e($certificate->course_result); ?></h3>
+        <h3>Certificate Number:&nbsp;<?php echo e($certificate->certificate_number); ?></h3>
+        <h3>Participant Name:&nbsp;<?php echo e($certificate->participant_name); ?></h3>
+        <h3>Company:&nbsp;<?php echo e($certificate->company); ?></h3>
+        <h3>Training Name:&nbsp;<?php echo e($certificate->training_name); ?></h3>
+        <h3>Trainer:&nbsp;<?php echo e($certificate->trainer); ?></h3>
+        <h3>Training Date:&nbsp;<?php echo e($certificate->training_date); ?></h3>
+        <h3>Issue Date:&nbsp;<?php echo e($certificate->issue_date); ?></h3>
+        <h3>Expiry Date:&nbsp;<?php echo e($certificate->expiry_date); ?></h3>
+        <h3>Passport/NID:&nbsp;<?php echo e($certificate->passport_nid); ?></h3>
+        <h3>Driving License:&nbsp;<?php echo e($certificate->driving_license); ?></h3>
       <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
       </div>
       <?php endif; ?>

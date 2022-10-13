@@ -115,7 +115,7 @@ class CertificateController extends Controller
         if ($request->search == null) {
             return view('/verify');
         }
-        $certificate = Certificate::join('courses', 'certificates.course_code', '=', 'certificates.course_code')->where('certificate_id','=',($request->search))->paginate(1);
+        $certificate = Certificate::where('certificate_number','=',($request->search))->paginate(1);
         return view('verify',['certificates'=>$certificate]);
     }
 

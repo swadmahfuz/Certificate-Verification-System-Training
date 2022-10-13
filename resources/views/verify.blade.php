@@ -11,7 +11,7 @@
     <title>TÜV Austria BIC Certificate Verification</title>
     <meta content="width=device-width, initial-scale=1" name="viewport" />
     <link
-      href={{ URL::asset('main.css'); }} 
+      href={{ URL::asset('public/main.css'); }} 
       rel="stylesheet"
       type="text/css"
     />
@@ -22,16 +22,15 @@
   <body>
     <div class="section wf-section">
       <img
-        src="https://cdn.pixabay.com/photo/2020/08/05/13/07/eco-5465409_1280.png"
+        src="images/TUV Austria Logo.png"
         loading="lazy"
         alt=""
         class="image"
         width="250"
       />
-      <h1 class="heading">Verify Your Certificate</h1>
+      <h1 class="heading">Verify Training Certificate</h1>
       <p class="paragraph">
-        Enter the "Certificate ID"
-        of your certificate and click the "Verify"&nbsp;button.
+        Enter the Certificate Number and click the "Verify"&nbsp;button.
       </p>
       <div class="form-block w-form">
         <form
@@ -76,16 +75,20 @@
       @isset($certificates)
       <div>
       @if($certificates->count() < 1)
-        <h3>The Certificate ID You Entered is Invalid</h3>
+        <h3>❌ The Certificate You Entered is Invalid or Manipulated. Please contact TUV Austria for futher inquiry. ❌</h3>
       @endif
       @foreach ($certificates as $certificate)
-        <h3>Certificate ID:&nbsp;{{ $certificate->certificate_id }}</h3>
-        <h3>Student ID:&nbsp;{{ $certificate->st_id }}</h3>
-        <h3>Student Name:&nbsp;{{ $certificate->st_name }}</h3>
-        <h3>Course Code:&nbsp;{{ $certificate->course_code }}</h3>
-        <h3>Course Name:&nbsp;{{ $certificate->course_name }}</h3>
-        <h3>Course Period:&nbsp;{{ $certificate->course_period }}</h3>
-        <h3>Final Result:&nbsp;{{ $certificate->course_result }}</h3>
+        <h3>Certificate Valid! ✅</h3>
+        <h3>Certificate Number:&nbsp;{{ $certificate->certificate_number }}</h3>
+        <h3>Participant Name:&nbsp;{{ $certificate->participant_name }}</h3>
+        <h3>Company:&nbsp;{{ $certificate->company }}</h3>
+        <h3>Training Name:&nbsp;{{ $certificate->training_name }}</h3>
+        <h3>Trainer:&nbsp;{{ $certificate->trainer }}</h3>
+        <h3>Training Date:&nbsp;{{ $certificate->training_date }}</h3>
+        <h3>Issue Date:&nbsp;{{ $certificate->issue_date }}</h3>
+        <h3>Expiry Date:&nbsp;{{ $certificate->expiry_date }}</h3>
+        <h3>Passport/NID:&nbsp;{{ $certificate->passport_nid }}</h3>
+        <h3>Driving License:&nbsp;{{ $certificate->driving_license }}</h3>
       @endforeach
       </div>
       @endisset
