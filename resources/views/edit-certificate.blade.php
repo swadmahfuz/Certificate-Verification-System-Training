@@ -15,7 +15,7 @@
                         <div class="card">
                             <div class="card-header">
                                 Edit Certificate Details
-                                <a href="admin" class="btn btn-success">Back</a>
+                                <a href="../admin" class="btn btn-success">Back</a>
                             </div>
                             <div class="card-body">
                                 @if (Session::has('Edited details successflly'))
@@ -27,16 +27,26 @@
                                     @csrf
                                     <div class="form-group">
                                         <input type="hidden" name="id" value="{{ $certificate->id }}">
-                                        <label for="certificateID">Certificate ID</label>
-                                        <input type="text" name="certid" class="form-control" placeholder="Confirm or Update Certificate ID" value="{{ $certificate->certificate_id }}">
-                                        <label for="Name">Student Name</label>
-                                        <input type="text" name="name" class="form-control" placeholder="UpdateName" value="{{ $certificate->st_name }}">
-                                        <label for="St_id">Student ID</label>
-                                        <input type="text" name="st_id" class="form-control" placeholder="Update Student ID" value="{{ $certificate->st_id }}">
-                                        <label for="Course_code">Course Code</label>
-                                        <input type="text" name="course_code" class="form-control" placeholder="Update Course Code" value="{{ $certificate->course_code }}">
-                                        <label for="Course_result">Course Result</label>
-                                        <input type="text" name="course_result" class="form-control" placeholder="Update Final Result" value="{{ $certificate->course_result }}">
+                                        <label for="certificate_number">Certificate Number</label>
+                                        <input type="text" name="certificate_number" class="form-control" value="{{ $certificate->certificate_number }}">
+                                        <label for="participant_name">Participant Name</label>
+                                        <input type="text" name="participant_name" class="form-control" value="{{ $certificate->participant_name }}">
+                                        <label for="passport_nid">NID/Passport Number</label>
+                                        <input type="text" name="passport_nid" class="form-control" value="{{ $certificate->passport_nid }}">
+                                        <label for="driving_license">Driving License</label>
+                                        <input type="text" name="driving_license" class="form-control" value="{{ $certificate->driving_license }}">
+                                        <label for="company">Company</label>
+                                        <input type="text" name="company" class="form-control" value="{{ $certificate->company }}">
+                                        <label for="training_name">Training Name</label>
+                                        <input type="text" name="training_name" class="form-control" value="{{ $certificate->training_name }}">
+                                        <label for="trainer">Trainer Name</label>
+                                        <input type="text" name="trainer" class="form-control" value="{{ $certificate->trainer }}">
+                                        <label for="training_date">Training Date</label>
+                                        <input type="text" name="training_date" class="form-control" value="{{ $certificate->training_date }}">
+                                        <label for="issue_date">Issue Date</label>
+                                        <input type="text" name="issue_date" class="form-control" value="{{ $certificate->issue_date }}">
+                                        <label for="expiry_date">Expiry Date</label>
+                                        <input type="text" name="expiry_date" class="form-control" value="{{ $certificate->expiry_date }}">
                                     <button type="submit" class="btn btn-success">Update Certificate</button>
                                 </form>
                             </div>

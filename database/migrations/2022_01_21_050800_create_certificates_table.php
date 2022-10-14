@@ -17,14 +17,14 @@ class CreateCertificatesTable extends Migration
             $table->increments('id');
             $table->string('certificate_number');
             $table->string('participant_name');
+            $table->string('passport_nid');
+            $table->string('driving_license');
             $table->string('company');
             $table->string('training_name');
             $table->string('trainer');
             $table->string('training_date');
             $table->string('issue_date');
             $table->string('expiry_date');
-            $table->string('passport_nid');
-            $table->string('driving_license');
             $table->timestamps();
             //Training Name, Name, Passport/NID, DL, Company, Training Date, 
             //Issue Date, Expiry Date, Trainer

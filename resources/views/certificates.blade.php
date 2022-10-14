@@ -42,14 +42,14 @@
                                         <th>Sl.</th>
                                         <th>Certificate ID</th>
                                         <th>Name</th>
+                                        <th>Passport/NID</th>
+                                        <th>DL</th>
                                         <th>Company</th>
                                         <th>Training</th>
                                         <th>Trainer</th>
                                         <th>Date</th>
                                         <th>Issue Date</th>
                                         <th>Exp. Date</th>
-                                        <th>Passport/NID</th>
-                                        <th>DL</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -59,14 +59,14 @@
                                             <td>{{$loop->iteration}}.</td>
                                             <td>{{ $certificate->certificate_number }}</td>
                                             <td>{{ $certificate->participant_name }}</td>
+                                            <td>{{ $certificate->passport_nid }}</td>
+                                            <td>{{ $certificate->driving_license }}</td>
                                             <td>{{ $certificate->company }}</td>
                                             <td>{{ $certificate->training_name }}</td>
                                             <td>{{ $certificate->trainer }}</td>
                                             <td>{{ $certificate->training_date }}</td>
                                             <td>{{ $certificate->issue_date }}</td>
                                             <td>{{ $certificate->expiry_date }}</td>
-                                            <td>{{ $certificate->passport_nid }}</td>
-                                            <td>{{ $certificate->driving_license }}</td>
                                             <td>
                                                 <a href="delete-certificate/{{ $certificate->id }}" class="btn btn-danger">Delete</a>
                                                 <a href="edit-certificate/{{ $certificate->id }}" class="btn btn-success">Edit</a>

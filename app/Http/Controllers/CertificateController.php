@@ -1,9 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Models\Certificate;
-use App\Models\Courses;
 use App\Exports\CertificateExport;
 use App\Imports\CertificateImport;
 use Illuminate\Http\Request;
@@ -32,24 +30,29 @@ class CertificateController extends Controller
         if($auth->isAuthenticated())
         {
         $certificate = new certificate();
-        $certificate->certificate_id = $request->certid;
-        $certificate->st_name =$request->name;
-        $certificate->st_id = $request->st_id;
-        $certificate->course_code = $request->course_code;
-        $certificate->course_result = $request->course_result;
+        $certificate->certificate_number = $request->certificate_number;
+        $certificate->participant_name = $request->participant_name;
+        $certificate->passport_nid = $request->passport_nid;
+        $certificate->driving_license = $request->driving_license;
+        $certificate->company = $request->company;
+        $certificate->training_name = $request->training_name;
+        $certificate->trainer = $request->trainer;
+        $certificate->training_date = $request->training_date;
+        $certificate->issue_date = $request->issue_date;
+        $certificate->expiry_date = $request->expiry_date;
         $certificate->save();
-        return redirect('/add-certificate');
+        return redirect('/admin');
         }
         return redirect ('/login');
     }
 
     public function getCertificate()
     {
-        $auth = resolve('littlegatekeeper');
+        //$auth = resolve('littlegatekeeper');
 
         if($auth->isAuthenticated())
         {
-            $certificates = Certificate::orderBy('id','DESC')->paginate(20);
+            $certificates = Certificate::orderBy('id','ASC')->paginate(100);
             return view('certificates',compact('certificates'));
         }
 
@@ -87,11 +90,16 @@ class CertificateController extends Controller
         if($auth->isAuthenticated())
         {
             $certificate = Certificate::find($request->id);
-            $certificate->certificate_id = $request->certid;
-            $certificate->st_name =$request->name;
-            $certificate->st_id = $request->st_id;
-            $certificate->course_code = $request->course_code;
-            $certificate->course_result = $request->course_result;
+            $certificate->certificate_number = $request->certificate_number;
+            $certificate->participant_name = $request->participant_name;
+            $certificate->passport_nid = $request->passport_nid;
+            $certificate->driving_license = $request->driving_license;
+            $certificate->company = $request->company;
+            $certificate->training_name = $request->training_name;
+            $certificate->trainer = $request->trainer;
+            $certificate->training_date = $request->training_date;
+            $certificate->issue_date = $request->issue_date;
+            $certificate->expiry_date = $request->expiry_date;
             $certificate->save();
             return redirect('/admin');
         }

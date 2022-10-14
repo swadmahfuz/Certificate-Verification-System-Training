@@ -81,14 +81,14 @@
         <h3>Certificate Valid! ✅</h3>
         <h3>Certificate Number:&nbsp;<?php echo e($certificate->certificate_number); ?></h3>
         <h3>Participant Name:&nbsp;<?php echo e($certificate->participant_name); ?></h3>
+        <h3>Passport/NID:&nbsp;<?php echo e($certificate->passport_nid); ?></h3>
+        <h3>Driving License:&nbsp;<?php echo e($certificate->driving_license); ?></h3>
         <h3>Company:&nbsp;<?php echo e($certificate->company); ?></h3>
         <h3>Training Name:&nbsp;<?php echo e($certificate->training_name); ?></h3>
         <h3>Trainer:&nbsp;<?php echo e($certificate->trainer); ?></h3>
         <h3>Training Date:&nbsp;<?php echo e($certificate->training_date); ?></h3>
         <h3>Issue Date:&nbsp;<?php echo e($certificate->issue_date); ?></h3>
         <h3>Expiry Date:&nbsp;<?php echo e($certificate->expiry_date); ?></h3>
-        <h3>Passport/NID:&nbsp;<?php echo e($certificate->passport_nid); ?></h3>
-        <h3>Driving License:&nbsp;<?php echo e($certificate->driving_license); ?></h3>
       <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
       </div>
       <?php endif; ?>
