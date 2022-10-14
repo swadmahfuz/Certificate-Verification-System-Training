@@ -22,7 +22,7 @@
                                         <td style="width: 40%"><input type="text" name="search" class="form-control" placeholder="Search by Certificate ID or Participant Name"></td>
                                         <td ><button type="submit"  class="btn btn-success">Search</button></td>
                                         </form>
-                                        <td ><a href="admin" class="btn btn-primary">Refresh</a></td>
+                                        <td ><a href="dashboard" class="btn btn-primary">Refresh</a></td>
                                         <td ><a href="imports-exports" class="btn btn-warning">Bulk Im/Ex</a></td>
                                         <td ><a href="logout" class="btn btn-danger">Log Out</a></td>
                                     </tr>

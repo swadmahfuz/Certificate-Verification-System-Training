@@ -36,7 +36,7 @@
                 <?php echo csrf_field(); ?>
                 <h2 class="text-center">Certificate Verification <br> Login</h2>     
                 <div class="form-group">
-                    <input type="text" class="form-control" placeholder="Username" name="username">
+                    <input type="text" class="form-control" placeholder="Email" name="email">
                 </div>
                 <div class="form-group">
                     <input type="password" class="form-control" placeholder="Password" name="password">

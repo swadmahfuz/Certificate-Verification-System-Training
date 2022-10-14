@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/',[CertificateController::class,'search'])->name('certificate.search');
+Route::get('/',[CertificateController::class,'search'])->name('certificate.search')->name('home');
 
 Route::get('/add-certificate',[CertificateController::class,'addCertificate']);
 Route::post('/add-certificate',[CertificateController::class,'createCertificate'])->name('certificate.create');
@@ -22,8 +22,11 @@ Route::get('/delete-certificate/{id}',[CertificateController::class,'deleteCerti
 Route::get('/admin-search',[CertificateController::class,'adminSearch'])->name('certificate.adminSearch');
 Route::get('/edit-certificate/{id}',[CertificateController::class,'editCertificate']);
 Route::post('/update-certificate',[CertificateController::class,'updateCertificate'])->name('certificate.update');
-Route::get('/admin', [CertificateController::class,'getCertificate']);
+Route::get('/dashboard', [CertificateController::class,'getCertificate'])->name('dashboard');
 
+Route::get('/admin', function () {
+    return view('/login');
+});
 Route::get('/login', function () {
     return view('/login');
 });
@@ -33,3 +36,8 @@ Route::post('/login/addCredentials', [CertificateController::class,'addCredentia
 Route::get('/imports-exports', [CertificateController::class,'importExportView']);
 Route::get('/export', [CertificateController::class, 'export'])->name('export');
 Route::post('import', [CertificateController::class, 'import'])->name('import');
+Auth::routes();
+
+//Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+///If login page layout changes, remember to update /admin and /login

@@ -14,7 +14,7 @@
                 <div class="row">
                     <div class="col-md-6 offset-md-3">
                         <div class="card">
-                            <div class="card-header">Add Certificate Data <a href="admin" class="btn btn-success">Back</a></div>
+                            <div class="card-header">Add Certificate Data <a href="dashboard" class="btn btn-success">Back</a></div>
                             <div class="card-body">
                                 <form method="POST" action="<?php echo e(route('certificate.create')); ?>">
                                     <?php echo csrf_field(); ?>

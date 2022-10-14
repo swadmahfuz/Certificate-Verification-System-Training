@@ -15,7 +15,7 @@
                         <div class="card">
                             <div class="card-header">
                                 Edit Certificate Details
-                                <a href="../admin" class="btn btn-success">Back</a>
+                                <a href="../dashboard" class="btn btn-success">Back</a>
                             </div>
                             <div class="card-body">
                                 <?php if(Session::has('Edited details successflly')): ?>

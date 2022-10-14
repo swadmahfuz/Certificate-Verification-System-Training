@@ -6,28 +6,36 @@ use App\Exports\CertificateExport;
 use App\Imports\CertificateImport;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Auth;
 
 class CertificateController extends Controller
 {
+    public function getCertificate()
+    {
+        if (Auth::check())
+        {
+            $certificates = Certificate::orderBy('id','ASC')->paginate(100);
+            return view('certificates',compact('certificates'));
+        }
+
+        return redirect('/admin');
+    }
+    
     public function addCertificate()
     {
-        $auth = resolve('littlegatekeeper');
-
-        if($auth->isAuthenticated())
+        if (Auth::check())
         {
             return view('add-certificate');
         }
         else
         {
-            return redirect('/login');
+            return redirect('/admin');
         }
     }
 
     public function createCertificate(Request $request)
     {
-        $auth = resolve('littlegatekeeper');
-
-        if($auth->isAuthenticated())
+        if (Auth::check())
         {
         $certificate = new certificate();
         $certificate->certificate_number = $request->certificate_number;
@@ -41,53 +49,36 @@ class CertificateController extends Controller
         $certificate->issue_date = $request->issue_date;
         $certificate->expiry_date = $request->expiry_date;
         $certificate->save();
-        return redirect('/admin');
+        return redirect('/dashboard');
         }
-        return redirect ('/login');
+        return redirect ('/admin');
     }
 
-    public function getCertificate()
-    {
-        //$auth = resolve('littlegatekeeper');
-
-        if($auth->isAuthenticated())
-        {
-            $certificates = Certificate::orderBy('id','ASC')->paginate(100);
-            return view('certificates',compact('certificates'));
-        }
-
-        return redirect('/login');
-    }
+    
 
     public function deleteCertificate($id)
     {
-        $auth = resolve('littlegatekeeper');
-
-        if($auth->isAuthenticated())
+        if (Auth::check())
         {
         Certificate::where('id',$id)->delete();
         return back()->with('Certificate_Deleted','Certificate details has been deleted successfully');
         }
-        return redirect ('/login');
+        return redirect ('/admin');
     }
 
     public function editCertificate($id)
     {
-        $auth = resolve('littlegatekeeper');
-
-        if($auth->isAuthenticated())
+        if (Auth::check())
         {
             $certificate = Certificate::find($id);
             return view('edit-certificate',compact('certificate'));
         }
-        return redirect ('/login');
+        return redirect ('/admin');
     }
 
     public function updateCertificate(Request $request)
     {
-        $auth = resolve('littlegatekeeper');
-
-        if($auth->isAuthenticated())
+        if (Auth::check())
         {
             $certificate = Certificate::find($request->id);
             $certificate->certificate_number = $request->certificate_number;
@@ -101,21 +92,19 @@ class CertificateController extends Controller
             $certificate->issue_date = $request->issue_date;
             $certificate->expiry_date = $request->expiry_date;
             $certificate->save();
-            return redirect('/admin');
+            return redirect('/dashboard');
         }
-        return redirect ('/login');
+        return redirect ('/admin');
     }
 
     public function adminSearch(Request $request)
     {
-        $auth = resolve('littlegatekeeper');
-
-        if($auth->isAuthenticated())
+        if (Auth::check())
         {
         $certificates = Certificate::where('certificate_id','=',($request->search))->orWhere('st_name','=',($request->search)) ->paginate(10);
         return view('certificates',compact('certificates'));
         }
-        return redirect ('/login');
+        return redirect ('/admin');
     }
 
     public function search(Request $request)
@@ -129,68 +118,62 @@ class CertificateController extends Controller
 
     public function addCredentials(Request $request)
     {
+        // $auth = resolve('littlegatekeeper');
 
-        $auth = resolve('littlegatekeeper');
+        // $loginSuccess = $auth->attempt($request->only([
+        //     'username',
+        //     'password'
+        // ]));
 
-        $loginSuccess = $auth->attempt($request->only([
-            'username',
-            'password'
-        ]));
+        $credentials = $request->only('email', 'password');
 
-        if ($loginSuccess) {
-            return redirect('/admin')->with('success', 'Thank You for authorizing. Please proceed.');
+        if (Auth::attempt($credentials)) {
+            // Authentication passed...
+            return redirect('/dashboard')->with('success', 'Thank You for authorizing. Please proceed.');
         }
         else{
-            return redirect('/login')->with('error', 'You entered the wrong credentials');
+            return redirect('/admin')->with('error', 'You entered the wrong credentials');
         }
 
     }
 
     public function logout()
     {
-        $auth = resolve('littlegatekeeper');
-
-        if($auth->isAuthenticated())
+        if (Auth::check())
         {
-            $auth->logout();
-            return redirect('/login');
+            Auth::logout();
+            return redirect('/admin');
         }
 
-        return redirect('/login');;
+        return redirect('/admin');;
     }
 
     public function importExportView()
     {
-        $auth = resolve('littlegatekeeper');
-
-        if($auth->isAuthenticated())
+        if (Auth::check())
         {
             return view('imports-exports');
         }
-       return redirect('/login');
+       return redirect('/admin');
     }
 
     public function export() 
     {
-        $auth = resolve('littlegatekeeper');
-
-        if($auth->isAuthenticated())
+        if (Auth::check())
         {
         return Excel::download(new CertificateExport, 'certificates.xlsx');
         }
-        return redirect('/login');
+        return redirect('/admin');
     }
 
     public function import()
     {
-        $auth = resolve('littlegatekeeper');
-
-        if($auth->isAuthenticated())
+        if (Auth::check())
         {
         Excel::import(new CertificateImport,request()->file('file'));
-        return redirect ('/admin');
+        return redirect ('/dashboard');
         }
-        return redirect ('/login');
+        return redirect ('/admin');
     }
 
 }
