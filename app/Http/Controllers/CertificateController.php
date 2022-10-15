@@ -7,6 +7,7 @@ use App\Imports\CertificateImport;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Auth;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class CertificateController extends Controller
 {
@@ -97,12 +98,28 @@ class CertificateController extends Controller
         return redirect ('/admin');
     }
 
+    public function generateQRCode(Request $request)
+    {
+        if (Auth::check())
+        {
+            //$certificate = Certificate::where('certificate_number','=',($request->generate));
+            //$certificate_number = $certificate->certificate_number;
+            
+            //$certificate_number = $request->search;
+            $certificate_number = (string) $request;
+            $url = 'https://www.websitedomain.com/?search='.$certificate_number;
+            return view('qrcode', compact('url'));
+            /// http://localhost/verify-cert-exp/qrcode?generate=TUV/CERT/2022/1001/001
+        }
+        return redirect('/admin');
+    }
+
     public function adminSearch(Request $request)
     {
         if (Auth::check())
         {
             $certificates = Certificate::where('certificate_number','=',($request->search))->orWhere('participant_name','LIKE','%'.($request->search).'%') ->paginate(100); ///Search by certificate number or Part of Name (% and LIKE)
-        return view('certificates',compact('certificates'));
+            return view('certificates',compact('certificates'));
         }
         return redirect ('/admin');
     }
@@ -118,6 +135,13 @@ class CertificateController extends Controller
 
     public function addCredentials(Request $request)
     {
+        // $auth = resolve('littlegatekeeper');
+
+        // $loginSuccess = $auth->attempt($request->only([
+        //     'username',
+        //     'password'
+        // ]));
+
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
@@ -130,14 +154,6 @@ class CertificateController extends Controller
 
     }
 
-    public function generateQRCode(Request $request)
-    {
-        if (Auth::check())
-        {
-
-        }
-        return redirect ('/admin');
-    }
 
     public function logout()
     {
