@@ -101,7 +101,7 @@ class CertificateController extends Controller
     {
         if (Auth::check())
         {
-        $certificates = Certificate::where('certificate_id','=',($request->search))->orWhere('st_name','=',($request->search)) ->paginate(10);
+            $certificates = Certificate::where('certificate_number','=',($request->search))->orWhere('participant_name','LIKE','%'.($request->search).'%') ->paginate(100); ///Search by certificate number or Part of Name (% and LIKE)
         return view('certificates',compact('certificates'));
         }
         return redirect ('/admin');
@@ -118,13 +118,6 @@ class CertificateController extends Controller
 
     public function addCredentials(Request $request)
     {
-        // $auth = resolve('littlegatekeeper');
-
-        // $loginSuccess = $auth->attempt($request->only([
-        //     'username',
-        //     'password'
-        // ]));
-
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
@@ -135,6 +128,15 @@ class CertificateController extends Controller
             return redirect('/admin')->with('error', 'You entered the wrong credentials');
         }
 
+    }
+
+    public function generateQRCode(Request $request)
+    {
+        if (Auth::check())
+        {
+
+        }
+        return redirect ('/admin');
     }
 
     public function logout()

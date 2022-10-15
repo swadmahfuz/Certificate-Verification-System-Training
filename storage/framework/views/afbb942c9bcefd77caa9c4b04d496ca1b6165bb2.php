@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <title>Add Certificate</title>
 </head>
-    <body>
+    <body background="images/tuv-login-background1.jpg">
         <section style="padding-top: 60px;">
             <div class="container">
                 <div class="row">
