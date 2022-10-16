@@ -98,18 +98,12 @@ class CertificateController extends Controller
         return redirect ('/admin');
     }
 
-    public function generateQRCode(Request $request)
+    public function generateQRCode($id)
     {
         if (Auth::check())
         {
-            //$certificate = Certificate::where('certificate_number','=',($request->generate));
-            //$certificate_number = $certificate->certificate_number;
-            
-            //$certificate_number = $request->search;
-            $certificate_number = (string) $request;
-            $url = 'https://www.websitedomain.com/?search='.$certificate_number;
-            return view('qrcode', compact('url'));
-            /// http://localhost/verify-cert-exp/qrcode?generate=TUV/CERT/2022/1001/001
+            $certificate = Certificate::find($id);
+            return view('qrcode', compact('certificate'));  ///send certificate data to view page
         }
         return redirect('/admin');
     }
@@ -135,13 +129,6 @@ class CertificateController extends Controller
 
     public function addCredentials(Request $request)
     {
-        // $auth = resolve('littlegatekeeper');
-
-        // $loginSuccess = $auth->attempt($request->only([
-        //     'username',
-        //     'password'
-        // ]));
-
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {

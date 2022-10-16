@@ -68,8 +68,9 @@
                                             <td>{{ $certificate->issue_date }}</td>
                                             <td>{{ $certificate->expiry_date }}</td>
                                             <td>
-                                                <a href="delete-certificate/{{ $certificate->id }}" class="btn btn-danger">Delete</a>
-                                                <a href="edit-certificate/{{ $certificate->id }}" class="btn btn-success">Edit</a>
+                                                <a href="qrcode/{{ $certificate->id }}" target="_blank" class="btn btn-success" style="margin-bottom: 5px">QR Code</a>
+                                                <a href="edit-certificate/{{ $certificate->id }}" class="btn btn-success" style="margin-bottom: 5px">Edit</a>
+                                                <a href="delete-certificate/{{ $certificate->id }}" class="btn btn-danger" style="margin-bottom: 5px">Delete</a>
                                             </td>
                                         </tr>
                                     @endforeach

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 13, 2022 at 08:21 PM
+-- Generation Time: Oct 16, 2022 at 01:41 PM
 -- Server version: 10.4.22-MariaDB
 -- PHP Version: 7.4.30
 
@@ -29,16 +29,16 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `certificates` (
   `id` int(10) UNSIGNED NOT NULL,
-  `certificate_number` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `participant_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `company` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `training_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `trainer` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `training_date` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `issue_date` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `expiry_date` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `passport_nid` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `driving_license` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `certificate_number` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `participant_name` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `passport_nid` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `driving_license` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `company` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `training_name` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `trainer` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `training_date` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `issue_date` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `expiry_date` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -47,8 +47,8 @@ CREATE TABLE `certificates` (
 -- Dumping data for table `certificates`
 --
 
-INSERT INTO `certificates` (`id`, `certificate_number`, `participant_name`, `company`, `training_name`, `trainer`, `training_date`, `issue_date`, `expiry_date`, `passport_nid`, `driving_license`, `created_at`, `updated_at`) VALUES
-(1, 'TUV/CERT/2022/1010/001', 'Swad Ahmed Mahfuz', 'TUV Austria', 'Safe Operation of Manlift', 'Shohidul Islam', '10/10/2022', '11/10/2022', '10/10/2024', '1003608153', 'DK10000000000009', '2022-10-13 13:08:24', '2022-10-13 13:10:24');
+INSERT INTO `certificates` (`id`, `certificate_number`, `participant_name`, `passport_nid`, `driving_license`, `company`, `training_name`, `trainer`, `training_date`, `issue_date`, `expiry_date`, `created_at`, `updated_at`) VALUES
+(1, 'TUV/CERT/2022/1001/001', 'Swad A Mahfuz', '1003608153', 'DK88888888888811', 'TUV Austria', 'Safe Operation of Manlift', 'Shohidul Islam', '14/10/2022', '15/10/2022', '14/10/2024', '2022-10-16 10:08:14', '2022-10-16 10:08:14');
 
 -- --------------------------------------------------------
 
@@ -73,7 +73,7 @@ CREATE TABLE `courses` (
 
 CREATE TABLE `failed_jobs` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `uuid` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `uuid` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `connection` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `queue` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `payload` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -98,12 +98,11 @@ CREATE TABLE `migrations` (
 --
 
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
-(19, '2014_10_12_000000_create_users_table', 1),
-(20, '2014_10_12_100000_create_password_resets_table', 1),
-(21, '2019_08_19_000000_create_failed_jobs_table', 1),
-(22, '2019_12_14_000001_create_personal_access_tokens_table', 1),
-(23, '2022_01_21_050800_create_certificates_table', 1),
-(24, '2022_01_25_142826_create_courses_table', 1);
+(25, '2014_10_12_000000_create_users_table', 2),
+(26, '2014_10_12_100000_create_password_resets_table', 2),
+(27, '2019_08_19_000000_create_failed_jobs_table', 2),
+(28, '2019_12_14_000001_create_personal_access_tokens_table', 2),
+(29, '2022_01_21_050800_create_certificates_table', 2);
 
 -- --------------------------------------------------------
 
@@ -112,8 +111,8 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 --
 
 CREATE TABLE `password_resets` (
-  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `token` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `token` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -125,9 +124,9 @@ CREATE TABLE `password_resets` (
 
 CREATE TABLE `personal_access_tokens` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `tokenable_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tokenable_type` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `tokenable_id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `token` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
   `abilities` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `last_used_at` timestamp NULL DEFAULT NULL,
@@ -143,14 +142,21 @@ CREATE TABLE `personal_access_tokens` (
 
 CREATE TABLE `users` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `email_verified_at` timestamp NULL DEFAULT NULL,
-  `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `password` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `remember_token` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`) VALUES
+(1, 'Swad Mahfuz', 'swad.mahfuz@gmail.com', NULL, '$2y$10$k3WHHNjcUxjQlRBZcVUj/.IAvbSY92uIFSRyLQPvFxIHOohuJsHzS', NULL, '2022-10-16 10:07:32', '2022-10-16 10:07:32');
 
 --
 -- Indexes for dumped tables
@@ -228,7 +234,7 @@ ALTER TABLE `failed_jobs`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- AUTO_INCREMENT for table `personal_access_tokens`
@@ -240,7 +246,7 @@ ALTER TABLE `personal_access_tokens`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

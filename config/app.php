@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'TÜV Austria BIC Certificate Verification'),
+    'name' => env('APP_NAME', 'TÜV Austria BIC Certificate Verification System'),
 
     /*
     |--------------------------------------------------------------------------
