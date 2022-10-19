@@ -15,7 +15,7 @@ class CreateCertificatesTable extends Migration
     {
         Schema::create('certificates', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('certificate_number');
+            $table->string('certificate_number')->unique();
             $table->string('participant_name');
             $table->string('passport_nid');
             $table->string('driving_license');

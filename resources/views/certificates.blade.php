@@ -68,7 +68,12 @@
                                             <td>{{ $certificate->issue_date }}</td>
                                             <td>{{ $certificate->expiry_date }}</td>
                                             <td>
-                                                <a href="qrcode/{{ $certificate->id }}" target="_blank" class="btn btn-success" style="margin-bottom: 5px">QR Code</a>
+                                                @php
+                                                    $url = url('');  ///capture server url
+                                                    $verification_url = $url.'?search='.$certificate->certificate_number;   ///concat server url with verification link and certificate number
+                                                @endphp
+                                                {{-- using goqr.me api to generate qr code image--}}
+                                                <a href="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ $verification_url }}" target="_blank" class="btn btn-success" style="margin-bottom: 5px">QR Code</a>
                                                 <a href="edit-certificate/{{ $certificate->id }}" class="btn btn-success" style="margin-bottom: 5px">Edit</a>
                                                 <a href="delete-certificate/{{ $certificate->id }}" class="btn btn-danger" style="margin-bottom: 5px">Delete</a>
                                             </td>

@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/',[CertificateController::class,'search'])->name('certificate.search')->name('home'); ///load homepage/verify page with search parameter or no parameter
-Route::get('/qrcode/{id}',[CertificateController::class,'generateQRCode'])->name('certificate.qrcode');
+//Route::get('/qrcode/{id}',[CertificateController::class,'generateQRCode'])->name('certificate.qrcode');
 
 Route::get('/add-certificate',[CertificateController::class,'addCertificate']);
 Route::post('/add-certificate',[CertificateController::class,'createCertificate'])->name('certificate.create');
