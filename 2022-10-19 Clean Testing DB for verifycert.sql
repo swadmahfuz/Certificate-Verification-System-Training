@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 16, 2022 at 01:41 PM
+-- Generation Time: Oct 19, 2022 at 07:16 AM
 -- Server version: 10.4.22-MariaDB
 -- PHP Version: 7.4.30
 
@@ -48,7 +48,8 @@ CREATE TABLE `certificates` (
 --
 
 INSERT INTO `certificates` (`id`, `certificate_number`, `participant_name`, `passport_nid`, `driving_license`, `company`, `training_name`, `trainer`, `training_date`, `issue_date`, `expiry_date`, `created_at`, `updated_at`) VALUES
-(1, 'TUV/CERT/2022/1001/001', 'Swad A Mahfuz', '1003608153', 'DK88888888888811', 'TUV Austria', 'Safe Operation of Manlift', 'Shohidul Islam', '14/10/2022', '15/10/2022', '14/10/2024', '2022-10-16 10:08:14', '2022-10-16 10:08:14');
+(1, 'TUV/CERT/2022/1001/001', 'Swad A Mahfuz', '1003608153', 'DK88888888888811', 'TUV Austria', 'Safe Operation of Manlift', 'Shohidul Islam', '14/10/2022', '15/10/2022', '14/10/2024', '2022-10-19 04:53:03', '2022-10-19 04:53:03'),
+(2, 'TUV/CERT/2022/1001/002', 'Alamgir Hossain', '1005743621', 'DK88888888888811', 'TUV Austria', 'Safe Operation of Manlift', 'Shohidul Islam', '14/10/2022', '15/10/2022', '14/10/2024', '2022-10-19 04:53:25', '2022-10-19 04:53:25');
 
 -- --------------------------------------------------------
 
@@ -98,11 +99,11 @@ CREATE TABLE `migrations` (
 --
 
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
-(25, '2014_10_12_000000_create_users_table', 2),
-(26, '2014_10_12_100000_create_password_resets_table', 2),
-(27, '2019_08_19_000000_create_failed_jobs_table', 2),
-(28, '2019_12_14_000001_create_personal_access_tokens_table', 2),
-(29, '2022_01_21_050800_create_certificates_table', 2);
+(30, '2014_10_12_000000_create_users_table', 1),
+(31, '2014_10_12_100000_create_password_resets_table', 1),
+(32, '2019_08_19_000000_create_failed_jobs_table', 1),
+(33, '2019_12_14_000001_create_personal_access_tokens_table', 1),
+(34, '2022_01_21_050800_create_certificates_table', 1);
 
 -- --------------------------------------------------------
 
@@ -156,7 +157,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`) VALUES
-(1, 'Swad Mahfuz', 'swad.mahfuz@gmail.com', NULL, '$2y$10$k3WHHNjcUxjQlRBZcVUj/.IAvbSY92uIFSRyLQPvFxIHOohuJsHzS', NULL, '2022-10-16 10:07:32', '2022-10-16 10:07:32');
+(1, 'Swad Mahfuz', 'swad.mahfuz@gmail.com', NULL, '$2y$10$FTohCfU9D17zwy6Y4EElPuYFsXaIFi62AcSZ6zPpzKAdOrofZtFYu', NULL, '2022-10-19 04:52:40', '2022-10-19 04:52:40');
 
 --
 -- Indexes for dumped tables
@@ -166,7 +167,8 @@ INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `re
 -- Indexes for table `certificates`
 --
 ALTER TABLE `certificates`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `certificates_certificate_number_unique` (`certificate_number`);
 
 --
 -- Indexes for table `courses`
@@ -216,7 +218,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `certificates`
 --
 ALTER TABLE `certificates`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `courses`
@@ -234,7 +236,7 @@ ALTER TABLE `failed_jobs`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
 -- AUTO_INCREMENT for table `personal_access_tokens`

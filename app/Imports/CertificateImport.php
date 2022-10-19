@@ -15,11 +15,16 @@ class CertificateImport implements ToModel
     public function model(array $row)
     {
         return new Certificate([
-            'certificate_id' => $row[0],
-            'st_name' => $row[1],
-            'st_id' => $row[2],
-            'course_code' => $row[3],
-            'course_result' => $row[4],
+            'certificate_number' => $row[0],
+            'participant_name' => $row[1],
+            'passport_nid' => $row[2],
+            'driving_license' => $row[3],
+            'company' => $row[4],
+            'training_name' => $row[5],
+            'trainer' => $row[6],
+            'training_date' => $row[7],
+            'issue_date' => $row[8],
+            'expiry_date' => $row[9],
         ]);
     }
 }

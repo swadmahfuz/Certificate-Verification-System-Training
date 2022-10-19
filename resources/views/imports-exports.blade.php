@@ -19,7 +19,7 @@
                 <br>
                 <button class="btn btn-success">Import Data</button>
                 <a class="btn btn-warning" href="{{ route('export') }}">Export Data</a>
-                <a href="admin" class="btn btn-primary">Admin Panel</a>
+                <a href="dashboard" class="btn btn-primary">Admin Panel</a>
             </form>
         </div>
     </div>

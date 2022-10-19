@@ -7,6 +7,7 @@ use App\Imports\CertificateImport;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class CertificateController extends Controller
 {
@@ -97,7 +98,7 @@ class CertificateController extends Controller
         return redirect ('/admin');
     }
 
-    public function generateQRCode($id)
+    public function generateQRCode($id)     ///function not used anymore as goQR api is implemented.
     {
         if (Auth::check())
         {
@@ -165,7 +166,9 @@ class CertificateController extends Controller
     {
         if (Auth::check())
         {
-        return Excel::download(new CertificateExport, 'certificates.xlsx');
+            $today = Carbon::now()->format('d-m-Y');   ///get current date
+            $fileName = 'TUV Austria BIC Certificate DB on '.$today.'.xlsx';
+            return Excel::download(new CertificateExport, $fileName);
         }
         return redirect('/admin');
     }
