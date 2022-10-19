@@ -4,8 +4,9 @@ namespace App\Imports;
 
 use App\Models\Certificate;
 use Maatwebsite\Excel\Concerns\ToModel;
+use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
-class CertificateImport implements ToModel
+class CertificateImport implements ToModel, WithHeadingRow
 {
     /**
     * @param array $row
@@ -15,16 +16,16 @@ class CertificateImport implements ToModel
     public function model(array $row)
     {
         return new Certificate([
-            'certificate_number' => $row[0],
-            'participant_name' => $row[1],
-            'passport_nid' => $row[2],
-            'driving_license' => $row[3],
-            'company' => $row[4],
-            'training_name' => $row[5],
-            'trainer' => $row[6],
-            'training_date' => $row[7],
-            'issue_date' => $row[8],
-            'expiry_date' => $row[9],
+            'certificate_number' => $row['certificate_number'],
+            'participant_name' => $row['participant_name'],
+            'passport_nid' => $row['passport_nid'],
+            'driving_license' => $row['driving_license'],
+            'company' => $row['company'],
+            'training_name' => $row['training_name'],
+            'trainer' => $row['trainer'],
+            'training_date' => $row['training_date'],
+            'issue_date' => $row['issue_date'],
+            'expiry_date' => $row['expirty_date'],
         ]);
     }
 }

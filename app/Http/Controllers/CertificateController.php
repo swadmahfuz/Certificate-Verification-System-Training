@@ -16,7 +16,7 @@ class CertificateController extends Controller
         if (Auth::check())
         {
             $certificates = Certificate::orderBy('id','ASC')->paginate(100);
-            return view('certificates',compact('certificates'));
+            return view('dashboard',compact('certificates'));
         }
 
         return redirect('/admin');
@@ -51,6 +51,16 @@ class CertificateController extends Controller
         $certificate->expiry_date = $request->expiry_date;
         $certificate->save();
         return redirect('/dashboard');
+        }
+        return redirect ('/admin');
+    }
+
+    public function viewCertificate($id)
+    {
+        if (Auth::check())
+        {
+            $certificate = Certificate::find($id);
+            return view('view-certificate',compact('certificate'));
         }
         return redirect ('/admin');
     }
