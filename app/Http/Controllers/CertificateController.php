@@ -11,6 +11,46 @@ use Carbon\Carbon;
 
 class CertificateController extends Controller
 {
+
+
+    ///Unauthenticated user functions
+    public function search(Request $request)
+    {
+        if ($request->search == null) {
+            return view('/verify');
+        }
+        $certificate = Certificate::where('certificate_number','=',($request->search))->paginate(1);
+        return view('verify',['certificates'=>$certificate]);
+    }
+
+    ///Authentication functions
+    public function addCredentials(Request $request)
+    {
+        $credentials = $request->only('email', 'password');
+
+        if (Auth::attempt($credentials)) {
+            // Authentication passed...
+            return redirect('/dashboard')->with('success', 'Thank You for authorizing. Please proceed.');
+        }
+        else{
+            return redirect('/admin')->with('error', 'You entered the wrong credentials');
+        }
+
+    }
+
+    public function logout()
+    {
+        if (Auth::check())
+        {
+            Auth::logout();
+            return redirect('/admin');
+        }
+
+        return redirect('/admin');;
+    }
+    
+    
+    ////Admin functions
     public function getCertificate()
     {
         if (Auth::check())
@@ -49,6 +89,7 @@ class CertificateController extends Controller
         $certificate->training_date = $request->training_date;
         $certificate->issue_date = $request->issue_date;
         $certificate->expiry_date = $request->expiry_date;
+        $certificate->created_by = Auth::user()->name;
         $certificate->save();
         return redirect('/dashboard');
         }
@@ -61,18 +102,6 @@ class CertificateController extends Controller
         {
             $certificate = Certificate::find($id);
             return view('view-certificate',compact('certificate'));
-        }
-        return redirect ('/admin');
-    }
-
-    
-
-    public function deleteCertificate($id)
-    {
-        if (Auth::check())
-        {
-        Certificate::where('id',$id)->delete();
-        return back()->with('Certificate_Deleted','Certificate details has been deleted successfully');
         }
         return redirect ('/admin');
     }
@@ -102,65 +131,32 @@ class CertificateController extends Controller
             $certificate->training_date = $request->training_date;
             $certificate->issue_date = $request->issue_date;
             $certificate->expiry_date = $request->expiry_date;
+            $certificate->updated_by = Auth::user()->name;
             $certificate->save();
             return redirect('/dashboard');
         }
         return redirect ('/admin');
     }
 
-    public function generateQRCode($id)     ///function not used anymore as goQR api is implemented.
+
+    public function deleteCertificate($id)
     {
         if (Auth::check())
         {
-            $certificate = Certificate::find($id);
-            return view('qrcode', compact('certificate'));  ///send certificate data to view page
+        Certificate::where('id',$id)->delete();
+        return back()->with('Certificate_Deleted','Certificate details has been deleted successfully');
         }
-        return redirect('/admin');
+        return redirect ('/admin');
     }
 
     public function adminSearch(Request $request)
     {
         if (Auth::check())
         {
-            $certificates = Certificate::where('certificate_number','=',($request->search))->orWhere('participant_name','LIKE','%'.($request->search).'%') ->paginate(100); ///Search by certificate number or Part of Name (% and LIKE)
-            return view('certificates',compact('certificates'));
+            $certificates = Certificate::where('certificate_number','=',($request->search))->orWhere('participant_name','LIKE','%'.($request->search).'%')->orWhere('passport_nid','=',($request->search))->orWhere('driving_license','=',($request->search))->orWhere('company','LIKE','%'.($request->search).'%')->orWhere('training_name','LIKE','%'.($request->search).'%')->orWhere('trainer','LIKE','%'.($request->search).'%')->orWhere('training_date','LIKE','%'.($request->search).'%')->paginate(100); ///search using % and LIKE to find words in query
+            return view('dashboard',compact('certificates'));
         }
         return redirect ('/admin');
-    }
-
-    public function search(Request $request)
-    {
-        if ($request->search == null) {
-            return view('/verify');
-        }
-        $certificate = Certificate::where('certificate_number','=',($request->search))->paginate(1);
-        return view('verify',['certificates'=>$certificate]);
-    }
-
-    public function addCredentials(Request $request)
-    {
-        $credentials = $request->only('email', 'password');
-
-        if (Auth::attempt($credentials)) {
-            // Authentication passed...
-            return redirect('/dashboard')->with('success', 'Thank You for authorizing. Please proceed.');
-        }
-        else{
-            return redirect('/admin')->with('error', 'You entered the wrong credentials');
-        }
-
-    }
-
-
-    public function logout()
-    {
-        if (Auth::check())
-        {
-            Auth::logout();
-            return redirect('/admin');
-        }
-
-        return redirect('/admin');;
     }
 
     public function importExportView()
@@ -194,3 +190,13 @@ class CertificateController extends Controller
     }
 
 }
+
+    // public function generateQRCode($id)     ///function not used anymore as goQR api is implemented.
+    // {
+    //     if (Auth::check())
+    //     {
+    //         $certificate = Certificate::find($id);
+    //         return view('qrcode', compact('certificate'));  ///send certificate data to view page
+    //     }
+    //     return redirect('/admin');
+    // }

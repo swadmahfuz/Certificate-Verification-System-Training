@@ -46,7 +46,12 @@ class TemporaryFileFactory
      */
     public function makeLocal(string $fileName = null, string $fileExtension = null): LocalTemporaryFile
     {
-        if (!file_exists($this->temporaryPath) && !mkdir($concurrentDirectory = $this->temporaryPath) && !is_dir($concurrentDirectory)) {
+        // if (!file_exists($this->temporaryPath) && !mkdir($concurrentDirectory = $this->temporaryPath) && !is_dir($concurrentDirectory)) {
+        //     throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+        // }
+
+        /// Code above modified to change folder permission because export/import was not working on all systems.
+        if (!file_exists($this->temporaryPath) && !mkdir($concurrentDirectory = $this->temporaryPath, 0777, true) && !is_dir($concurrentDirectory)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
         }
 

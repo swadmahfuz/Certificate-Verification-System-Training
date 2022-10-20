@@ -43,11 +43,11 @@
                                         <label for="trainer">Trainer Name</label>
                                         <input type="text" name="trainer" class="form-control" value="<?php echo e($certificate->trainer); ?>">
                                         <label for="training_date">Training Date</label>
-                                        <input type="text" name="training_date" class="form-control" value="<?php echo e($certificate->training_date); ?>">
+                                        <input type="date" name="training_date" class="form-control" value="<?php echo e($certificate->training_date); ?>">
                                         <label for="issue_date">Issue Date</label>
-                                        <input type="text" name="issue_date" class="form-control" value="<?php echo e($certificate->issue_date); ?>">
+                                        <input type="date" name="issue_date" class="form-control" value="<?php echo e($certificate->issue_date); ?>">
                                         <label for="expiry_date">Expiry Date</label>
-                                        <input type="text" name="expiry_date" class="form-control" value="<?php echo e($certificate->expiry_date); ?>">
+                                        <input type="date" name="expiry_date" class="form-control" value="<?php echo e($certificate->expiry_date); ?>">
                                     <button type="submit" class="btn btn-success">Update Certificate</button>
                                 </form>
                             </div>

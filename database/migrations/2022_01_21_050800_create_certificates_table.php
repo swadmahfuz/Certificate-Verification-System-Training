@@ -25,6 +25,8 @@ class CreateCertificatesTable extends Migration
             $table->string('training_date');
             $table->string('issue_date');
             $table->string('expiry_date');
+            $table->string('created_by');
+            $table->string('updated_by')->nullable();
             $table->timestamps();
             //Training Name, Name, Passport/NID, DL, Company, Training Date, 
             //Issue Date, Expiry Date, Trainer

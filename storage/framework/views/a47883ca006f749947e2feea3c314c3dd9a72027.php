@@ -60,6 +60,14 @@
                                         <th>Expiry Date</th>
                                         <td><?php echo e($certificate->expiry_date); ?></td>
                                     </tr>
+                                    <tr>
+                                        <th>Created by</th>
+                                        <td><?php echo e($certificate->created_by); ?></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Updated by</th>
+                                        <td><?php echo e($certificate->updated_by); ?></td>
+                                    </tr>
                                 </table>
                             </div>
                             <div class="card-footer">

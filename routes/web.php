@@ -18,14 +18,12 @@ use Illuminate\Support\Facades\Route;
 Route::get('/',[CertificateController::class,'search'])->name('certificate.search'); ///load homepage/ certificate verification page with search parameter or no parameter
 
 ///Authentication Routes
-///If login page layout changes, remember to update /admin and /login
-
 Auth::routes();
-Route::get('/admin', function () { return view('/login'); } );
-Route::get('/login', function () { return view('/login'); });
+Route::get('/admin', function () { if (Auth::check()){ return redirect()->route('dashboard'); } return view('/login'); } );
+Route::get('/login', function () { if (Auth::check()){ return redirect()->route('dashboard'); } return view('/login'); } );
 Route::post('/login/addCredentials', [CertificateController::class,'addCredentials'])->name('certificate.login');
 Route::get('/logout',[CertificateController::class,'logout']);
-
+///If login page layout changes, remember to update /admin and /login 
 
 //Admin Routes
 Route::get('/dashboard', [CertificateController::class,'getCertificate'])->name('dashboard');

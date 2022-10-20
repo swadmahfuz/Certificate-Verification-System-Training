@@ -20,7 +20,7 @@
                                     <tr>
                                         <td ><a href="add-certificate" class="btn btn-success">Add New Certificate</a></td>
                                         <form action="{{ route('certificate.adminSearch') }}">
-                                        <td style="width: 40%"><input type="text" name="search" class="form-control" placeholder="Search by Certificate ID or Participant Name"></td>
+                                        <td style="width: 40%"><input type="text" name="search" class="form-control" placeholder="Search Certificates"></td>
                                         <td ><button type="submit"  class="btn btn-success">Search</button></td>
                                         </form>
                                         <td ><a href="dashboard" class="btn btn-primary">Refresh</a></td>
@@ -76,13 +76,13 @@
                                                 
                                                 {{-- Action buttons --}}
                                                 {{-- using goqr.me api to generate qr code image--}}
-                                                <a href="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ $verification_url }}" target="_blank" style="margin-bottom: 5px"><i class="fa-solid fa-qrcode"></i></a>
+                                                <a href="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ $verification_url }}" target="_blank" style="margin-bottom: 5px"><i class="fa-solid fa-qrcode" title="Generate QR Code"></i></a>
 
-                                                <a href="view-certificate/{{ $certificate->id }}" style="margin-bottom: 5px" target="_blank"><i class="fa-solid fa-circle-info"></i></a>
+                                                <a href="view-certificate/{{ $certificate->id }}" style="margin-bottom: 5px" target="_blank"><i class="fa-solid fa-circle-info" title="View Certificate Details"></i></a>
 
-                                                <a href="edit-certificate/{{ $certificate->id }}" style="margin-bottom: 5px" target="_blank"><i class="fa-solid fa-pen-to-square"></i></a>
+                                                <a href="edit-certificate/{{ $certificate->id }}" style="margin-bottom: 5px" target="_blank"><i class="fa-solid fa-pen-to-square" title="Edit Certificate Information"></i></a>
 
-                                                <a href="delete-certificate/{{ $certificate->id }}" style="margin-bottom: 5px"><i class="fa-solid fa-trash"></i></a>
+                                                <a href="delete-certificate/{{ $certificate->id }}" style="margin-bottom: 5px"><i class="fa-solid fa-trash" title="Delete Certificate"></i></a>
                                             </td>
                                         </tr>
                                     @endforeach

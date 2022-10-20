@@ -60,6 +60,14 @@
                                         <th>Expiry Date</th>
                                         <td>{{ $certificate->expiry_date }}</td>
                                     </tr>
+                                    <tr>
+                                        <th>Created by</th>
+                                        <td>{{ $certificate->created_by }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Last Updated by</th>
+                                        <td>{{ $certificate->updated_by }}</td>
+                                    </tr>
                                 </table>
                             </div>
                             <div class="card-footer">
