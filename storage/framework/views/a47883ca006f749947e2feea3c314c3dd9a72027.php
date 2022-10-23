@@ -65,7 +65,7 @@
                                         <td><?php echo e($certificate->created_by); ?></td>
                                     </tr>
                                     <tr>
-                                        <th>Updated by</th>
+                                        <th>Last Updated by</th>
                                         <td><?php echo e($certificate->updated_by); ?></td>
                                     </tr>
                                 </table>

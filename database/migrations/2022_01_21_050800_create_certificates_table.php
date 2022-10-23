@@ -18,27 +18,17 @@ class CreateCertificatesTable extends Migration
             $table->string('certificate_number')->unique();
             $table->string('participant_name');
             $table->string('passport_nid');
-            $table->string('driving_license');
-            $table->string('company');
+            $table->string('driving_license')->nullable();
+            $table->string('company')->nullable();
             $table->string('training_name');
             $table->string('trainer');
             $table->string('training_date');
             $table->string('issue_date');
             $table->string('expiry_date');
-            $table->string('created_by');
+            $table->string('created_by')->default('Bulk uploaded');
             $table->string('updated_by')->nullable();
             $table->timestamps();
-            //Training Name, Name, Passport/NID, DL, Company, Training Date, 
-            //Issue Date, Expiry Date, Trainer
-            /*
-            $table->string('certificate_id');
-            $table->string('st_name');
-            $table->string('st_id');
-            $table->string('course_code');
-            $table->string('course_result');
-            */
-            
-
+            $table->softDeletes(); ///create 'deleted at column'
         });
     }
 

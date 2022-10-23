@@ -51,11 +51,22 @@ class CertificateController extends Controller
     
     
     ////Admin functions
-    public function getCertificate()
+    public function getDashboard()
     {
         if (Auth::check())
         {
             $certificates = Certificate::orderBy('id','ASC')->paginate(100);
+            return view('dashboard',compact('certificates'));
+        }
+
+        return redirect('/admin');
+    }
+
+    public function getDeletedCertificates()
+    {
+        if (Auth::check())
+        {
+            $certificates = Certificate::onlyTrashed()->orderBy('id','ASC')->paginate(100);
             return view('dashboard',compact('certificates'));
         }
 
