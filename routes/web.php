@@ -36,4 +36,4 @@ Route::get('/delete-certificate/{id}',[CertificateController::class,'deleteCerti
 Route::get('/admin-search',[CertificateController::class,'adminSearch'])->name('certificate.adminSearch');
 Route::get('/imports-exports', [CertificateController::class,'importExportView']);
 Route::get('/export', [CertificateController::class, 'export'])->name('export');
-Route::post('import', [CertificateController::class, 'import'])->name('import');
+Route::post('/import', [CertificateController::class, 'import'])->name('import');

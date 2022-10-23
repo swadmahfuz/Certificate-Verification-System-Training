@@ -1,5 +1,0 @@
-verifycert.swadmahfuz.com
-
-DB Name: swadmahf_verifycert
-DB User: swadmahf_verifycert
-DB Pass: LLcYIac_Y^q{
