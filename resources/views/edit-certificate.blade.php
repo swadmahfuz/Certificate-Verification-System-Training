@@ -27,27 +27,71 @@
                                     @csrf
                                     <div class="form-group">
                                         <input type="hidden" name="id" value="{{ $certificate->id }}">
+                                        
                                         <label for="certificate_number">Certificate Number</label>
+                                        @error('certificate_number')
+                                            <span class="text-danger">{{$message}}</span> <br> 
+                                        @enderror
                                         <input type="text" name="certificate_number" class="form-control" value="{{ $certificate->certificate_number }}">
+                                        <br>
+
                                         <label for="participant_name">Participant Name</label>
+                                        @error('participant_name')
+                                            <span class="text-danger">{{$message}}</span> <br> 
+                                        @enderror
                                         <input type="text" name="participant_name" class="form-control" value="{{ $certificate->participant_name }}">
+                                        <br>
+
                                         <label for="passport_nid">NID/Passport Number</label>
+                                        @error('passport_nid')
+                                            <span class="text-danger">{{$message}}</span> <br> 
+                                        @enderror
                                         <input type="text" name="passport_nid" class="form-control" value="{{ $certificate->passport_nid }}">
+                                        <br>
+
                                         <label for="driving_license">Driving License</label>
                                         <input type="text" name="driving_license" class="form-control" value="{{ $certificate->driving_license }}">
+                                        <br>
+
                                         <label for="company">Company</label>
                                         <input type="text" name="company" class="form-control" value="{{ $certificate->company }}">
+                                        <br>
+
                                         <label for="training_name">Training Name</label>
+                                        @error('training_name')
+                                            <span class="text-danger">{{$message}}</span> <br> 
+                                        @enderror
                                         <input type="text" name="training_name" class="form-control" value="{{ $certificate->training_name }}">
+                                        <br>
+
                                         <label for="trainer">Trainer Name</label>
+                                        @error('trainer')
+                                            <span class="text-danger">{{$message}}</span> <br> 
+                                        @enderror
                                         <input type="text" name="trainer" class="form-control" value="{{ $certificate->trainer }}">
+                                        <br>
+
                                         <label for="training_date">Training Date</label>
+                                        @error('training_date')
+                                            <span class="text-danger">{{$message}}</span> <br> 
+                                        @enderror
                                         <input type="date" name="training_date" class="form-control" value="{{ $certificate->training_date }}">
+                                        <br>
+
                                         <label for="issue_date">Issue Date</label>
+                                        @error('issue_date')
+                                            <span class="text-danger">{{$message}}</span> <br> 
+                                        @enderror
                                         <input type="date" name="issue_date" class="form-control" value="{{ $certificate->issue_date }}">
+                                        <br>
+
                                         <label for="expiry_date">Expiry Date</label>
+                                        @error('expiry_date')
+                                            <span class="text-danger">{{$message}}</span> <br> 
+                                        @enderror
                                         <input type="date" name="expiry_date" class="form-control" value="{{ $certificate->expiry_date }}">
-                                    <button type="submit" class="btn btn-success">Update Certificate</button>
+                                        <br>
+                                        <button type="submit" class="btn btn-success">Update Certificate</button>
                                 </form>
                             </div>
                         </div>

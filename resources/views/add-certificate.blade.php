@@ -12,33 +12,79 @@
         <section style="padding-top: 60px;">
             <div class="container">
                 <div class="row">
-                    <div class="col-md-6 offset-md-3">
+                    <div class="col-md-8 offset-md-2">
                         <div class="card">
-                            <div class="card-header">Add Certificate Data <a href="dashboard" class="btn btn-success">Back</a></div>
+                            <div class="card-header" style="text-align: center">
+                                <h3 >Add Certificate Data</h3> <br> 
+                                <a href="dashboard" class="btn btn-success">Back to Dashboard</a>
+                            </div>
                             <div class="card-body">
-                                <form method="POST" action="{{ route('certificate.create') }}">
+                                
+                                <form class="col s12" method="POST" action="{{ route('certificate.create') }}">
                                     @csrf
                                     <div class="form-group">
                                         <label for="certificate_number">Certificate Number</label>
-                                        <input type="text" name="certificate_number" class="form-control" placeholder="Enter Certificate Number">
+                                        @error('certificate_number')
+                                            <span class="text-danger">{{$message}}</span> <br> 
+                                        @enderror
+                                        <input type="text" name="certificate_number" class="form-control" placeholder="Enter Certificate Number" value="{{ old('certificate_number') }}">
+                                        <br>
+                                        
                                         <label for="participant_name">Participant Name</label>
-                                        <input type="text" name="participant_name" class="form-control" placeholder="Enter Participant Name">
+                                        @error('participant_name')
+                                            <span class="text-danger">{{$message}}</span> <br> 
+                                        @enderror
+                                        <input type="text" name="participant_name" class="form-control" placeholder="Enter Participant Name" value="{{ old('participant_name') }}">
+                                        <br>
+
                                         <label for="passport_nid">NID/Passport Number</label>
-                                        <input type="text" name="passport_nid" class="form-control" placeholder="Enter NID/Passport Number">
+                                        @error('passport_nid')
+                                            <span class="text-danger">{{$message}}</span> <br> 
+                                        @enderror
+                                        <input type="text" name="passport_nid" class="form-control" placeholder="Enter NID/Passport Number" value="{{ old('passport_nid') }}">
+                                        <br>
+
                                         <label for="driving_license">Driving License</label>
-                                        <input type="text" name="driving_license" class="form-control" placeholder="Enter Driving License Number (if available)">
+                                        <input type="text" name="driving_license" class="form-control" placeholder="Enter Driving License Number (if available)" value="{{ old('driving_license') }}">
+                                        <br>
+
                                         <label for="company">Company</label>
-                                        <input type="text" name="company" class="form-control" placeholder="Enter Company Name">
+                                        <input type="text" name="company" class="form-control" placeholder="Enter Company Name" value="{{ old('company') }}">
+                                        <br>
+
                                         <label for="training_name">Training Name</label>
-                                        <input type="text" name="training_name" class="form-control" placeholder="Enter Training Name">
+                                        @error('training_name')
+                                            <span class="text-danger">{{$message}}</span> <br> 
+                                        @enderror
+                                        <input type="text" name="training_name" class="form-control" placeholder="Enter Training Name" value="{{ old('training_name') }}">
+                                        <br>
+
                                         <label for="trainer">Trainer Name</label>
-                                        <input type="text" name="trainer" class="form-control" placeholder="Enter Trainer Name">
+                                        @error('trainer')
+                                            <span class="text-danger">{{$message}}</span> <br> 
+                                        @enderror
+                                        <input type="text" name="trainer" class="form-control" placeholder="Enter Trainer Name" value="{{ old('trainer') }}">
+                                        <br>
+
                                         <label for="training_date">Training Date</label>
-                                        <input type="date" name="training_date" class="form-control" placeholder="Enter Training Date">
+                                        @error('training_date')
+                                            <span class="text-danger">{{$message}}</span> <br> 
+                                        @enderror
+                                        <input type="date" name="training_date" class="form-control" placeholder="Enter Training Date" value="{{ old('training_date') }}">
+                                        <br>
+
                                         <label for="issue_date">Issue Date</label>
-                                        <input type="date" name="issue_date" class="form-control" placeholder="Enter Certificate Issue Date">
+                                        @error('issue_date')
+                                            <span class="text-danger">{{$message}}</span> <br> 
+                                        @enderror
+                                        <input type="date" name="issue_date" class="form-control" placeholder="Enter Certificate Issue Date" value="{{ old('issue_date') }}">
+                                        <br>
+
                                         <label for="expiry_date">Expiry Date</label>
-                                        <input type="date" name="expiry_date" class="form-control" placeholder="Enter Certificate Expiry Date">
+                                        @error('expiry_date')
+                                            <span class="text-danger">{{$message}}</span> <br> 
+                                        @enderror
+                                        <input type="date" name="expiry_date" class="form-control" placeholder="Enter Certificate Expiry Date" value="{{ old('expiry_date') }}">
                                     </div>
                                         <button type="submit" class="btn btn-success">Add Details</button>
                                 </form>

@@ -12,33 +12,125 @@
         <section style="padding-top: 60px;">
             <div class="container">
                 <div class="row">
-                    <div class="col-md-6 offset-md-3">
+                    <div class="col-md-8 offset-md-2">
                         <div class="card">
-                            <div class="card-header">Add Certificate Data <a href="dashboard" class="btn btn-success">Back</a></div>
+                            <div class="card-header" style="text-align: center">
+                                <h3 >Add Certificate Data</h3> <br> 
+                                <a href="dashboard" class="btn btn-success">Back to Dashboard</a>
+                            </div>
                             <div class="card-body">
-                                <form method="POST" action="<?php echo e(route('certificate.create')); ?>">
+                                
+                                <form class="col s12" method="POST" action="<?php echo e(route('certificate.create')); ?>">
                                     <?php echo csrf_field(); ?>
                                     <div class="form-group">
                                         <label for="certificate_number">Certificate Number</label>
-                                        <input type="text" name="certificate_number" class="form-control" placeholder="Enter Certificate Number">
+                                        <?php $__errorArgs = ['certificate_number'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                            <span class="text-danger"><?php echo e($message); ?></span> <br> 
+                                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                                        <input type="text" name="certificate_number" class="form-control" placeholder="Enter Certificate Number" value="<?php echo e(old('certificate_number')); ?>">
+                                        <br>
+                                        
                                         <label for="participant_name">Participant Name</label>
-                                        <input type="text" name="participant_name" class="form-control" placeholder="Enter Participant Name">
+                                        <input type="text" name="participant_name" class="form-control" placeholder="Enter Participant Name" value="<?php echo e(old('participant_name')); ?>">
+                                        <br>
+
                                         <label for="passport_nid">NID/Passport Number</label>
-                                        <input type="text" name="passport_nid" class="form-control" placeholder="Enter NID/Passport Number">
+                                        <?php $__errorArgs = ['passport_nid'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                            <span class="text-danger"><?php echo e($message); ?></span> <br> 
+                                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                                        <input type="text" name="passport_nid" class="form-control" placeholder="Enter NID/Passport Number" value="<?php echo e(old('passport_nid')); ?>">
+                                        <br>
+
                                         <label for="driving_license">Driving License</label>
-                                        <input type="text" name="driving_license" class="form-control" placeholder="Enter Driving License Number (if available)">
+                                        <input type="text" name="driving_license" class="form-control" placeholder="Enter Driving License Number (if available)" value="<?php echo e(old('driving_license')); ?>">
+                                        <br>
+
                                         <label for="company">Company</label>
-                                        <input type="text" name="company" class="form-control" placeholder="Enter Company Name">
+                                        <input type="text" name="company" class="form-control" placeholder="Enter Company Name" value="<?php echo e(old('company')); ?>">
+                                        <br>
+
                                         <label for="training_name">Training Name</label>
-                                        <input type="text" name="training_name" class="form-control" placeholder="Enter Training Name">
+                                        <?php $__errorArgs = ['training_name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                            <span class="text-danger"><?php echo e($message); ?></span> <br> 
+                                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                                        <input type="text" name="training_name" class="form-control" placeholder="Enter Training Name" value="<?php echo e(old('training_name')); ?>">
+                                        <br>
+
                                         <label for="trainer">Trainer Name</label>
-                                        <input type="text" name="trainer" class="form-control" placeholder="Enter Trainer Name">
+                                        <?php $__errorArgs = ['trainer'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                            <span class="text-danger"><?php echo e($message); ?></span> <br> 
+                                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                                        <input type="text" name="trainer" class="form-control" placeholder="Enter Trainer Name" value="<?php echo e(old('trainer')); ?>">
+                                        <br>
+
                                         <label for="training_date">Training Date</label>
-                                        <input type="date" name="training_date" class="form-control" placeholder="Enter Training Date">
+                                        <?php $__errorArgs = ['training_date'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                            <span class="text-danger"><?php echo e($message); ?></span> <br> 
+                                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                                        <input type="date" name="training_date" class="form-control" placeholder="Enter Training Date" value="<?php echo e(old('training_date')); ?>">
+                                        <br>
+
                                         <label for="issue_date">Issue Date</label>
-                                        <input type="date" name="issue_date" class="form-control" placeholder="Enter Certificate Issue Date">
+                                        <?php $__errorArgs = ['issue_date'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                            <span class="text-danger"><?php echo e($message); ?></span> <br> 
+                                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                                        <input type="date" name="issue_date" class="form-control" placeholder="Enter Certificate Issue Date" value="<?php echo e(old('issue_date')); ?>">
+                                        <br>
+
                                         <label for="expiry_date">Expiry Date</label>
-                                        <input type="date" name="expiry_date" class="form-control" placeholder="Enter Certificate Expiry Date">
+                                        <?php $__errorArgs = ['expiry_date'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                            <span class="text-danger"><?php echo e($message); ?></span> <br> 
+                                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                                        <input type="date" name="expiry_date" class="form-control" placeholder="Enter Certificate Expiry Date" value="<?php echo e(old('expiry_date')); ?>">
                                     </div>
                                         <button type="submit" class="btn btn-success">Add Details</button>
                                 </form>

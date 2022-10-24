@@ -89,20 +89,31 @@ class CertificateController extends Controller
     {
         if (Auth::check())
         {
-        $certificate = new certificate();
-        $certificate->certificate_number = $request->certificate_number;
-        $certificate->participant_name = $request->participant_name;
-        $certificate->passport_nid = $request->passport_nid;
-        $certificate->driving_license = $request->driving_license;
-        $certificate->company = $request->company;
-        $certificate->training_name = $request->training_name;
-        $certificate->trainer = $request->trainer;
-        $certificate->training_date = $request->training_date;
-        $certificate->issue_date = $request->issue_date;
-        $certificate->expiry_date = $request->expiry_date;
-        $certificate->created_by = Auth::user()->name;
-        $certificate->save();
-        return redirect('/dashboard');
+            $validate = $request->validate([
+                'certificate_number' => 'required|unique:certificates', ///check if certificate is unique from "Certificates" table
+                'participant_name' => 'required',
+                'passport_nid' => 'required',
+                'training_name' => 'required',
+                'trainer' => 'required',
+                'training_date' => 'required',
+                'issue_date' => 'required',
+                'expiry_date' => 'required',
+            ]);
+            
+            $certificate = new certificate();
+            $certificate->certificate_number = $request->certificate_number;
+            $certificate->participant_name = $request->participant_name;
+            $certificate->passport_nid = $request->passport_nid;
+            $certificate->driving_license = $request->driving_license;
+            $certificate->company = $request->company;
+            $certificate->training_name = $request->training_name;
+            $certificate->trainer = $request->trainer;
+            $certificate->training_date = $request->training_date;
+            $certificate->issue_date = $request->issue_date;
+            $certificate->expiry_date = $request->expiry_date;
+            $certificate->created_by = Auth::user()->name;
+            $certificate->save();
+            return redirect('/dashboard');
         }
         return redirect ('/admin');
     }
@@ -131,6 +142,16 @@ class CertificateController extends Controller
     {
         if (Auth::check())
         {
+            $validate = $request->validate([
+                'certificate_number' => 'required',
+                'participant_name' => 'required',
+                'passport_nid' => 'required',
+                'training_name' => 'required',
+                'trainer' => 'required',
+                'training_date' => 'required',
+                'issue_date' => 'required',
+                'expiry_date' => 'required',
+            ]);
             $certificate = Certificate::find($request->id);
             $certificate->certificate_number = $request->certificate_number;
             $certificate->participant_name = $request->participant_name;

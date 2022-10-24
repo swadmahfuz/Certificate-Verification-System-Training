@@ -28,27 +28,127 @@
                                     <?php echo csrf_field(); ?>
                                     <div class="form-group">
                                         <input type="hidden" name="id" value="<?php echo e($certificate->id); ?>">
+                                        
                                         <label for="certificate_number">Certificate Number</label>
+                                        <?php $__errorArgs = ['certificate_number'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                            <span class="text-danger"><?php echo e($message); ?></span> <br> 
+                                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                                         <input type="text" name="certificate_number" class="form-control" value="<?php echo e($certificate->certificate_number); ?>">
+                                        <br>
+
                                         <label for="participant_name">Participant Name</label>
+                                        <?php $__errorArgs = ['participant_name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                            <span class="text-danger"><?php echo e($message); ?></span> <br> 
+                                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                                         <input type="text" name="participant_name" class="form-control" value="<?php echo e($certificate->participant_name); ?>">
+                                        <br>
+
                                         <label for="passport_nid">NID/Passport Number</label>
+                                        <?php $__errorArgs = ['passport_nid'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                            <span class="text-danger"><?php echo e($message); ?></span> <br> 
+                                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                                         <input type="text" name="passport_nid" class="form-control" value="<?php echo e($certificate->passport_nid); ?>">
+                                        <br>
+
                                         <label for="driving_license">Driving License</label>
                                         <input type="text" name="driving_license" class="form-control" value="<?php echo e($certificate->driving_license); ?>">
+                                        <br>
+
                                         <label for="company">Company</label>
                                         <input type="text" name="company" class="form-control" value="<?php echo e($certificate->company); ?>">
+                                        <br>
+
                                         <label for="training_name">Training Name</label>
+                                        <?php $__errorArgs = ['training_name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                            <span class="text-danger"><?php echo e($message); ?></span> <br> 
+                                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                                         <input type="text" name="training_name" class="form-control" value="<?php echo e($certificate->training_name); ?>">
+                                        <br>
+
                                         <label for="trainer">Trainer Name</label>
+                                        <?php $__errorArgs = ['trainer'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                            <span class="text-danger"><?php echo e($message); ?></span> <br> 
+                                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                                         <input type="text" name="trainer" class="form-control" value="<?php echo e($certificate->trainer); ?>">
+                                        <br>
+
                                         <label for="training_date">Training Date</label>
+                                        <?php $__errorArgs = ['training_date'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                            <span class="text-danger"><?php echo e($message); ?></span> <br> 
+                                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                                         <input type="date" name="training_date" class="form-control" value="<?php echo e($certificate->training_date); ?>">
+                                        <br>
+
                                         <label for="issue_date">Issue Date</label>
+                                        <?php $__errorArgs = ['issue_date'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                            <span class="text-danger"><?php echo e($message); ?></span> <br> 
+                                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                                         <input type="date" name="issue_date" class="form-control" value="<?php echo e($certificate->issue_date); ?>">
+                                        <br>
+
                                         <label for="expiry_date">Expiry Date</label>
+                                        <?php $__errorArgs = ['expiry_date'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                            <span class="text-danger"><?php echo e($message); ?></span> <br> 
+                                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                                         <input type="date" name="expiry_date" class="form-control" value="<?php echo e($certificate->expiry_date); ?>">
-                                    <button type="submit" class="btn btn-success">Update Certificate</button>
+                                        <br>
+                                        <button type="submit" class="btn btn-success">Update Certificate</button>
                                 </form>
                             </div>
                         </div>
