@@ -22,10 +22,11 @@ class CertificateImport implements ToModel, WithHeadingRow
             'driving_license' => $row['driving_license'],
             'company' => $row['company'],
             'training_name' => $row['training_name'],
+            'location' => $row['location'],
             'trainer' => $row['trainer'],
             'training_date' => $row['training_date'],
             'issue_date' => $row['issue_date'],
-            'expiry_date' => $row['expirty_date'],
+            'expiry_date' => $row['expiry_date'],
             'created_by' => $row['created_by'],
         ]);
     }

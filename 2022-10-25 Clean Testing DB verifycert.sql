@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 23, 2022 at 12:56 PM
+-- Generation Time: Oct 25, 2022 at 10:18 AM
 -- Server version: 10.4.22-MariaDB
 -- PHP Version: 7.4.30
 
@@ -35,10 +35,12 @@ CREATE TABLE `certificates` (
   `driving_license` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `company` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `training_name` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `location` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `trainer` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `training_date` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `issue_date` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `expiry_date` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `file` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_by` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Bulk uploaded',
   `updated_by` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -94,11 +96,11 @@ CREATE TABLE `migrations` (
 --
 
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
-(85, '2014_10_12_000000_create_users_table', 1),
-(86, '2014_10_12_100000_create_password_resets_table', 1),
-(87, '2019_08_19_000000_create_failed_jobs_table', 1),
-(88, '2019_12_14_000001_create_personal_access_tokens_table', 1),
-(89, '2022_01_21_050800_create_certificates_table', 1);
+(100, '2014_10_12_000000_create_users_table', 1),
+(101, '2014_10_12_100000_create_password_resets_table', 1),
+(102, '2019_08_19_000000_create_failed_jobs_table', 1),
+(103, '2019_12_14_000001_create_personal_access_tokens_table', 1),
+(104, '2022_01_21_050800_create_certificates_table', 1);
 
 -- --------------------------------------------------------
 
@@ -152,7 +154,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`) VALUES
-(1, 'Swad Mahfuz', 'swad.mahfuz@gmail.com', NULL, '$2y$10$2tttC6dYh8s6IDQ2xfDBneAd/D/Hosa8MK7sersNJjiid/3HI5Lfy', NULL, '2022-10-23 10:55:57', '2022-10-23 10:55:57');
+(1, 'Swad Mahfuz', 'swad.mahfuz@gmail.com', NULL, '$2y$10$I/dDTgB57mo2JAt9ODuhkO6NbXI.fNiAnP7fDOWAsJDXxQ2wwjFZu', NULL, '2022-10-25 08:17:59', '2022-10-25 08:17:59');
 
 --
 -- Indexes for dumped tables
@@ -231,7 +233,7 @@ ALTER TABLE `failed_jobs`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=90;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=105;
 
 --
 -- AUTO_INCREMENT for table `personal_access_tokens`

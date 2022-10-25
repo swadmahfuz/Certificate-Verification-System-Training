@@ -25,12 +25,17 @@ class CertificateExport implements FromCollection, WithHeadings
             'Driving License',
             'Company',
             'Training Name',
+            'Location',
             'Trainer',
             'Training Date',
             'Issue Date',
             'Expiry Date',
+            'File path',
+            'Created by',
+            'Updated by',
             'Created at',
-            'Updated at'
+            'Updated at',
+            'Deleted at',
         ];
     }
 }

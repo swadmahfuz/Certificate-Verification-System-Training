@@ -21,6 +21,7 @@ class CreateCertificatesTable extends Migration
             $table->string('driving_license')->nullable();
             $table->string('company')->nullable();
             $table->string('training_name');
+            $table->string('location');
             $table->string('trainer');
             $table->string('training_date');
             $table->string('issue_date');

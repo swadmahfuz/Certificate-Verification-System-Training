@@ -16,7 +16,7 @@
                         <div class="card">
                             <div class="card-header" style="padding-top: 20px; padding-bottom: 20px;"><center><h3>TÜV Austria BIC Certificate DB</h3></center>
                                 <br>
-                                <table style="width:70%; margin-left:15%; margin-right:15%;">
+                                <table style="width:80%; margin-left:10%; margin-right:10%;">
                                     <tr>
                                         <td ><a href="add-certificate" class="btn btn-success">Add New Certificate</a></td>
                                         <form action="{{ route('certificate.adminSearch') }}">

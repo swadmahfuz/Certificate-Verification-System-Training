@@ -15,7 +15,10 @@
                     <div class="col-md-12 ">
                         <div class="card">
                             <div class="card-header" ><center><h3>Detailed Certificate Information</h3></center>
-                                <center><a href="../dashboard" class="btn btn-primary">Go back to Dashboard</a></center>
+                                <center>
+                                    <a href="../dashboard" class="btn btn-primary">Go back to Dashboard</a> 
+                                    <a href="../delete-certificate/{{ $certificate->id }}" class="btn btn-danger">Delete Certificate</a>
+                                </center> 
                             </div>
                             <div class="card-body">
                                 <table class="table table-striped" style="width:60%; margin-left:20%; margin-right:20%; border: 1px solid black;">
@@ -43,6 +46,10 @@
                                     <tr>
                                         <th>Training</th>
                                         <td>{{ $certificate->training_name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Training Location</th>
+                                        <td>{{ $certificate->location }}</td>
                                     </tr>
                                     <tr>
                                         <th>Trainer</th>

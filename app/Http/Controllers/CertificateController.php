@@ -94,6 +94,7 @@ class CertificateController extends Controller
                 'participant_name' => 'required',
                 'passport_nid' => 'required',
                 'training_name' => 'required',
+                'location' => 'required',
                 'trainer' => 'required',
                 'training_date' => 'required',
                 'issue_date' => 'required',
@@ -107,6 +108,7 @@ class CertificateController extends Controller
             $certificate->driving_license = $request->driving_license;
             $certificate->company = $request->company;
             $certificate->training_name = $request->training_name;
+            $certificate->location = $request->location;
             $certificate->trainer = $request->trainer;
             $certificate->training_date = $request->training_date;
             $certificate->issue_date = $request->issue_date;
@@ -147,6 +149,7 @@ class CertificateController extends Controller
                 'participant_name' => 'required',
                 'passport_nid' => 'required',
                 'training_name' => 'required',
+                'location' => 'required',
                 'trainer' => 'required',
                 'training_date' => 'required',
                 'issue_date' => 'required',
@@ -159,6 +162,7 @@ class CertificateController extends Controller
             $certificate->driving_license = $request->driving_license;
             $certificate->company = $request->company;
             $certificate->training_name = $request->training_name;
+            $certificate->location = $request->location;
             $certificate->trainer = $request->trainer;
             $certificate->training_date = $request->training_date;
             $certificate->issue_date = $request->issue_date;

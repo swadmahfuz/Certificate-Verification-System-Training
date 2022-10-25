@@ -84,7 +84,8 @@
         <h3>Passport/NID:&nbsp;{{ $certificate->passport_nid }}</h3>
         <h3>Driving License:&nbsp;{{ $certificate->driving_license }}</h3>
         <h3>Company:&nbsp;{{ $certificate->company }}</h3>
-        <h3>Training Name:&nbsp;{{ $certificate->training_name }}</h3>
+        <h3>Training:&nbsp;{{ $certificate->training_name }}</h3>
+        <h3>Training Location:&nbsp;{{ $certificate->location }}</h3>
         <h3>Trainer:&nbsp;{{ $certificate->trainer }}</h3>
         <h3>Training Date:&nbsp;{{ $certificate->training_date }}</h3>
         <h3>Issue Date:&nbsp;{{ $certificate->issue_date }}</h3>
