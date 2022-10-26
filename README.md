@@ -12,17 +12,17 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/swadmahfuz/verify-cert">
+  <a href="https://github.com/swadmahfuz/Certificate-Verification-System">
     <img src="images/logo.png" alt="Logo" width="80" height="80">
   </a>
 
-<h3 align="center">TÜV Austria Certificate Authenticity Verifier - Laravel</h3>
+<h3 align="center">Certificate Verification Web Application (Laravel)</h3>
+<br />
 
   <p align="center">
-    Certificate Verification Webapp for TÜV Austria Bureau of Inspection and Certification developed by Swad Mahfuz (Asst. Manager - Sales & Ops). Made with PHP and Laravel 7.4.
+    Developed by Swad Mahfuz (Asst. Manager - Sales & Ops, TÜV Austria). 
     <br />
-    <a href="https://github.com/swadmahfuz/verify-cert"><strong>Explore the project »</strong></a>
-    <br />
+    <a href="https://github.com/swadmahfuz/Certificate-Verification-System"><strong>Explore the project »</strong></a>
   </p>
 </div>
 
@@ -57,7 +57,15 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://github.com/swadmahfuz/verify-cert)
+[![Product Name Screen Shot][product-screenshot]](https://github.com/swadmahfuz/Certificate-Verification-System)
+<br />
+This project is made for maintaining and verifying certificates issued by an organization. Admins can add/edit/remove cetificate data from the dashboard and interested parties can verify the authenticity of the certificates. The project may be modified for verifying other things like product authenticity.
+
+<strong>Main Features: </strong>
+* Maintain Certificate Database.
+* Certificate Verification
+* Admin Dashboard
+* Generate and download QR Code for verification. 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -65,9 +73,11 @@
 
 ### Built With
 
-* [Laravel]
-* [HTML]
-* [CSS]
+* Laravel 8.83.25
+* PHP 7.4.30
+* HTML
+* CSS
+* goqr.me API for QR Code Generation.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -84,15 +94,21 @@ This project is built using Laravel. You may need to have installed php composer
 
 ### Installation
 
-1. Get Composer
-2. Clone the repo and resolve dependencies, if any
+1. Get Composer.
+2. Clone the repo and resolve dependencies, if any.
    ```sh
-   git clone https://github.com/swadmahfuz/verify-cert.git
+   git clone https://github.com/swadmahfuz/Certificate-Verification-System.git
    ```
-3. Run php artisan serve in the project location
-4. Import the .sql file to your DB
-5. Run the project
+3. Import the sample .sql file to your DB and configure .env file as per DB Name.
+4. Run the project
+5. Register new user to login to dashboard. (Make sure registration route is enabled in web.php)
 
+<stong>Notes</strong>
+
+*  All required packages included in the project. No need to run ```composer install```  
+*  ```php artisan serve``` command not required to run the project.
+* Default Login Credentials included in sample DB: 'swad.mahfuz@gmail.com' , '123456789'
+* Template for Bulk Import included in 'root/downloads' folder.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -101,7 +117,8 @@ This project is built using Laravel. You may need to have installed php composer
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-This project can be used for a verification system where admins can add data manually as they prefer.
+This project can be used for maintaining and verifying certificates issued by an organization. The project may be modified for verifying other things like product authenticity.
+
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -120,7 +137,7 @@ Distributed under the GPL-3.0 License. See `LICENSE` for more information.
 
 Swad Ahmed Mahfuz - contact@swadmahfuz.com
 
-Project Link: [https://github.com/swadmahfuz/verify-cert](https://github.com/swadmahfuz/verify-cert)
+Project Link: [https://github.com/swadmahfuz/Certificate-Verification-System](https://github.com/swadmahfuz/Certificate-Verification-System)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -128,16 +145,16 @@ Project Link: [https://github.com/swadmahfuz/verify-cert](https://github.com/swa
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/swadmahfuz/verify-cert.svg?style=for-the-badge
-[contributors-url]: https://github.com/swadmahfuz/verify-cert/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/swadmahfuz/verify-cert.svg?style=for-the-badge
-[forks-url]: https://github.com/swadmahfuz/verify-cert/network/members
-[stars-shield]: https://img.shields.io/github/stars/swadmahfuz/verify-cert.svg?style=for-the-badge
-[stars-url]: https://github.com/swadmahfuz/verify-cert/stargazers
-[issues-shield]: https://img.shields.io/github/issues/swadmahfuz/verify-cert.svg?style=for-the-badge
-[issues-url]: https://github.com/swadmahfuz/verify-cert/issues
-[license-shield]: https://img.shields.io/github/license/swadmahfuz/verify-cert.svg?style=for-the-badge
-[license-url]: https://github.com/swadmahfuz/verify-cert/blob/master/LICENSE
+[contributors-shield]: https://img.shields.io/github/contributors/swadmahfuz/Certificate-Verification-System.svg?style=for-the-badge
+[contributors-url]: https://github.com/swadmahfuz/Certificate-Verification-System/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/swadmahfuz/Certificate-Verification-System.svg?style=for-the-badge
+[forks-url]: https://github.com/swadmahfuz/Certificate-Verification-System/network/members
+[stars-shield]: https://img.shields.io/github/stars/swadmahfuz/Certificate-Verification-System.svg?style=for-the-badge
+[stars-url]: https://github.com/swadmahfuz/Certificate-Verification-System/stargazers
+[issues-shield]: https://img.shields.io/github/issues/swadmahfuz/Certificate-Verification-System.svg?style=for-the-badge
+[issues-url]: https://github.com/swadmahfuz/Certificate-Verification-System/issues
+[license-shield]: https://img.shields.io/github/license/swadmahfuz/Certificate-Verification-System.svg?style=for-the-badge
+[license-url]: https://github.com/swadmahfuz/Certificate-Verification-System/blob/master/LICENSE
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/swad-mahfuz/
 [product-screenshot]: images/screenshot.png

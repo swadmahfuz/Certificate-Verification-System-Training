@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use DB;
 
 class CertificateController extends Controller
 {
@@ -124,7 +125,7 @@ class CertificateController extends Controller
     {
         if (Auth::check())
         {
-            $certificate = Certificate::find($id);
+            $certificate = Certificate::withTrashed()->find($id);   ///Ensure deleted certificate info can also be viewed by using withTrashed method.
             return view('view-certificate',compact('certificate'));
         }
         return redirect ('/admin');
@@ -179,8 +180,13 @@ class CertificateController extends Controller
     {
         if (Auth::check())
         {
-        Certificate::where('id',$id)->delete();
-        return back()->with('Certificate_Deleted','Certificate details has been deleted successfully');
+            $certificate = Certificate::find($id);
+            $certificate_number = $certificate->certificate_number . " (Deleted)";
+            $deleted_by = Auth::user()->name;
+            DB::table('certificates')->where('id', $id)->update(array('certificate_number' => $certificate_number)); ///Concat "(Deleted)" with cert number to prevent duplicate certificate number error. 
+            DB::table('certificates')->where('id', $id)->update(array('deleted_by' => $deleted_by));    ///Add user's name to deleted by column.
+            Certificate::where('id',$id)->delete();
+            return back()->with('Certificate_Deleted','Certificate details has been deleted successfully');
         }
         return redirect ('/admin');
     }

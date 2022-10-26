@@ -14,7 +14,8 @@
                 <div class="row">
                     <div class="col-md-7 offset-md-3">
                         <div class="card">
-                            <div class="card-header" ><center><h3>Add Certificate Information</h3></center>
+                            <div class="card-header" >
+                                <center><h3>Add Certificate Information</h3></center>
                                 <center>
                                     <a href="./dashboard" class="btn btn-primary">Go back to Dashboard</a> 
                                     <h6 style="text-align: right">* Required fields</h6>

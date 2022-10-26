@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="robots" content="noindex">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Admin Area</title>
+        <title>Admin Dashboard</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A==" crossorigin="anonymous" referrerpolicy="no-referrer" />     
     </head>
@@ -16,7 +16,7 @@
                         <div class="card">
                             <div class="card-header" style="padding-top: 20px; padding-bottom: 20px;"><center><h3>TÜV Austria BIC Certificate DB</h3></center>
                                 <br>
-                                <table style="width:80%; margin-left:10%; margin-right:10%;">
+                                <table style="width:90%; margin-left:5%; margin-right:10%;">
                                     <tr>
                                         <td ><a href="add-certificate" class="btn btn-success">Add New Certificate</a></td>
                                         <form action="<?php echo e(route('certificate.adminSearch')); ?>">
@@ -24,10 +24,9 @@
                                         <td ><button type="submit"  class="btn btn-success">Search</button></td>
                                         </form>
                                         <td ><a href="dashboard" class="btn btn-primary">Refresh</a></td>
-                                        <td ><a href="imports-exports" class="btn btn-warning">Bulk Im/Ex</a></td>
+                                        <td ><a href="imports-exports" class="btn btn-warning">Import/Export</a></td>
                                         <td ><a href="logout" class="btn btn-danger">Log Out</a></td>
                                     </tr>
-
                                 </table>
 
                             </div>

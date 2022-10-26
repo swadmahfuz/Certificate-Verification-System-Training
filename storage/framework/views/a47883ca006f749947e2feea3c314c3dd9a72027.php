@@ -75,6 +75,10 @@
                                         <th>Last Updated by</th>
                                         <td><?php echo e($certificate->updated_by); ?></td>
                                     </tr>
+                                    <tr>
+                                        <th>Deleted by</th>
+                                        <td><?php echo e($certificate->deleted_by); ?></td>
+                                    </tr>
                                 </table>
                             </div>
                             <div class="card-footer">

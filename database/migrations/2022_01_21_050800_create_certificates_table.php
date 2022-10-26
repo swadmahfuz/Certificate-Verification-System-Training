@@ -26,11 +26,11 @@ class CreateCertificatesTable extends Migration
             $table->string('training_date');
             $table->string('issue_date');
             $table->string('expiry_date');
-            $table->string('file')->nullable();
             $table->string('created_by')->default('Bulk uploaded');
             $table->string('updated_by')->nullable();
+            $table->string('deleted_by')->nullable();
             $table->timestamps();
-            $table->softDeletes(); ///create 'deleted at column'
+            $table->softDeletes(); ///create 'deleted at' column
         });
     }
 

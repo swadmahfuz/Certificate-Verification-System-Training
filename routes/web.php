@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/',[CertificateController::class,'search'])->name('certificate.search'); ///load homepage/ certificate verification page with search parameter or no parameter
 
 ///Authentication Routes
-Auth::routes();
+Auth::routes(['register' => true]); ///set to false to disable registration
 Route::get('/admin', function () { if (Auth::check()){ return redirect()->route('dashboard'); } return view('/login'); } );
 Route::get('/login', function () { if (Auth::check()){ return redirect()->route('dashboard'); } return view('/login'); } );
 Route::post('/login/addCredentials', [CertificateController::class,'addCredentials'])->name('certificate.login');
