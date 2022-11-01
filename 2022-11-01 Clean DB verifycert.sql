@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 26, 2022 at 10:21 AM
+-- Generation Time: Nov 01, 2022 at 07:39 AM
 -- Server version: 10.4.22-MariaDB
 -- PHP Version: 7.4.30
 
@@ -81,11 +81,11 @@ CREATE TABLE `migrations` (
 --
 
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
-(120, '2014_10_12_000000_create_users_table', 1),
-(121, '2014_10_12_100000_create_password_resets_table', 1),
-(122, '2019_08_19_000000_create_failed_jobs_table', 1),
-(123, '2019_12_14_000001_create_personal_access_tokens_table', 1),
-(124, '2022_01_21_050800_create_certificates_table', 1);
+(140, '2014_10_12_000000_create_users_table', 1),
+(141, '2014_10_12_100000_create_password_resets_table', 1),
+(142, '2019_08_19_000000_create_failed_jobs_table', 1),
+(143, '2019_12_14_000001_create_personal_access_tokens_table', 1),
+(144, '2022_01_21_050800_create_certificates_table', 1);
 
 -- --------------------------------------------------------
 
@@ -127,19 +127,13 @@ CREATE TABLE `users` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `name` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `email` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `designation` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `email_verified_at` timestamp NULL DEFAULT NULL,
   `password` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `remember_token` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `users`
---
-
-INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`) VALUES
-(1, 'Swad Mahfuz', 'swad.mahfuz@gmail.com', NULL, '$2y$10$TBU/wxax1yr0Iw1j4Ippe.hyvO2CgxcEpgPXQtjkfi40cZSc7xQVu', NULL, '2022-10-26 08:21:38', '2022-10-26 08:21:38');
 
 --
 -- Indexes for dumped tables
@@ -206,7 +200,7 @@ ALTER TABLE `failed_jobs`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=125;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=145;
 
 --
 -- AUTO_INCREMENT for table `personal_access_tokens`
@@ -218,7 +212,7 @@ ALTER TABLE `personal_access_tokens`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

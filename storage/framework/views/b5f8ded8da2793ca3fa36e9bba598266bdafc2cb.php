@@ -14,8 +14,9 @@
                 <div class="row">
                     <div class="col-md-12 ">
                         <div class="card">
-                            <div class="card-header" style="padding-top: 20px; padding-bottom: 20px;"><center><h3>TÜV Austria BIC Certificate DB</h3></center>
-                                <br>
+                            <div class="card-header" style="padding-top: 20px; padding-bottom: 20px;">
+                                <center><h3>TÜV Austria BIC Certificate DB</h3></center>
+                                <h6 style="text-align: right; margin-bottom: 10px;">Logged in User: <b><?php echo e(auth()->user()->name); ?> (<?php echo e(auth()->user()->designation); ?>)</b></h6>
                                 <table style="width:90%; margin-left:5%; margin-right:10%;">
                                     <tr>
                                         <td ><a href="add-certificate" class="btn btn-success">Add New Certificate</a></td>
