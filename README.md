@@ -20,7 +20,7 @@
 <br />
 
   <p align="center">
-    Developed by Swad Mahfuz (Asst. Manager - Sales & Ops, TÜV Austria). 
+    Developed by Swad Mahfuz (Asst. Manager, TÜV Austria). 
     <br />
     <a href="https://github.com/swadmahfuz/Certificate-Verification-System"><strong>Explore the project »</strong></a>
   </p>
@@ -59,7 +59,7 @@
 
 [![Product Name Screen Shot][product-screenshot]](https://github.com/swadmahfuz/Certificate-Verification-System)
 <br />
-This project is made for maintaining and verifying certificates issued by an organization. Admins can add/edit/remove cetificate data from the dashboard and interested parties can verify the authenticity of the certificates. The project may be modified for verifying other things like product authenticity.
+I built this application to tackle the issue of certificate forgery and verification; a problem my organization has been facing quite a lot. Manually maintaining and verifying certificates was time consuming for my colleagues. It  aims to save time and effort for employees of any Testing, Inspection and Certification company by maintaining a certificate/report database and clients by allowing certificate/report verification using QR Code. Admins can add/edit/remove cetificate data from the dashboard and interested parties can verify the authenticity of the certificates. The project may be modified for verifying other things like product authenticity, or 3rd party reports.
 
 <strong>Main Features: </strong>
 * Maintain Certificate Database.
@@ -107,7 +107,6 @@ This project is built using Laravel. You may need to have installed php composer
 
 *  All required packages included in the project. No need to run ```composer install```  
 *  ```php artisan serve``` command not required to run the project.
-* Default Login Credentials included in sample DB: 'swad.mahfuz@gmail.com' , '123456789'
 * Template for Bulk Import included in 'root/downloads' folder.
 
 <p align="right">(<a href="#top">back to top</a>)</p>

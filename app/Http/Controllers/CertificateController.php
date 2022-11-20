@@ -56,7 +56,7 @@ class CertificateController extends Controller
     {
         if (Auth::check())
         {
-            $certificates = Certificate::orderBy('id','ASC')->paginate(100);
+            $certificates = Certificate::orderBy('certificate_number','DESC')->paginate(100); ///Sorted by certificate number
             return view('dashboard',compact('certificates'));
         }
 
@@ -67,7 +67,7 @@ class CertificateController extends Controller
     {
         if (Auth::check())
         {
-            $certificates = Certificate::onlyTrashed()->orderBy('id','ASC')->paginate(100);
+            $certificates = Certificate::onlyTrashed()->orderBy('certificate_number','DESC')->paginate(100);
             return view('dashboard',compact('certificates'));
         }
 
