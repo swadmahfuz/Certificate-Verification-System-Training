@@ -78,7 +78,9 @@ class CertificateController extends Controller
     {
         if (Auth::check())
         {
-            return view('add-certificate');
+            $currentYear = date('Y');       ///Pass the current year as YYYY to the view file to populate certificate number 
+            $currentMonthDay = date('md');  ///Pass the current year as MMDD to the view file to populate certificate number
+            return view('add-certificate', compact('currentYear', 'currentMonthDay'));
         }
         else
         {

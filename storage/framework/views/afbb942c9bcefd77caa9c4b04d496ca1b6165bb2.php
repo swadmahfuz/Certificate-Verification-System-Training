@@ -37,7 +37,7 @@ $message = $__bag->first($__errorArgs[0]); ?>
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
-                                        <input type="text" name="certificate_number" class="form-control" placeholder="Enter Certificate Number" value="<?php echo e(old('certificate_number')); ?>">
+                                        <input type="text" name="certificate_number" class="form-control" placeholder="Enter Certificate Number" value="TUVAT/CERT/<?php echo e($currentYear); ?>/<?php echo e($currentMonthDay); ?>/">
                                         <br>
                                         
                                         <label for="participant_name">Participant Name*</label>

@@ -30,7 +30,7 @@
                                         @error('certificate_number')
                                             <span class="text-danger">{{$message}}</span> <br> 
                                         @enderror
-                                        <input type="text" name="certificate_number" class="form-control" placeholder="Enter Certificate Number" value="{{ old('certificate_number') }}">
+                                        <input type="text" name="certificate_number" class="form-control" placeholder="Enter Certificate Number" value="TUVAT/CERT/{{ $currentYear }}/{{ $currentMonthDay }}/">
                                         <br>
                                         
                                         <label for="participant_name">Participant Name*</label>

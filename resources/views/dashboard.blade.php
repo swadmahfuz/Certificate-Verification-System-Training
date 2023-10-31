@@ -15,7 +15,7 @@
                     <div class="col-md-12 ">
                         <div class="card">
                             <div class="card-header" style="padding-top: 20px; padding-bottom: 20px;">
-                                <center><h3>TÜV Austria BIC Certificate DB</h3></center>
+                                <center><h3>TÜV Austria BIC Training Certificate DB</h3></center>
                                 <h6 style="text-align: right; margin-bottom: 10px;">Logged in User: <b>{{ auth()->user()->name }} ({{ auth()->user()->designation }})</b></h6>
                                 <table style="width:90%; margin-left:5%; margin-right:10%;">
                                     <tr>

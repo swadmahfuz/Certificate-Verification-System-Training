@@ -22,7 +22,7 @@
             <form action="{{ route('import') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <input type="file" name="file" class="form-control"> 
-                <h6 style="text-align: right; font-style:italic; margin-top:5px">Please upload excel sheet as per import tembplate given above.</h6>
+                <h6 style="text-align: right; font-style:italic; margin-top:5px">Please upload excel sheet as per import template given above.</h6>
                 <center><button class="btn btn-success" style="margin-top: 10px">Import Data</button></center>
                 <br>
             </form>
