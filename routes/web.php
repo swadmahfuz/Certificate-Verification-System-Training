@@ -19,6 +19,8 @@ Route::get('/',[CertificateController::class,'search'])->name('certificate.searc
 
 ///Authentication Routes
 Auth::routes(['register' => false]); ///set to false to disable registration
+Route::get('/reset', function () { return view('auth.passwords.email'); } ); ///password reset route
+
 Route::get('/admin', function () { if (Auth::check()){ return redirect()->route('dashboard'); } return view('/login'); } );
 Route::get('/login', function () { if (Auth::check()){ return redirect()->route('dashboard'); } return view('/login'); } );
 Route::post('/login/addCredentials', [CertificateController::class,'addCredentials'])->name('certificate.login');
