@@ -18,10 +18,10 @@ class CertificateController extends Controller
     public function search(Request $request)
     {
         if ($request->search == null) {
-            return view('/verifyInspection');
+            return view('/verify');
         }
         $certificate = Certificate::where('certificate_number','=',($request->search))->paginate(1);
-        return view('verifyInspection',['certificates'=>$certificate]);
+        return view('verify',['certificates'=>$certificate]);
     }
 
     ///Authentication functions
