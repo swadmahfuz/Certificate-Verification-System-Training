@@ -75,7 +75,7 @@
       @isset($certificates)
       <div>
       @if($certificates->count() < 1)
-        <h3>❌ The Certificate You Entered is Invalid or Manipulated. Please contact TUV Austria for futher inquiry. ❌</h3>
+        <h3>⚠️ The Certificate You Entered is Invalid or Manipulated. Please contact TUV Austria for futher inquiry. ⚠️</h3>
       @endif
       {{-- @foreach ($certificates as $certificate)
         <h3>Certificate Authentic! ✅</h3>
@@ -94,7 +94,11 @@
       {{-- Table format implemented below --}}
       @foreach ($certificates as $certificate)
           <div>
-              <h3>Certificate Authentic! ✅</h3>
+              @if (\Carbon\Carbon::parse($certificate->expiry_date)->isPast())
+                  <h3 style="color: red;">Certificate Authentic but Expired! ⚠️</h3>
+              @else
+                  <h3 style="color: green;">Certificate Authentic and Valid! ✅</h3>
+              @endif
               <br>
               <table style="width: 100%; border-collapse: collapse;">
                   <tr>
