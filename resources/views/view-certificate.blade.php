@@ -24,7 +24,7 @@
                                 <table class="table table-striped" style="width:60%; margin-left:20%; margin-right:20%; border: 1px solid black;">
 
                                     <tr>
-                                        <th>Certificate ID</th>
+                                        <th>Certificate Number</th>
                                         <td>{{ $certificate->certificate_number }}</td>
                                     </tr>
                                     <tr>

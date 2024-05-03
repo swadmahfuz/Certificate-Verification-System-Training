@@ -77,8 +77,8 @@
       @if($certificates->count() < 1)
         <h3>❌ The Certificate You Entered is Invalid or Manipulated. Please contact TUV Austria for futher inquiry. ❌</h3>
       @endif
-      @foreach ($certificates as $certificate)
-        <h3>Certificate Valid! ✅</h3>
+      {{-- @foreach ($certificates as $certificate)
+        <h3>Certificate Authentic! ✅</h3>
         <h3>Certificate Number:&nbsp;{{ $certificate->certificate_number }}</h3>
         <h3>Participant Name:&nbsp;{{ $certificate->participant_name }}</h3>
         <h3>Passport/NID:&nbsp;{{ $certificate->passport_nid }}</h3>
@@ -90,7 +90,72 @@
         <h3>Training Date:&nbsp;{{ $certificate->training_date }}</h3>
         <h3>Issue Date:&nbsp;{{ $certificate->issue_date }}</h3>
         <h3>Expiry Date:&nbsp;{{ $certificate->expiry_date }}</h3>
+      @endforeach --}}
+      {{-- Table format implemented below --}}
+      @foreach ($certificates as $certificate)
+          <div>
+              <h3>Certificate Authentic! ✅</h3>
+              <br>
+              <table style="width: 100%; border-collapse: collapse;">
+                  <tr>
+                      <td style="padding: 6px;"><h3><strong>Certificate Number</strong></h3></td>
+                      <td style="padding: 6px;"><h3>:</h3></td>
+                      <td style="padding: 6px;"><h3>{{ $certificate->certificate_number }}</h3></td>
+                  </tr>
+                  <tr>
+                      <td style="padding: 6px;"><h3><strong>Participant Name</strong></h3></td>
+                      <td style="padding: 6px;"><h3>:</h3></td>
+                      <td style="padding: 6px;"><h3>{{ $certificate->participant_name }}</h3></td>
+                  </tr>
+                  <tr>
+                      <td style="padding: 6px;"><h3><strong>Passport/NID</strong></h3></td>
+                      <td style="padding: 6px;"><h3>:</h3></td>
+                      <td style="padding: 6px;"><h3>{{ $certificate->passport_nid }}</h3></td>
+                  </tr>
+                  <tr>
+                      <td style="padding: 6px;"><h3><strong>Driving License</strong></h3></td>
+                      <td style="padding: 6px;"><h3>:</h3></td>
+                      <td style="padding: 6px;"><h3>{{ $certificate->driving_license }}</h3></td>
+                  </tr>
+                  <tr>
+                      <td style="padding: 6px;"><h3><strong>Company</strong></h3></td>
+                      <td style="padding: 6px;"><h3>:</h3></td>
+                      <td style="padding: 6px;"><h3>{{ $certificate->company }}</h3></td>
+                  </tr>
+                  <tr>
+                      <td style="padding: 6px;"><h3><strong>Training</strong></h3></td>
+                      <td style="padding: 6px;"><h3>:</h3></td>
+                      <td style="padding: 6px;"><h3>{{ $certificate->training_name }}</h3></td>
+                  </tr>
+                  <tr>
+                      <td style="padding: 6px;"><h3><strong>Training Location</strong></h3></td>
+                      <td style="padding: 6px;"><h3>:</h3></td>
+                      <td style="padding: 6px;"><h3>{{ $certificate->location }}</h3></td>
+                  </tr>
+                  <tr>
+                      <td style="padding: 6px;"><h3><strong>Trainer</strong></h3></td>
+                      <td style="padding: 6px;"><h3>:</h3></td>
+                      <td style="padding: 6px;"><h3>{{ $certificate->trainer }}</h3></td>
+                  </tr>
+                  <tr>
+                      <td style="padding: 6px;"><h3><strong>Training Date</strong></h3></td>
+                      <td style="padding: 6px;"><h3>:</h3></td>
+                      <td style="padding: 6px;"><h3>{{ $certificate->training_date }}</h3></td>
+                  </tr>
+                  <tr>
+                      <td style="padding: 6px;"><h3><strong>Issue Date</strong></h3></td>
+                      <td style="padding: 6px;"><h3>:</h3></td>
+                      <td style="padding: 6px;"><h3>{{ $certificate->issue_date }}</h3></td>
+                  </tr>
+                  <tr>
+                      <td style="padding: 6px;"><h3><strong>Expiry Date</strong></h3></td>
+                      <td style="padding: 6px;"><h3>:</h3></td>
+                      <td style="padding: 6px;"><h3>{{ $certificate->expiry_date }}</h3></td>
+                  </tr>
+              </table>
+          </div>
       @endforeach
+
       </div>
       @endisset
     </div>
