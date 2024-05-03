@@ -1,0 +1,14 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class InspectionCertificate extends Model
+{
+    use HasFactory;
+    use SoftDeletes;
+    protected $table = "inspection_certificates";
+    protected $guarded = [];  
+}
