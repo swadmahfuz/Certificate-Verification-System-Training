@@ -6,7 +6,22 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Admin Dashboard</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A==" crossorigin="anonymous" referrerpolicy="no-referrer" />     
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <style>
+            .table-striped tbody td, .table-striped thead th {
+                vertical-align: middle; /* Centers the content vertically in table cells */
+            }
+            .table-striped thead th {
+                text-align: left; /* Centers the text horizontally in table headers */
+                position: sticky;
+                top: 0; /* Keeps the header at the top */
+                background-color: rgb(243, 243, 243); /* Non-transparent background */
+                border-right: 1px solid #dee2e6; /* Adds a border to the right of each header cell */
+            }
+            .table-striped thead th:last-child {
+                border-right: none; /* Removes the border for the last header cell */
+            }
+        </style>
     </head>
     <body background="images/tuv-login-background1.jpg">
         <section style="padding-top: 60px;">
@@ -48,9 +63,10 @@
                                         <th>Company</th>
                                         <th>Training</th>
                                         <th>Trainer</th>
-                                        <th>Date</th>
+                                        <th>Trg Date</th>
                                         <th>Issue Date</th>
                                         <th>Exp. Date</th>
+                                        <th>QR Code</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -68,14 +84,15 @@
                                             <td>{{ $certificate->training_date }}</td>
                                             <td>{{ $certificate->issue_date }}</td>
                                             <td>{{ $certificate->expiry_date }}</td>
+                                            @php
+                                                $url = url('');  ///capture server url
+                                                $verification_url = $url.'?search='.$certificate->certificate_number;   ///concat server url with verification link and certificate number
+                                            @endphp
+                                            {{-- The code below uses goqr.me api to generate qr code image --}}
+                                            <td> <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ $verification_url }}"/> </td>
                                             <td>
-                                                @php
-                                                    $url = url('');  ///capture server url
-                                                    $verification_url = $url.'?search='.$certificate->certificate_number;   ///concat server url with verification link and certificate number
-                                                @endphp
-                                                
                                                 {{-- Action buttons --}}
-                                                {{-- using goqr.me api to generate qr code image--}}
+                                                {{-- using goqr.me api to generate qr code image link--}}
                                                 <a href="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ $verification_url }}" target="_blank" style="margin-bottom: 5px"><i class="fa-solid fa-qrcode" title="Generate QR Code"></i></a>
 
                                                 <a href="view-certificate/{{ $certificate->id }}" style="margin-bottom: 5px" target="_blank"><i class="fa-solid fa-circle-info" title="View Certificate Details"></i></a>

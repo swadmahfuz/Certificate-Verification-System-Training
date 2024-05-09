@@ -72,6 +72,15 @@
                                         <td>{{ $certificate->created_by }}</td>
                                     </tr>
                                     <tr>
+                                        <th>QR Code</th>
+                                        @php
+                                            $url = url('');  ///capture server url
+                                            $verification_url = $url.'?search='.$certificate->certificate_number;   ///concat server url with verification link and certificate number
+                                        @endphp
+                                        {{-- The line below uses generate qr code image --}}
+                                        <td><img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ $verification_url }}"/></td>
+                                    </tr>
+                                    <tr>
                                         <th>Last Updated by</th>
                                         <td>{{ $certificate->updated_by }}</td>
                                     </tr>
