@@ -17,6 +17,7 @@
                             <div class="card-header" ><center><h3>Detailed Certificate Information</h3></center>
                                 <center>
                                     <a href="../dashboard" class="btn btn-primary">Go back to Dashboard</a> 
+                                    <a href="../edit-certificate/{{ $certificate->id }}" class="btn btn-warning">Edit Certificate</a>
                                     <a href="../delete-certificate/{{ $certificate->id }}" class="btn btn-danger">Delete Certificate</a>
                                 </center> 
                             </div>
@@ -56,8 +57,12 @@
                                         <td>{{ $certificate->trainer }}</td>
                                     </tr>
                                     <tr>
-                                        <th>Training Date</th>
+                                        <th>Training Start Date</th>
                                         <td>{{ $certificate->training_date }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Training End Date</th>
+                                        <td>{{ $certificate->training_end }}</td>
                                     </tr>
                                     <tr>
                                         <th>Issue Date</th>

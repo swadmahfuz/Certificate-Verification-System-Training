@@ -100,6 +100,7 @@ class CertificateController extends Controller
                 'location' => 'required',
                 'trainer' => 'required',
                 'training_date' => 'required',
+                'training_end' => 'required',
                 'issue_date' => 'required',
                 'expiry_date' => 'required',
             ]);
@@ -114,6 +115,7 @@ class CertificateController extends Controller
             $certificate->location = $request->location;
             $certificate->trainer = $request->trainer;
             $certificate->training_date = $request->training_date;
+            $certificate->training_end = $request->training_end;
             $certificate->issue_date = $request->issue_date;
             $certificate->expiry_date = $request->expiry_date;
             $certificate->created_by = Auth::user()->name;
@@ -155,6 +157,7 @@ class CertificateController extends Controller
                 'location' => 'required',
                 'trainer' => 'required',
                 'training_date' => 'required',
+                'training_end' => 'required',
                 'issue_date' => 'required',
                 'expiry_date' => 'required',
             ]);
@@ -168,6 +171,7 @@ class CertificateController extends Controller
             $certificate->location = $request->location;
             $certificate->trainer = $request->trainer;
             $certificate->training_date = $request->training_date;
+            $certificate->training_end = $request->training_end;
             $certificate->issue_date = $request->issue_date;
             $certificate->expiry_date = $request->expiry_date;
             $certificate->updated_by = Auth::user()->name;

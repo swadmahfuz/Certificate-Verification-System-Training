@@ -1,10 +1,10 @@
 -- phpMyAdmin SQL Dump
--- version 5.1.1
+-- version 5.1.0
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 01, 2022 at 07:39 AM
--- Server version: 10.4.22-MariaDB
+-- Generation Time: May 09, 2024 at 09:43 PM
+-- Server version: 10.4.19-MariaDB
 -- PHP Version: 7.4.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -38,6 +38,7 @@ CREATE TABLE `certificates` (
   `location` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `trainer` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `training_date` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `training_end` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `issue_date` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `expiry_date` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_by` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Bulk uploaded',
@@ -67,6 +68,35 @@ CREATE TABLE `failed_jobs` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `inspection_certificates`
+--
+
+CREATE TABLE `inspection_certificates` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `certificate_number` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `client_name` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `inspection_type` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `inspection_location` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `equipment_name` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `equipment_brand` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `equipment_serial_chassis` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `equipment_rated_capacity` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `equipment_swl` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `inspection_date` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `validity_date` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `inspection_remarks` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `inspection_internal_notes` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_by` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Bulk uploaded',
+  `updated_by` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `deleted_by` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `migrations`
 --
 
@@ -85,7 +115,9 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (141, '2014_10_12_100000_create_password_resets_table', 1),
 (142, '2019_08_19_000000_create_failed_jobs_table', 1),
 (143, '2019_12_14_000001_create_personal_access_tokens_table', 1),
-(144, '2022_01_21_050800_create_certificates_table', 1);
+(144, '2022_01_21_050800_create_certificates_table', 1),
+(145, '2024_05_03_124430_create_inspection_certificates_table', 2),
+(146, '2024_05_10_011117_add_training_end_to_certificates_table', 3);
 
 -- --------------------------------------------------------
 
@@ -136,6 +168,20 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`id`, `name`, `email`, `designation`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`) VALUES
+(1, 'Swad Ahmed Mahfuz', 'am.sales@tuvat.com.bd', 'Assistant Manager - S&O', NULL, '$2y$10$wqbgOiQQvDhwheew/jzImOe3FvX295iSf8lQZLMMbiusWg5o8IMei', 'IpGvsdXCpd0nw8ZxPjuatqNcE1aHKSj83RU0M8izGxLME7fDRWzWeag7OYPU', '2023-10-31 18:19:06', '2023-11-01 08:15:47'),
+(3, 'Md. Borhanuddin', 'hse.ine01@tuvat.com.bd', 'HSE Engineer - INE', NULL, '$2y$10$f1ZLMBXnS/26ktllK8q3NOhG.wVuL3FPu4l5C7nZjXQCWjzwSZ2da', 'q97ozoas0bbJSL3hLu6s3d5tk00vMntrRo6KuTx1Fu0rKq7DoUCDq1yCsPV1', '2023-10-31 18:20:00', '2023-11-10 16:40:04'),
+(4, 'Afsana Akter', 'admin.executive@tuvat.com.bd', 'Admin Executive', NULL, '$2y$10$xO4owTFWYXbOHW92o/JoTuCiYDISKJvhdwcOJhyFc9xEog/ZcFiTq', 'vRTDIOy0ejejz8zo6iASM3AkJbuL5ziVdQKOscbqqAA4YhcQdoQYzjzNvoS1', '2023-10-31 19:07:25', '2023-11-12 05:06:49'),
+(5, 'Shohidul Islam', 'manager.ine@tuvat.com.bd', 'Manager - INE', NULL, '$2y$10$Kdlug3imnNtAwItATovifOD.CWCpgYRGF3nylS5N/K4It/P7EnR/y', NULL, '2023-10-31 19:09:41', '2023-10-31 19:09:41'),
+(6, 'Md. Shimul Hossain Shaon', 'am.ine01@tuvat.com.bd', 'Assistant Manager - INE', NULL, '$2y$10$gnOlKWWW0vrOTTRfnnrq9ujMcrhrRqV8LFfvVDAWcsuVx7rUWPyiy', NULL, '2023-10-31 19:10:27', '2023-10-31 19:10:27'),
+(7, 'Ahmad Rafiq', 'buh.ine@tuvat.com.pk', 'Business Unit Head - INE', NULL, '$2y$10$0Mbz0VyruSnVTD56McyFteZPejg.uKyihzB53X43eP.7FV9u6Nvg.', NULL, '2023-10-31 19:14:18', '2023-10-31 19:14:18'),
+(8, 'Md Ridoy Hossain', 'tuv.tis.ine3@gmail.com', 'Sr. Inspector - INE', NULL, '$2y$10$s.Be3Af5A0F9ZO42EeD1W.xvcKSQeBOQ97LTWRIXLlQExaNJ5l3NC', NULL, '2024-01-24 11:10:06', '2024-01-24 11:10:06'),
+(9, 'Md. Din Amin', 'tuv.tis.ine6@gmail.com', 'Inspector - INE', NULL, '$2y$10$yA4A9RZs3/nAGpITBQSpYOY/eCCUWzgTJcXDsEXf5j3q4j3sGhrrK', NULL, '2024-04-02 06:05:38', '2024-04-02 06:05:38');
+
+--
 -- Indexes for dumped tables
 --
 
@@ -152,6 +198,13 @@ ALTER TABLE `certificates`
 ALTER TABLE `failed_jobs`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `failed_jobs_uuid_unique` (`uuid`);
+
+--
+-- Indexes for table `inspection_certificates`
+--
+ALTER TABLE `inspection_certificates`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `inspection_certificates_certificate_number_unique` (`certificate_number`);
 
 --
 -- Indexes for table `migrations`
@@ -197,10 +250,16 @@ ALTER TABLE `failed_jobs`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `inspection_certificates`
+--
+ALTER TABLE `inspection_certificates`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=145;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=147;
 
 --
 -- AUTO_INCREMENT for table `personal_access_tokens`
@@ -212,7 +271,7 @@ ALTER TABLE `personal_access_tokens`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

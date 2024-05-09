@@ -111,16 +111,17 @@
                       <td style="padding: 6px;"><h3>:</h3></td>
                       <td style="padding: 6px;"><h3>{{ $certificate->participant_name }}</h3></td>
                   </tr>
-                  <tr>
+                  {{-- NID and DL info removed from public display for privacy reasons. --}}
+                  {{-- <tr>
                       <td style="padding: 6px;"><h3><strong>Passport/NID</strong></h3></td>
                       <td style="padding: 6px;"><h3>:</h3></td>
                       <td style="padding: 6px;"><h3>{{ $certificate->passport_nid }}</h3></td>
-                  </tr>
-                  <tr>
+                  </tr> --}}
+                  {{-- <tr>
                       <td style="padding: 6px;"><h3><strong>Driving License</strong></h3></td>
                       <td style="padding: 6px;"><h3>:</h3></td>
                       <td style="padding: 6px;"><h3>{{ $certificate->driving_license }}</h3></td>
-                  </tr>
+                  </tr> --}}
                   <tr>
                       <td style="padding: 6px;"><h3><strong>Company</strong></h3></td>
                       <td style="padding: 6px;"><h3>:</h3></td>
@@ -142,10 +143,15 @@
                       <td style="padding: 6px;"><h3>{{ $certificate->trainer }}</h3></td>
                   </tr>
                   <tr>
-                      <td style="padding: 6px;"><h3><strong>Training Date</strong></h3></td>
+                      <td style="padding: 6px;"><h3><strong>Training Start Date</strong></h3></td>
                       <td style="padding: 6px;"><h3>:</h3></td>
                       <td style="padding: 6px;"><h3>{{ $certificate->training_date }}</h3></td>
                   </tr>
+                  <tr>
+                    <td style="padding: 6px;"><h3><strong>Training End Date</strong></h3></td>
+                    <td style="padding: 6px;"><h3>:</h3></td>
+                    <td style="padding: 6px;"><h3>{{ $certificate->training_end }}</h3></td>
+                </tr>
                   <tr>
                       <td style="padding: 6px;"><h3><strong>Issue Date</strong></h3></td>
                       <td style="padding: 6px;"><h3>:</h3></td>

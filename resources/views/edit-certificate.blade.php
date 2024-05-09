@@ -83,11 +83,18 @@
                                         <input type="text" name="trainer" class="form-control" placeholder="Enter Trainer Name" value="{{ $certificate->trainer }}">
                                         <br>
 
-                                        <label for="training_date">Training Date*</label>
+                                        <label for="training_date">Training Start Date*</label>
                                         @error('training_date')
                                             <span class="text-danger">{{$message}}</span> <br> 
                                         @enderror
                                         <input type="date" name="training_date" class="form-control" placeholder="Enter Training Date" value="{{ $certificate->training_date }}">
+                                        <br>
+
+                                        <label for="training_end">Training End Date*</label>
+                                        @error('training_end')
+                                            <span class="text-danger">{{$message}}</span> <br> 
+                                        @enderror
+                                        <input type="date" name="training_end" class="form-control" placeholder="Enter Training End Date" value="{{ $certificate->training_end }}">
                                         <br>
 
                                         <label for="issue_date">Issue Date*</label>
