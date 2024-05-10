@@ -169,5 +169,6 @@
       </div>
       @endisset
     </div>
+    @include('layouts.footer')  <!-- Including the footer Blade file -->
   </body>
 </html>
