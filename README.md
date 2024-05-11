@@ -59,13 +59,31 @@
 
 [![Product Name Screen Shot][product-screenshot]](https://github.com/swadmahfuz/Certificate-Verification-System)
 <br />
-I built this application to tackle the issue of certificate forgery and verification; a problem my organization has been facing quite a lot. Manually maintaining and verifying certificates was time consuming for my colleagues. It  aims to save time and effort for employees of any Testing, Inspection and Certification company by maintaining a certificate/report database and clients by allowing certificate/report verification using QR Code. Admins can add/edit/remove cetificate data from the dashboard and interested parties can verify the authenticity of the certificates. The project may be modified for verifying other things like product authenticity, or 3rd party reports.
+<h2  align="center">🛡️ TUV Austria Training Certificate Verification System </h2>
 
-<strong>Main Features: </strong>
-* Maintain Certificate Database.
-* Certificate Verification
-* Admin Dashboard
-* Generate and download QR Code for verification. 
+<h3>📌 Overview </h3></br>
+
+<p>This application is designed to address the persistent challenges of certificate forgery and inefficient manual verification processes that our organization, TUV Austria, has frequently encountered. The primary goal of this tool is to enhance operational efficiency and accuracy in the authentication of certificates and reports.</p>
+
+<h3>🗂️ Key Features </h3></br>
+
+* Database Management 📁: Maintains a comprehensive database of certificates and reports, streamlining the storage and retrieval process.
+* QR Code Verification 📱: Enables clients and other stakeholders to verify the authenticity of certificates and reports swiftly using QR codes.
+* TUV Austria Employee Dashboard 🖥️: Allows TUV Austria employees to efficiently manage certificate data, including adding, editing, and removing entries.
+* Versatility 🔧: While primarily focused on certificates, the application’s architecture allows for future adaptations, such as verifying product authenticity or third-party reports.
+</br>
+</br>
+
+<h3>🚀 Benefits </h3> </br>
+
+* Time Efficiency ⏳: Significantly reduces the time spent by employees on manual verification processes.
+* Security 🛑: Enhances the integrity of the verification process, helping to prevent fraud and unauthorized use of falsified documents.
+* User-Friendly 🤝: Provides a user-friendly interface for both administrative tasks and verification processes.
+
+🌟 Potential Expansions
+<p>This project holds potential for further modifications to accommodate a broader range of verification needs, including but not limited to product authenticity and third-party reports. A complimenting app has also been developed for Inspection/Calibration Certificate Verification that uses the same database, which runs from a separate directory. </p>
+
+App link: [https://github.com/swadmahfuz/Certificate-Verification-System-Inspection](https://github.com/swadmahfuz/Certificate-Verification-System-Inspection) 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -134,7 +152,7 @@ Distributed under the GPL-3.0 License. See `LICENSE` for more information.
 <!-- CONTACT -->
 ## Contact
 
-Swad Ahmed Mahfuz - contact@swadmahfuz.com
+Swad Ahmed Mahfuz - contact@swadmahfuz.com, swad.mahfuz@gmail.com
 
 Project Link: [https://github.com/swadmahfuz/Certificate-Verification-System](https://github.com/swadmahfuz/Certificate-Verification-System)
 

@@ -10,6 +10,17 @@ use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use DB;
 
+/*
+|--------------------------------------------------------------------------
+| Certificate Verification System (CVS) 
+| TUV Austria Bureau of Inspection & Certification 
+| Developed by: Swad Ahmed Mahfuz (Assistant Manager - Sales & Operations, Bangladesh)
+| Contact: swad.mahfuz@gmail.com, +1-725-867-7718, +88 01733 023 008
+| Project Start: 12 October 2022
+| Latest Stable Release: v2.0.0 -  20 May 2024
+|--------------------------------------------------------------------------
+*/
+
 class CertificateController extends Controller
 {
 
@@ -201,7 +212,7 @@ class CertificateController extends Controller
     {
         if (Auth::check())
         {
-            $certificates = Certificate::where('certificate_number','=',($request->search))->orWhere('participant_name','LIKE','%'.($request->search).'%')->orWhere('passport_nid','=',($request->search))->orWhere('driving_license','=',($request->search))->orWhere('company','LIKE','%'.($request->search).'%')->orWhere('training_name','LIKE','%'.($request->search).'%')->orWhere('trainer','LIKE','%'.($request->search).'%')->orWhere('training_date','LIKE','%'.($request->search).'%')->paginate(100); ///search using % and LIKE to find words in query
+            $certificates = Certificate::where('certificate_number','=',($request->search))->orWhere('participant_name','LIKE','%'.($request->search).'%')->orWhere('passport_nid','=',($request->search))->orWhere('driving_license','=',($request->search))->orWhere('company','LIKE','%'.($request->search).'%')->orWhere('training_name','LIKE','%'.($request->search).'%')->orWhere('location','LIKE','%'.($request->search).'%')->orWhere('trainer','LIKE','%'.($request->search).'%')->orWhere('training_date','LIKE','%'.($request->search).'%')->orWhere('training_end','LIKE','%'.($request->search).'%')->orWhere('issue_date','LIKE','%'.($request->search).'%')->orWhere('expiry_date','LIKE','%'.($request->search).'%')->paginate(100); ///search using % and LIKE to find words in query
             return view('dashboard',compact('certificates'));
         }
         return redirect ('/admin');

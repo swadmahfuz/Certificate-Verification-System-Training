@@ -27,7 +27,7 @@ Route::post('/login/addCredentials', [CertificateController::class,'addCredentia
 Route::get('/logout',[CertificateController::class,'logout']);
 ///If login page layout changes, remember to update /admin and /login 
 
-//Admin Routes
+//Logged-in user Routes
 Route::get('/dashboard', [CertificateController::class,'getDashboard'])->name('dashboard');
 Route::get('/deleted-certificates', [CertificateController::class,'getDeletedCertificates'])->name('deletedCertificates');
 Route::get('/add-certificate',[CertificateController::class,'addCertificate']);
