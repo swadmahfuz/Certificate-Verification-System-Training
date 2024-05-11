@@ -72,7 +72,6 @@
 * TUV Austria Employee Dashboard 🖥️: Allows TUV Austria employees to efficiently manage certificate data, including adding, editing, and removing entries.
 * Versatility 🔧: While primarily focused on certificates, the application’s architecture allows for future adaptations, such as verifying product authenticity or third-party reports.
 </br>
-</br>
 
 <h3>🚀 Benefits </h3> </br>
 
@@ -80,7 +79,7 @@
 * Security 🛑: Enhances the integrity of the verification process, helping to prevent fraud and unauthorized use of falsified documents.
 * User-Friendly 🤝: Provides a user-friendly interface for both administrative tasks and verification processes.
 
-🌟 Potential Expansions
+<h3>🌟 Potential Expansions</h3></br>
 <p>This project holds potential for further modifications to accommodate a broader range of verification needs, including but not limited to product authenticity and third-party reports. A complimenting app has also been developed for Inspection/Calibration Certificate Verification that uses the same database, which runs from a separate directory. </p>
 
 App link: [https://github.com/swadmahfuz/Certificate-Verification-System-Inspection](https://github.com/swadmahfuz/Certificate-Verification-System-Inspection) 
