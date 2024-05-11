@@ -16,11 +16,11 @@
     <img src="images/logo.png" alt="Logo" width="80" height="80">
   </a>
 
-<h3 align="center">Certificate Verification Web Application (Laravel)</h3>
+<h3 align="center">🛡️ TUV Austria Training Certificate Verification System</h3>
 <br />
 
   <p align="center">
-    Developed by Swad Mahfuz (Asst. Manager, TÜV Austria). 
+    Developed by Swad Mahfuz - Assistant Manager (Sales & Operations), TÜV Austria (Bangladesh Office). 
     <br />
     <a href="https://github.com/swadmahfuz/Certificate-Verification-System"><strong>Explore the project »</strong></a>
   </p>
@@ -118,7 +118,11 @@ This project is built using Laravel. You may need to have installed php composer
    ```
 3. Import the sample .sql file to your DB and configure .env file as per DB Name.
 4. Run the project
-5. Register new user to login to dashboard. (Make sure registration route is enabled in web.php)
+5. Register new user to login to dashboard. (Make sure registration route is enabled in web.php) 
+
+Please note that the Inspection CVS application (separate application) must be installed in the same domain under a seprate sub-domain for the whole system to work. It is recommended to install Training CVS first and then the Inspection CVS.
+
+This application shares a common database with the Inspection CVS and thus the .env file for both the applications should be configured in a way so that both Training CVS and Inspection CVS uses the same database name & credentials and SMTP credentials.
 
 <stong>Notes</strong>
 
