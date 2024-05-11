@@ -19,6 +19,7 @@
     <link rel="icon" href="#" sizes="192x192">
     <link rel="apple-touch-icon" href="#">
   </head>
+  <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
   <body>
     <div class="section wf-section">
       <img

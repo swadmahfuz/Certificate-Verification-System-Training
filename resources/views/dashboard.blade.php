@@ -22,6 +22,7 @@
                 border-right: none; /* Removes the border for the last header cell */
             }
         </style>
+    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
     </head>
     <body background="images/tuv-login-background1.jpg">
         <section style="padding-top: 60px;">

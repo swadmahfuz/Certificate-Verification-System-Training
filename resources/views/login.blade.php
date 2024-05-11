@@ -29,6 +29,7 @@
                 font-weight: bold;
             }
         </style>
+        <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
     </head>
     <body background="images/tuv-login-background1.jpg">
         <div class="login-form">
