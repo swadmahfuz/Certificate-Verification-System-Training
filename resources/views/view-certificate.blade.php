@@ -103,8 +103,15 @@
                                     </tr>
                                     <tr>
                                         <th>Last Updated on</th>
-                                        <td>{{ $certificate->updated_at->format('d M Y \a\t H:i:s') }}</td>
-                                    </tr>
+                                        <td>
+                                            <!-- Ensures it will only show when a user updates a certificate after uploading -->
+                                            @if ($certificate->updated_by)
+                                                {{ $certificate->updated_at->format('d M Y \a\t H:i:s') }} 
+                                            @else
+                                                
+                                            @endif
+                                        </td>
+                                    </tr>   
                                     <tr>
                                         <th>Deleted by</th>
                                         <td>{{ $certificate->deleted_by }}</td>
