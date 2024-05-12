@@ -187,7 +187,7 @@ class CertificateController extends Controller
             $certificate->expiry_date = $request->expiry_date;
             $certificate->updated_by = Auth::user()->name;
             $certificate->save();
-            return redirect('/dashboard');
+            return redirect('/view-certificate/' . $certificate->id);
         }
         return redirect ('/admin');
     }
