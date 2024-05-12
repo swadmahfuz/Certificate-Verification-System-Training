@@ -72,9 +72,15 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    <!-- Get current page number and continue sl. in next page -->
+                                    @php
+                                        $currentPage = $certificates->currentPage();
+                                        $perPage = $certificates->perPage();
+                                        $offset = ($currentPage - 1) * $perPage;
+                                    @endphp
                                     @foreach ($certificates as $certificate)
                                         <tr>
-                                            <td>{{$loop->iteration}}.</td>
+                                            <td>{{ $loop->iteration + $offset }}.</td> <!-- continue sl. from previous page -->
                                             <td>{{ $certificate->certificate_number }}</td>
                                             <td>{{ $certificate->participant_name }}</td>
                                             {{-- <td>{{ $certificate->passport_nid }}</td>

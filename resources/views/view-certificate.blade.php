@@ -30,6 +30,16 @@
                                         <td>{{ $certificate->certificate_number }}</td>
                                     </tr>
                                     <tr>
+                                        <th>Certificate Status</th>
+                                        <td>
+                                            @if (\Carbon\Carbon::now() > \Carbon\Carbon::parse($certificate->expiry_date))
+                                                <span style="color: red;">Certificate Expired! ⚠️</span>
+                                            @else
+                                                <span style="color: green;">Certificate Valid! ✅</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                    <tr>
                                         <th>Name</th>
                                         <td>{{ $certificate->participant_name }}</td>
                                     </tr>
@@ -70,7 +80,7 @@
                                         <td>{{ $certificate->issue_date }}</td>
                                     </tr>
                                     <tr>
-                                        <th>Expiry Date</th>
+                                        <th>Valid Till</th>
                                         <td>{{ $certificate->expiry_date }}</td>
                                     </tr>
                                     <tr>
