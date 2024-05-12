@@ -88,9 +88,9 @@
                                             <td>{{ $certificate->company }}</td>
                                             <td>{{ $certificate->training_name }}</td>
                                             <td>{{ $certificate->trainer }}</td>
-                                            <td>{{ $certificate->training_date }}</td>
-                                            <td>{{ $certificate->issue_date }}</td>
-                                            <td>{{ $certificate->expiry_date }}</td>
+                                            <td>{{ \Carbon\Carbon::createFromFormat('Y-m-d', $certificate->training_date)->format('d-m-Y') }}</td> 
+                                            <td>{{ \Carbon\Carbon::createFromFormat('Y-m-d', $certificate->issue_date)->format('d-m-Y') }}</td>
+                                            <td>{{ \Carbon\Carbon::createFromFormat('Y-m-d', $certificate->expiry_date)->format('d-m-Y') }}</td>
                                             @php
                                                 $url = url('');  ///capture server url
                                                 $verification_url = $url.'?search='.$certificate->certificate_number;   ///concat server url with verification link and certificate number

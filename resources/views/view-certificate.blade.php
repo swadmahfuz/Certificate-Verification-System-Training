@@ -69,19 +69,19 @@
                                     </tr>
                                     <tr>
                                         <th>Training Start Date</th>
-                                        <td>{{ $certificate->training_date }}</td>
+                                        <td>{{ \Carbon\Carbon::createFromFormat('Y-m-d', $certificate->training_date)->format('d M Y') }}</td>
                                     </tr>
                                     <tr>
                                         <th>Training End Date</th>
-                                        <td>{{ $certificate->training_end }}</td>
+                                        <td>{{ \Carbon\Carbon::createFromFormat('Y-m-d', $certificate->training_end)->format('d M Y') }}</td>
                                     </tr>
                                     <tr>
                                         <th>Issue Date</th>
-                                        <td>{{ $certificate->issue_date }}</td>
+                                        <td>{{ \Carbon\Carbon::createFromFormat('Y-m-d', $certificate->issue_date)->format('d M Y') }}</td>
                                     </tr>
                                     <tr>
                                         <th>Valid Till</th>
-                                        <td>{{ $certificate->expiry_date }}</td>
+                                        <td>{{ \Carbon\Carbon::createFromFormat('Y-m-d', $certificate->expiry_date)->format('d M Y') }}</td>
                                     </tr>
                                     <tr>
                                         <th>Created by</th>
@@ -99,6 +99,10 @@
                                     <tr>
                                         <th>Last Updated by</th>
                                         <td>{{ $certificate->updated_by }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Last Updated on</th>
+                                        <td>{{ $certificate->updated_at->format('d M Y \a\t H:i:s') }}</td>
                                     </tr>
                                     <tr>
                                         <th>Deleted by</th>

@@ -23,7 +23,10 @@
                 <form action="{{ route('import') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <input type="file" name="file" class="form-control"> 
-                    <h6 style="text-align: right; font-style:italic; margin-top:5px">Please upload excel sheet as per import template given above.</h6>
+                    <h6 style="text-align: right; font-style:italic; margin-top:5px">Please upload MS Excel sheet as per the given import template given above.</h6>
+                    <h6 style="text-align: right; font-style: italic; font-weight: bold; margin-top: 5px; color: red;">Do not change template formatting.</h6>
+                    <h6 style="text-align: right; font-style: italic; font-weight: bold; margin-top: 5px; color: red;">All dates in excel sheet must be given in YYYY-MM-DD Format.</h6>
+                    <h6 style="text-align: right; font-style: italic; font-weight: bold; margin-top: 5px; color: red;">Example: "20 May 2024" should be written as "2024-05-20".</h6>
                     <center><button class="btn btn-success" style="margin-top: 10px">Import Data</button></center>
                     <br>
                 </form>

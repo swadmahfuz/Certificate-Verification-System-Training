@@ -38,6 +38,7 @@ class CertificateExport implements FromCollection, WithHeadings
             'Location',
             'Trainer',
             'Training Date',
+            'Training End Date',
             'Issue Date',
             'Expiry Date',
             'Created by',
