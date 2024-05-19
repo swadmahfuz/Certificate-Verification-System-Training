@@ -212,10 +212,49 @@ class CertificateController extends Controller
     {
         if (Auth::check())
         {
-            $certificates = Certificate::where('certificate_number','=',($request->search))->orWhere('participant_name','LIKE','%'.($request->search).'%')->orWhere('passport_nid','=',($request->search))->orWhere('driving_license','=',($request->search))->orWhere('company','LIKE','%'.($request->search).'%')->orWhere('training_name','LIKE','%'.($request->search).'%')->orWhere('location','LIKE','%'.($request->search).'%')->orWhere('trainer','LIKE','%'.($request->search).'%')->orWhere('training_date','LIKE','%'.($request->search).'%')->orWhere('training_end','LIKE','%'.($request->search).'%')->orWhere('issue_date','LIKE','%'.($request->search).'%')->orWhere('expiry_date','LIKE','%'.($request->search).'%')->paginate(100); ///search using % and LIKE to find words in query
+            $certificates = Certificate::where('certificate_number','=',($request->search))
+            ->orWhere('participant_name','LIKE','%'.($request->search).'%')     ///search using % and LIKE to find words in query
+            ->orWhere('passport_nid','=',($request->search))
+            ->orWhere('driving_license','=',($request->search))
+            ->orWhere('company','LIKE','%'.($request->search).'%')
+            ->orWhere('training_name','LIKE','%'.($request->search).'%')
+            ->orWhere('location','LIKE','%'.($request->search).'%')
+            ->orWhere('trainer','LIKE','%'.($request->search).'%')
+            ->orWhere('training_date','LIKE','%'.($request->search).'%')
+            ->orWhere('training_end','LIKE','%'.($request->search).'%')
+            ->orWhere('issue_date','LIKE','%'.($request->search).'%')
+            ->orWhere('expiry_date','LIKE','%'.($request->search).'%')
+            ->paginate(100); 
             return view('dashboard',compact('certificates'));
         }
         return redirect ('/admin');
+    }
+
+    ///Testing Live-Search in Dashboard
+    public function liveSearch(Request $request)
+    {
+        if (Auth::check()) {
+            if($request->has('userInput')){
+                $userInput = $request->userInput;
+                $result = Certificate::where('certificate_number','=', $userInput)
+                ->orWhere('participant_name','LIKE','%'.$userInput.'%')
+                ->orWhere('passport_nid','=',$userInput)
+                ->orWhere('driving_license','=',$userInput)
+                ->orWhere('company','LIKE','%'.$userInput.'%')
+                ->orWhere('training_name','LIKE','%'.$userInput.'%')
+                ->orWhere('location','LIKE','%'.$userInput.'%')
+                ->orWhere('trainer','LIKE','%'.$userInput.'%')
+                ->orWhere('training_date','LIKE','%'.$userInput.'%')
+                ->orWhere('training_end','LIKE','%'.$userInput.'%')
+                ->orWhere('issue_date','LIKE','%'.$userInput.'%')
+                ->orWhere('expiry_date','LIKE','%'.$userInput.'%')
+                ->get();
+                return response()->json(['data'=>$result]);
+            }else{
+                return view('dashboard');
+            }
+        }
+        return redirect('/admin');
     }
 
     public function importExportView()
