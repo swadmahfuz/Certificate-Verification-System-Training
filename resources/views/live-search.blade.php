@@ -132,7 +132,7 @@
             $(document).ready(function() {
                 $(".search-input").on('keyup', function() {
                     var searchX = $(this).val(); // storing user input in "searchX" variable
-                    console.log(searchX); // log searchX input in console for debugging
+                    /* console.log(searchX); // log searchX input in console for debugging */
                     if (searchX.length >= 3) {
                         $.ajax({
                             url: "{{ url('live-search') }}",
@@ -158,7 +158,11 @@
                                     _html += '<td>' + formatDate(data.issue_date) + '</td>';
                                     _html += '<td>' + formatDate(data.expiry_date) + '</td>';
                                     _html += '<td><img src="' + generateQRCode(data.verification_url) + '"/></td>';
-                                    _html += '<td>Actions</td>'; // Placeholder for actual action buttons
+                                    _html += '<td>';
+                                    _html += '<a href="view-certificate/' + data.id + '" style="margin-bottom: 5px" target="_blank"><i class="fa-solid fa-circle-info" title="View Certificate Details"></i></a> ';
+                                    _html += '<a href="edit-certificate/' + data.id + '" style="margin-bottom: 5px" target="_blank"><i class="fa-solid fa-pen-to-square" title="Edit Certificate Information"></i></a> ';
+                                    _html += '<a href="delete-certificate/' + data.id + '" style="margin-bottom: 5px"><i class="fa-solid fa-trash" title="Delete Certificate"></i></a> ';
+                                    _html += '</td>';
                                     _html += '</tr>';
                                 });
                                 $(".search-result tbody").html(_html); // Populate the tbody with new rows
@@ -180,35 +184,6 @@
                 }
             });
         </script>
-        
-
-        {{-- <script type="text/javascript">
-            $(document).ready(function(){
-                $(".search-input").on('keyup', function(){
-                    var search = $(this).val(); /* storing user input "search-input" in "search" variable */
-                    console.log(search); /* Test search bar input in console for live search functionality */
-                    if(search.length>=3){
-                        $.ajax({
-                            url: "{{ url('live-search') }}",
-                            data: {
-                                userInput:search    /* seach box input is passed to variable search passed to the ajax as "userInput"  */
-                            },
-                            dataType: 'json',
-                            beforeSend: function(){
-                                $(".search-result").html('<li class="list-group-item"> Loading... </li>');
-                            },
-                            success: function(res){
-                                var _html = '';
-                                $.each(res.data, function(index, data){
-                                    _html += '<td>' + data.certificate_number + '</td>';
-                                });
-                                $(".search-result").html(_html);
-                            }
-                        });
-                    }
-                });
-            });
-        </script> --}}
     </body>
     <footer> @include('layouts.footer')  <!-- Including the footer Blade file --> </footer>
 </html>
