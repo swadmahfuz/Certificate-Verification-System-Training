@@ -12,6 +12,12 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
         <style>
+            .container {
+                max-width: 75%;
+            }
+            .table-container {
+                overflow-x: auto;
+            }
             .table-striped tbody td, .table-striped thead th {
                 vertical-align: middle; /* Centers the content vertically in table cells */
             }
@@ -133,7 +139,7 @@
                 $(".search-input").on('keyup', function() {
                     var searchX = $(this).val(); // storing user input in "searchX" variable
                     /* console.log(searchX); // log searchX input in console for debugging */
-                    if (searchX.length >= 3) {
+                    if (searchX.length >= 3 || searchX.length === 0) {
                         $.ajax({
                             url: "{{ url('live-search') }}",
                             data: {
@@ -148,7 +154,7 @@
                                 var _html = '';
                                 $.each(res.data, function(index, data) {
                                     _html += '<tr>';
-                                    _html += '<td>' + (index + 1) + '</td>'; // Assuming index + 1 as serial number
+                                    _html += '<td>' + (index + 1) + '.</td>'; // Assuming index + 1 as serial number
                                     _html += '<td>' + data.certificate_number + '</td>';
                                     _html += '<td>' + data.participant_name + '</td>';
                                     _html += '<td>' + data.company + '</td>';

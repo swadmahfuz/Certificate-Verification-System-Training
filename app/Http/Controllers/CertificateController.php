@@ -231,7 +231,7 @@ class CertificateController extends Controller
     }
 
     ///Testing Live-Search in Dashboard
-    public function liveSearch(Request $request)
+/*     public function liveSearch(Request $request)
     {
         if (Auth::check()) {
             if($request->has('userInput')){
@@ -255,7 +255,41 @@ class CertificateController extends Controller
             }
         }
         return redirect('/admin');
-    }
+    } */
+    public function liveSearch(Request $request)
+    {
+        if (Auth::check()) {
+            if ($request->has('userInput')) {
+                $userInput = $request->userInput;
+    
+                if (empty($userInput)) {
+                    // If the search input is empty, return all certificates ordered by certificate_number descending
+                    $result = Certificate::orderBy('certificate_number', 'desc')->get();
+                } else {
+                    $result = Certificate::where('certificate_number', '=', $userInput)
+                        ->orWhere('participant_name', 'LIKE', '%' . $userInput . '%')
+                        ->orWhere('passport_nid', '=', $userInput)
+                        ->orWhere('driving_license', '=', $userInput)
+                        ->orWhere('company', 'LIKE', '%' . $userInput . '%')
+                        ->orWhere('training_name', 'LIKE', '%' . $userInput . '%')
+                        ->orWhere('location', 'LIKE', '%' . $userInput . '%')
+                        ->orWhere('trainer', 'LIKE', '%' . $userInput . '%')
+                        ->orWhere('training_date', 'LIKE', '%' . $userInput . '%')
+                        ->orWhere('training_end', 'LIKE', '%' . $userInput . '%')
+                        ->orWhere('issue_date', 'LIKE', '%' . $userInput . '%')
+                        ->orWhere('expiry_date', 'LIKE', '%' . $userInput . '%')
+                        ->orderBy('certificate_number', 'desc') // Ensure the result is ordered by certificate_number descending
+                        ->get();
+                }
+    
+                return response()->json(['data' => $result]);
+            } else {
+                return view('dashboard');
+            }
+        }
+    
+        return redirect('/admin');
+    }    
 
     public function importExportView()
     {
