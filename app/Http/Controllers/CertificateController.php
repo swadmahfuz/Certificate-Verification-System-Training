@@ -208,11 +208,11 @@ class CertificateController extends Controller
         return redirect ('/admin');
     }
 
-    public function adminSearch(Request $request)
+    public function adminSearch(Request $request)           ///Not requied if Live Search is used instead
     {
         if (Auth::check())
         {
-            $certificates = Certificate::where('certificate_number','=',($request->search))
+            $certificates = Certificate::where('certificate_number', 'LIKE', '%' . ($request->search) . '%')
             ->orWhere('participant_name','LIKE','%'.($request->search).'%')     ///search using % and LIKE to find words in query
             ->orWhere('passport_nid','=',($request->search))
             ->orWhere('driving_license','=',($request->search))
@@ -230,66 +230,38 @@ class CertificateController extends Controller
         return redirect ('/admin');
     }
 
-    ///Testing Live-Search in Dashboard
-/*     public function liveSearch(Request $request)
-    {
-        if (Auth::check()) {
-            if($request->has('userInput')){
-                $userInput = $request->userInput;
-                $result = Certificate::where('certificate_number','=', $userInput)
-                ->orWhere('participant_name','LIKE','%'.$userInput.'%')
-                ->orWhere('passport_nid','=',$userInput)
-                ->orWhere('driving_license','=',$userInput)
-                ->orWhere('company','LIKE','%'.$userInput.'%')
-                ->orWhere('training_name','LIKE','%'.$userInput.'%')
-                ->orWhere('location','LIKE','%'.$userInput.'%')
-                ->orWhere('trainer','LIKE','%'.$userInput.'%')
-                ->orWhere('training_date','LIKE','%'.$userInput.'%')
-                ->orWhere('training_end','LIKE','%'.$userInput.'%')
-                ->orWhere('issue_date','LIKE','%'.$userInput.'%')
-                ->orWhere('expiry_date','LIKE','%'.$userInput.'%')
-                ->get();
-                return response()->json(['data'=>$result]);
-            }else{
-                return view('dashboard');
-            }
-        }
-        return redirect('/admin');
-    } */
+    ///Live-Search in Dashboard
     public function liveSearch(Request $request)
     {
         if (Auth::check()) {
-            if ($request->has('userInput')) {
-                $userInput = $request->userInput;
+            $perPage = 100; // Number of certificates per page
+            $userInput = $request->input('userInput', '');
     
-                if (empty($userInput)) {
-                    // If the search input is empty, return all certificates ordered by certificate_number descending
-                    $result = Certificate::orderBy('certificate_number', 'desc')->get();
-                } else {
-                    $result = Certificate::where('certificate_number', '=', $userInput)
-                        ->orWhere('participant_name', 'LIKE', '%' . $userInput . '%')
-                        ->orWhere('passport_nid', '=', $userInput)
-                        ->orWhere('driving_license', '=', $userInput)
-                        ->orWhere('company', 'LIKE', '%' . $userInput . '%')
-                        ->orWhere('training_name', 'LIKE', '%' . $userInput . '%')
-                        ->orWhere('location', 'LIKE', '%' . $userInput . '%')
-                        ->orWhere('trainer', 'LIKE', '%' . $userInput . '%')
-                        ->orWhere('training_date', 'LIKE', '%' . $userInput . '%')
-                        ->orWhere('training_end', 'LIKE', '%' . $userInput . '%')
-                        ->orWhere('issue_date', 'LIKE', '%' . $userInput . '%')
-                        ->orWhere('expiry_date', 'LIKE', '%' . $userInput . '%')
-                        ->orderBy('certificate_number', 'desc') // Ensure the result is ordered by certificate_number descending
-                        ->get();
-                }
-    
-                return response()->json(['data' => $result]);
+            if (empty($userInput)) {
+                // If the search input is empty, return all certificates ordered by certificate_number descending with pagination
+                $result = Certificate::orderBy('certificate_number', 'desc')->paginate($perPage);
             } else {
-                return view('dashboard');
+                $result = Certificate::where('certificate_number', 'LIKE', '%' . $userInput . '%')
+                    ->orWhere('participant_name', 'LIKE', '%' . $userInput . '%')
+                    ->orWhere('passport_nid', '=', $userInput)
+                    ->orWhere('driving_license', '=', $userInput)
+                    ->orWhere('company', 'LIKE', '%' . $userInput . '%')
+                    ->orWhere('training_name', 'LIKE', '%' . $userInput . '%')
+                    ->orWhere('location', 'LIKE', '%' . $userInput . '%')
+                    ->orWhere('trainer', 'LIKE', '%' . $userInput . '%')
+                    ->orWhere('training_date', 'LIKE', '%' . $userInput . '%')
+                    ->orWhere('training_end', 'LIKE', '%' . $userInput . '%')
+                    ->orWhere('issue_date', 'LIKE', '%' . $userInput . '%')
+                    ->orWhere('expiry_date', 'LIKE', '%' . $userInput . '%')
+                    ->orderBy('certificate_number', 'desc')
+                    ->paginate($perPage); // Ensure the result is paginated
             }
-        }
     
-        return redirect('/admin');
-    }    
+            return response()->json(['data' => $result]);
+        } else {
+            return redirect('/admin');
+        }
+    }
 
     public function importExportView()
     {
