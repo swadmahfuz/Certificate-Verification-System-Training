@@ -24,6 +24,7 @@ class CreateCertificatesTable extends Migration
             $table->string('location');
             $table->string('trainer');
             $table->string('training_date');
+            $table->string('training_end');
             $table->string('issue_date');
             $table->string('expiry_date');
             $table->string('created_by')->default('Bulk uploaded');

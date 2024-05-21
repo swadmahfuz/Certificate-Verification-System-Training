@@ -40,6 +40,4 @@ Route::get('/admin-search',[CertificateController::class,'adminSearch'])->name('
 Route::get('/imports-exports', [CertificateController::class,'importExportView']);
 Route::get('/export', [CertificateController::class, 'export'])->name('export');
 Route::post('/import', [CertificateController::class, 'import'])->name('import');
-
-///Testing Live-Search in Dashboard page
-Route::get('/live-search', [CertificateController::class, 'liveSearch'])->name('live-Search');
+Route::get('/live-search', [CertificateController::class, 'liveSearch'])->name('liveSearch');

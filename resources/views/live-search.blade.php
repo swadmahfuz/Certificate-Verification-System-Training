@@ -12,6 +12,12 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
         <style>
+            .container {
+                max-width: 75%;
+            }
+            .table-container {
+                overflow-x: auto;
+            }
             .table-striped tbody td, .table-striped thead th {
                 vertical-align: middle; /* Centers the content vertically in table cells */
             }
@@ -130,46 +136,46 @@
 
         <script type="text/javascript">
             $(document).ready(function() {
-                $(".search-input").on('keyup', function() {
-                    var searchX = $(this).val(); // storing user input in "searchX" variable
-                    /* console.log(searchX); // log searchX input in console for debugging */
-                    if (searchX.length >= 3) {
-                        $.ajax({
-                            url: "{{ url('live-search') }}",
-                            data: {
-                                userInput: searchX // pass search box input to server as "userInput"
-                            },
-                            dataType: 'json',
-                            beforeSend: function() {
-                                // Update only the tbody part of the table to show a loading message
-                                $(".search-result tbody").html('<tr><td colspan="11">Loading...</td></tr>'); // Ensure colspan matches the number of columns in your table
-                            },
-                            success: function(res) {
-                                var _html = '';
-                                $.each(res.data, function(index, data) {
-                                    _html += '<tr>';
-                                    _html += '<td>' + (index + 1) + '</td>'; // Assuming index + 1 as serial number
-                                    _html += '<td>' + data.certificate_number + '</td>';
-                                    _html += '<td>' + data.participant_name + '</td>';
-                                    _html += '<td>' + data.company + '</td>';
-                                    _html += '<td>' + data.training_name + '</td>';
-                                    _html += '<td>' + data.trainer + '</td>';
-                                    _html += '<td>' + formatDate(data.training_date) + '</td>';
-                                    _html += '<td>' + formatDate(data.issue_date) + '</td>';
-                                    _html += '<td>' + formatDate(data.expiry_date) + '</td>';
-                                    _html += '<td><img src="' + generateQRCode(data.verification_url) + '"/></td>';
-                                    _html += '<td>';
-                                    _html += '<a href="view-certificate/' + data.id + '" style="margin-bottom: 5px" target="_blank"><i class="fa-solid fa-circle-info" title="View Certificate Details"></i></a> ';
-                                    _html += '<a href="edit-certificate/' + data.id + '" style="margin-bottom: 5px" target="_blank"><i class="fa-solid fa-pen-to-square" title="Edit Certificate Information"></i></a> ';
-                                    _html += '<a href="delete-certificate/' + data.id + '" style="margin-bottom: 5px"><i class="fa-solid fa-trash" title="Delete Certificate"></i></a> ';
-                                    _html += '</td>';
-                                    _html += '</tr>';
-                                });
-                                $(".search-result tbody").html(_html); // Populate the tbody with new rows
-                            }
-                        });
-                    }
-                });
+                function fetchCertificates(page = 1, userInput = '') {
+                    $.ajax({
+                        url: "{{ url('live-search') }}",
+                        data: {
+                            userInput: userInput,
+                            page: page
+                        },
+                        dataType: 'json',
+                        beforeSend: function() {
+                            $(".search-result tbody").html('<tr><td colspan="11">Please wait while your query is being searched...</td></tr>');
+                        },
+                        success: function(res) {
+                            var _html = '';
+                            $.each(res.data.data, function(index, data) {
+                                _html += '<tr>';
+                                _html += '<td>' + (index + 1 + (res.data.current_page - 1) * res.data.per_page) + '.</td>'; // Assuming index + 1 as serial number
+                                _html += '<td>' + data.certificate_number + '</td>';
+                                _html += '<td>' + data.participant_name + '</td>';
+                                _html += '<td>' + data.company + '</td>';
+                                _html += '<td>' + data.training_name + '</td>';
+                                _html += '<td>' + data.trainer + '</td>';
+                                _html += '<td>' + formatDate(data.training_date) + '</td>';
+                                _html += '<td>' + formatDate(data.issue_date) + '</td>';
+                                _html += '<td>' + formatDate(data.expiry_date) + '</td>';
+                                _html += '<td><img src="' + generateQRCode(data.verification_url) + '"/></td>';
+                                _html += '<td>';
+                                _html += '<a href="view-certificate/' + data.id + '" style="margin-bottom: 5px" target="_blank"><i class="fa-solid fa-circle-info" title="View Certificate Details"></i></a> ';
+                                _html += '<a href="edit-certificate/' + data.id + '" style="margin-bottom: 5px" target="_blank"><i class="fa-solid fa-pen-to-square" title="Edit Certificate Information"></i></a> ';
+                                _html += '<a href="delete-certificate/' + data.id + '" style="margin-bottom: 5px"><i class="fa-solid fa-trash" title="Delete Certificate"></i></a> ';
+                                _html += '</td>';
+                                _html += '</tr>';
+                            });
+                            $(".search-result tbody").html(_html); // Populate the tbody with new rows
+        
+                            // Update pagination links
+                            $('.pagination').remove();
+                            $('.card-body').append(generatePaginationLinks(res.data));
+                        }
+                    });
+                }
         
                 function formatDate(date) {
                     var d = new Date(date);
@@ -182,8 +188,39 @@
                 function generateQRCode(url) {
                     return 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=' + encodeURIComponent(url);
                 }
+        
+                function generatePaginationLinks(data) {
+                    var paginationLinks = '<nav class="pagination-container"><ul class="pagination">';
+                    if (data.current_page > 1) {
+                        paginationLinks += '<li class="page-item"><a class="page-link" href="#" data-page="' + (data.current_page - 1) + '">&laquo;</a></li>';
+                    }
+                    for (var i = 1; i <= data.last_page; i++) {
+                        paginationLinks += '<li class="page-item' + (i === data.current_page ? ' active' : '') + '"><a class="page-link" href="#" data-page="' + i + '">' + i + '</a></li>';
+                    }
+                    if (data.current_page < data.last_page) {
+                        paginationLinks += '<li class="page-item"><a class="page-link" href="#" data-page="' + (data.current_page + 1) + '">&raquo;</a></li>';
+                    }
+                    paginationLinks += '</ul></nav>';
+                    return paginationLinks;
+                }
+        
+                $(".search-input").on('keyup', function() {
+                    var userInput = $(this).val();
+                    fetchCertificates(1, userInput);
+                });
+        
+                $(document).on('click', '.pagination a', function(e) {
+                    e.preventDefault();
+                    var page = $(this).attr('data-page');
+                    var userInput = $('.search-input').val();
+                    fetchCertificates(page, userInput);
+                });
+        
+                // Initial fetch for the first page without any search input
+                fetchCertificates();
             });
         </script>
+    
     </body>
     <footer> @include('layouts.footer')  <!-- Including the footer Blade file --> </footer>
 </html>

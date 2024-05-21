@@ -18,7 +18,7 @@
                             <div class="card-header" ><center><h3>Detailed Certificate Information</h3></center>
                                 <center>
                                     <a href="../dashboard" class="btn btn-primary">Go back to Dashboard</a>
-                                    <a href="add-certificate" class="btn btn-success">Add New Certificate</a> 
+                                    <a href="../add-certificate" class="btn btn-success">Add New Certificate</a> 
                                     <a href="../edit-certificate/{{ $certificate->id }}" class="btn btn-warning">Edit Certificate</a>
                                     <a href="../delete-certificate/{{ $certificate->id }}" class="btn btn-danger">Delete Certificate</a>
                                 </center> 
