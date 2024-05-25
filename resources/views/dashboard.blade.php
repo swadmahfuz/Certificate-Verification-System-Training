@@ -150,6 +150,7 @@
                         success: function(res) {
                             var _html = '';
                             $.each(res.data.data, function(index, data) {
+                                var verification_url = "{{ url('') }}" + "?search=" + data.certificate_number;
                                 _html += '<tr>';
                                 _html += '<td>' + (index + 1 + (res.data.current_page - 1) * res.data.per_page) + '.</td>'; // Assuming index + 1 as serial number
                                 _html += '<td>' + data.certificate_number + '</td>';
@@ -160,7 +161,7 @@
                                 _html += '<td>' + formatDate(data.training_date) + '</td>';
                                 _html += '<td>' + formatDate(data.issue_date) + '</td>';
                                 _html += '<td>' + formatDate(data.expiry_date) + '</td>';
-                                _html += '<td><img src="' + generateQRCode(data.verification_url) + '"/></td>';
+                                _html += '<td><img src="' + generateQRCode(verification_url) + '"/></td>';
                                 _html += '<td>';
                                 _html += '<a href="view-certificate/' + data.id + '" style="margin-bottom: 5px" target="_blank"><i class="fa-solid fa-circle-info" title="View Certificate Details"></i></a> ';
                                 _html += '<a href="edit-certificate/' + data.id + '" style="margin-bottom: 5px" target="_blank"><i class="fa-solid fa-pen-to-square" title="Edit Certificate Information"></i></a> ';
