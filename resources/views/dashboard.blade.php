@@ -13,7 +13,7 @@
         <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
         <style>
             .container {
-                max-width: 75%;
+                max-width: 99%;
             }
             .table-container {
                 overflow-x: auto;
