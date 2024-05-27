@@ -97,10 +97,10 @@
       {{-- Table format implemented below --}}
       @foreach ($certificates as $certificate)
           <div style="padding-left: 10px; padding-right: 10px;">
-              @if (\Carbon\Carbon::parse($certificate->expiry_date)->isPast())
-                  <h3 style="color: red; text-align: center;">Certificate Authentic but Expired! ⚠️</h3>
-              @else
+              @if (empty($certificate->expiry_date) || ! \Carbon\Carbon::parse($certificate->expiry_date)->isPast())
                   <h3 style="color: green; text-align: center;">Certificate Authentic and Valid! ✅</h3>
+              @else
+                  <h3 style="color: red; text-align: center;">Certificate Authentic but Expired! ⚠️</h3>
               @endif
               <br>
               <table style="width: 100%; border-collapse: collapse;">
@@ -114,17 +114,6 @@
                       <td style="padding: 6px;"><h3>:</h3></td>
                       <td style="padding: 6px;"><h3>{{ $certificate->participant_name }}</h3></td>
                   </tr>
-                  {{-- NID and DL info removed from public display for privacy reasons. --}}
-                  {{-- <tr>
-                      <td style="padding: 6px;"><h3><strong>Passport/NID</strong></h3></td>
-                      <td style="padding: 6px;"><h3>:</h3></td>
-                      <td style="padding: 6px;"><h3>{{ $certificate->passport_nid }}</h3></td>
-                  </tr> --}}
-                  {{-- <tr>
-                      <td style="padding: 6px;"><h3><strong>Driving License</strong></h3></td>
-                      <td style="padding: 6px;"><h3>:</h3></td>
-                      <td style="padding: 6px;"><h3>{{ $certificate->driving_license }}</h3></td>
-                  </tr> --}}
                   <tr>
                       <td style="padding: 6px;"><h3><strong>Company</strong></h3></td>
                       <td style="padding: 6px;"><h3>:</h3></td>
@@ -163,7 +152,15 @@
                   <tr>
                       <td style="padding: 6px;"><h3><strong>Expiry Date</strong></h3></td>
                       <td style="padding: 6px;"><h3>:</h3></td>
-                      <td style="padding: 6px;"><h3>{{ $certificate->expiry_date }}</h3></td>
+                      <td style="padding: 6px;">
+                        <h3>
+                            @if (!empty($certificate->expiry_date))
+                                {{ \Carbon\Carbon::createFromFormat('Y-m-d', $certificate->expiry_date)->format('d M Y') }}
+                            @else
+                                No Expiry Date
+                            @endif
+                        </h3>
+                      </td>
                   </tr>
               </table>
           </div>

@@ -33,10 +33,10 @@
                                     <tr>
                                         <th>Certificate Status</th>
                                         <td>
-                                            @if (\Carbon\Carbon::now() > \Carbon\Carbon::parse($certificate->expiry_date))
-                                                <span style="color: red;">Certificate Expired! ⚠️</span>
-                                            @else
+                                            @if (empty($certificate->expiry_date) || \Carbon\Carbon::now() <= \Carbon\Carbon::parse($certificate->expiry_date))
                                                 <span style="color: green;">Certificate Valid! ✅</span>
+                                            @else
+                                                <span style="color: red;">Certificate Expired! ⚠️</span>
                                             @endif
                                         </td>
                                     </tr>
@@ -82,7 +82,11 @@
                                     </tr>
                                     <tr>
                                         <th>Valid Till</th>
-                                        <td>{{ \Carbon\Carbon::createFromFormat('Y-m-d', $certificate->expiry_date)->format('d M Y') }}</td>
+                                        @if (!empty($certificate->expiry_date))
+                                            <td>{{ \Carbon\Carbon::createFromFormat('Y-m-d', $certificate->expiry_date)->format('d M Y') }}</td>
+                                        @else
+                                            <td>No Expiry Date</td>
+                                        @endif
                                     </tr>
                                     <tr>
                                         <th>Created by</th>

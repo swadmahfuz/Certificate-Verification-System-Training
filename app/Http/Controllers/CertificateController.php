@@ -113,7 +113,7 @@ class CertificateController extends Controller
                 'training_date' => 'required',
                 'training_end' => 'required',
                 'issue_date' => 'required',
-                'expiry_date' => 'required',
+                'expiry_date' => 'nullable',    /// To include certificates that do not have expiry date.
             ]);
             
             $certificate = new certificate();
@@ -170,7 +170,7 @@ class CertificateController extends Controller
                 'training_date' => 'required',
                 'training_end' => 'required',
                 'issue_date' => 'required',
-                'expiry_date' => 'required',
+                'expiry_date' => 'nullable',        /// To include certificates that do not have expiry date.
             ]);
             $certificate = Certificate::find($request->id);
             $certificate->certificate_number = $request->certificate_number;
