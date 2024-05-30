@@ -35,6 +35,7 @@ class CertificateImport implements ToModel, WithHeadingRow
             'location' => $row['location'],
             'trainer' => $row['trainer'],
             'training_date' => $row['training_date'],
+            'training_end' => $row['training_end'],
             'issue_date' => $row['issue_date'],
             'expiry_date' => $row['expiry_date'],
             'created_by' => $row['created_by'],
