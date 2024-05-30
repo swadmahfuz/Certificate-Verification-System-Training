@@ -98,10 +98,7 @@
                                         <input type="date" name="issue_date" class="form-control" placeholder="Enter Certificate Issue Date" value="{{ old('issue_date') }}">
                                         <br>
 
-                                        <label for="expiry_date">Expiry Date*</label>
-                                        @error('expiry_date')
-                                            <span class="text-danger">{{$message}}</span> <br> 
-                                        @enderror
+                                        <label for="expiry_date">Expiry Date</label>
                                         <input type="date" name="expiry_date" class="form-control" placeholder="Enter Certificate Expiry Date" value="{{ old('expiry_date') }}">
                                         <br>
                                         
