@@ -137,17 +137,17 @@
                   <tr>
                       <td style="padding: 6px;"><h3><strong>Training Start Date</strong></h3></td>
                       <td style="padding: 6px;"><h3>:</h3></td>
-                      <td style="padding: 6px;"><h3>{{ $certificate->training_date }}</h3></td>
+                      <td style="padding: 6px;"><h3>{{ \Carbon\Carbon::createFromFormat('Y-m-d', $certificate->training_date)->format('d M Y') }}</h3></td>
                   </tr>
                   <tr>
                     <td style="padding: 6px;"><h3><strong>Training End Date</strong></h3></td>
                     <td style="padding: 6px;"><h3>:</h3></td>
-                    <td style="padding: 6px;"><h3>{{ $certificate->training_end }}</h3></td>
+                    <td style="padding: 6px;"><h3>{{ \Carbon\Carbon::createFromFormat('Y-m-d', $certificate->training_end)->format('d M Y') }}</h3></td>
                 </tr>
                   <tr>
                       <td style="padding: 6px;"><h3><strong>Issue Date</strong></h3></td>
                       <td style="padding: 6px;"><h3>:</h3></td>
-                      <td style="padding: 6px;"><h3>{{ $certificate->issue_date }}</h3></td>
+                      <td style="padding: 6px;"><h3>{{ \Carbon\Carbon::createFromFormat('Y-m-d', $certificate->issue_date)->format('d M Y') }}</h3></td>
                   </tr>
                   <tr>
                       <td style="padding: 6px;"><h3><strong>Expiry Date</strong></h3></td>
