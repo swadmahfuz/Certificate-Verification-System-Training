@@ -100,7 +100,13 @@
                                                 <td>{{ $certificate->trainer }}</td>
                                                 <td>{{ \Carbon\Carbon::createFromFormat('Y-m-d', $certificate->training_date)->format('d-m-Y') }}</td> 
                                                 <td>{{ \Carbon\Carbon::createFromFormat('Y-m-d', $certificate->issue_date)->format('d-m-Y') }}</td>
-                                                <td>{{ \Carbon\Carbon::createFromFormat('Y-m-d', $certificate->expiry_date)->format('d-m-Y') }}</td>
+                                                <td>
+                                                    @if ($certificate->expiry_date)     <!-- Checks if expiration date is NULL -->
+                                                        {{ \Carbon\Carbon::createFromFormat('Y-m-d', $certificate->expiry_date)->format('d-m-Y') }}
+                                                    @else
+                                                        N/A
+                                                    @endif
+                                                </td>
                                                 @php
                                                     $url = url('');  ///capture server url
                                                     $verification_url = $url.'?search='.$certificate->certificate_number;   ///concat server url with verification link and certificate number
