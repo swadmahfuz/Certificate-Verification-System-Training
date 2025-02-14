@@ -1,0 +1,2 @@
+2025-02-15
+1. If app does not run after deployment, navigate to root->storage->framework and make the necessary folders if they are not there: "cache" , "sessions" , "views"
