@@ -16,7 +16,7 @@
                     <div class="col-md-7 offset-md-3">
                         <div class="card">
                             <div class="card-header" >
-                                <center><h3>Add Certificate Information</h3></center>
+                                <center><h3>TÜV Austria BIC CVS - Add New Certificate</h3></center>
                                 <center>
                                     <a href="./dashboard" class="btn btn-primary">Go back to Dashboard</a> 
                                     <h6 style="text-align: right">* Required fields</h6>
@@ -100,6 +100,24 @@
 
                                         <label for="expiry_date">Expiry Date</label>
                                         <input type="date" name="expiry_date" class="form-control" placeholder="Enter Certificate Expiry Date" value="{{ old('expiry_date') }}">
+                                        <br>
+
+                                        <label for="review_by">Review by</label>
+                                        <select name="review_by" class="form-control">
+                                            <option value="">Select Reviewer</option>
+                                            @foreach($users as $user)
+                                                <option value="{{ $user->name }}">{{ $user->name }} | {{ $user->designation }}</option>
+                                            @endforeach
+                                        </select>
+                                        <br>
+    
+                                        <label for="approval_by">Approval by</label>
+                                        <select name="approval_by" class="form-control">
+                                            <option value="">Select Approver</option>
+                                            @foreach($users as $user)
+                                                <option value="{{ $user->name }}">{{ $user->name }} | {{ $user->designation }}</option>
+                                            @endforeach
+                                        </select>
                                         <br>
                                         
                                         <center><button type="submit" class="btn btn-success">Add Details</button></center>

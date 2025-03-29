@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Models\Certificate;
+use App\Models\User;
 use App\Exports\CertificateExport;
 use App\Imports\CertificateImport;
 use Illuminate\Http\Request;
@@ -14,10 +15,10 @@ use DB;
 |--------------------------------------------------------------------------
 | Certificate Verification System (CVS) 
 | TUV Austria Bureau of Inspection & Certification 
-| Developed by: Swad Ahmed Mahfuz (Assistant Manager - Sales & Operations, Bangladesh)
+| Developed by: Swad Ahmed Mahfuz (Head of Divison - Business Assurance & Training, Bangladesh)
 | Contact: swad.mahfuz@gmail.com, +1-725-867-7718, +88 01733 023 008
 | Project Start: 12 October 2022
-| Latest Stable Release: v2.0.0 -  20 May 2024
+| Latest Stable Release: v3.0.0 -  30 March 2025
 |--------------------------------------------------------------------------
 */
 
@@ -26,7 +27,7 @@ class CertificateController extends Controller
 
 
     ///Unauthenticated user functions
-    public function search(Request $request)
+    public function search(Request $request)  ///Public function to search for certificate       
     {
         if ($request->search == null) {
             return view('/verify-certificate');
@@ -85,13 +86,51 @@ class CertificateController extends Controller
         return redirect('/admin');
     }
     
+    public function getPendingCertificates()
+    {
+        if (Auth::check()) {
+            $userId = Auth::user()->id;
+            $userName = Auth::user()->name;
+    
+            $query = Certificate::where(function ($query) use ($userId, $userName) {
+                $query->where(function ($q) use ($userId, $userName) {
+                    $q->where('status', 'Pending Review')
+                      ->where(function ($subQuery) use ($userId, $userName) {
+                          $subQuery->where('review_by_id', $userId)
+                                   ->orWhere('review_by', $userName);
+                      });
+                })
+                ->orWhere(function ($q) use ($userId, $userName) {
+                    $q->where('status', 'Pending Approval')
+                      ->where(function ($subQuery) use ($userId, $userName) {
+                          $subQuery->where('approval_by_id', $userId)
+                                   ->orWhere('approval_by', $userName);
+                      });
+                });
+            })
+            ->whereNotIn('status', ['Approved', 'approved', ' APPROVED']) // Explicitly exclude Approved
+            ->orderBy('certificate_number', 'DESC');
+    
+            // Debugging: Check generated SQL
+            // dd($query->toSql(), $query->getBindings());
+    
+            // Execute query
+            $certificates = $query->paginate(100);
+    
+            return view('pending-certificates', compact('certificates'));
+        }
+    
+        return redirect('/admin');
+    }
+
     public function addCertificate()
     {
         if (Auth::check())
         {
             $currentYear = date('Y');       ///Pass the current year as YYYY to the view file to populate certificate number 
             $currentMonthDay = date('md');  ///Pass the current year as MMDD to the view file to populate certificate number
-            return view('add-certificate', compact('currentYear', 'currentMonthDay'));
+            $users = User::all(); ///Fetch all users and pass to view to populate "review by" and "approval by" dropdowns  
+            return view('add-certificate', compact('currentYear', 'currentMonthDay', 'users'));
         }
         else
         {
@@ -114,7 +153,25 @@ class CertificateController extends Controller
                 'training_end' => 'required',
                 'issue_date' => 'required',
                 'expiry_date' => 'nullable',    /// To include certificates that do not have expiry date.
+                'review_by' => 'required',
+                'approval_by' => 'required',
             ]);
+
+            ///The following code block is to find out user IDs of reviewer and approver in case the name of user changes and there are certificates pending review or approval.
+
+            $review_by_user = User::where('name', $request->review_by)->first();
+            if ($review_by_user) {
+                $review_by_user_id = $review_by_user->id; // Store the found user ID in a variable
+            } else {
+                $review_by_user_id = null; // Handle cases where no matching user is found
+            }
+
+            $approval_by_user = User::where('name', $request->approval_by)->first();
+            if ($approval_by_user) {
+                $approval_by_user_id = $approval_by_user->id; // Store the found user ID in a variable
+            } else {
+                $approval_by_user_id = null; // Handle cases where no matching user is found
+            }
             
             $certificate = new certificate();
             $certificate->certificate_number = $request->certificate_number;
@@ -130,6 +187,12 @@ class CertificateController extends Controller
             $certificate->issue_date = $request->issue_date;
             $certificate->expiry_date = $request->expiry_date;
             $certificate->created_by = Auth::user()->name;
+            $certificate->created_by_id = Auth::user()->id;
+            $certificate->review_by = $request->review_by;
+            $certificate->review_by_id = $review_by_user_id;
+            $certificate->approval_by = $request->approval_by;
+            $certificate->approval_by_id = $approval_by_user_id;
+            $certificate->status = "Pending Review";       ///Certificate status flow: Pending Review-> Pending Approval ->Approved
             $certificate->save();
             return redirect('/view-certificate/' . $certificate->id);
         }
@@ -150,8 +213,9 @@ class CertificateController extends Controller
     {
         if (Auth::check())
         {
+            $users = User::all(); ///Fetch all users and pass to view to populate "review by" and "approval by" dropdowns 
             $certificate = Certificate::find($id);
-            return view('edit-certificate',compact('certificate'));
+            return view('edit-certificate',compact('certificate', 'users'));
         }
         return redirect ('/admin');
     }
@@ -171,7 +235,24 @@ class CertificateController extends Controller
                 'training_end' => 'required',
                 'issue_date' => 'required',
                 'expiry_date' => 'nullable',        /// To include certificates that do not have expiry date.
+                'review_by' => 'required',
+                'approval_by' => 'required',
             ]);
+
+            $review_by_user = User::where('name', $request->review_by)->first();
+            if ($review_by_user) {
+                $review_by_user_id = $review_by_user->id; // Store the found user ID in a variable
+            } else {
+                $review_by_user_id = null; // Handle cases where no matching user is found
+            }
+
+            $approval_by_user = User::where('name', $request->approval_by)->first();
+            if ($approval_by_user) {
+                $approval_by_user_id = $approval_by_user->id; // Store the found user ID in a variable
+            } else {
+                $approval_by_user_id = null; // Handle cases where no matching user is found
+            }
+
             $certificate = Certificate::find($request->id);
             $certificate->certificate_number = $request->certificate_number;
             $certificate->participant_name = $request->participant_name;
@@ -185,6 +266,11 @@ class CertificateController extends Controller
             $certificate->training_end = $request->training_end;
             $certificate->issue_date = $request->issue_date;
             $certificate->expiry_date = $request->expiry_date;
+            $certificate->review_by = $request->review_by;
+            $certificate->review_by_id = $review_by_user_id;
+            $certificate->approval_by = $request->approval_by;
+            $certificate->approval_by_id = $approval_by_user_id;
+            $certificate->status = "Pending Review";       ///Status changed back to pending if any update is made and will again require review and approval 
             $certificate->updated_by = Auth::user()->name;
             $certificate->save();
             return redirect('/view-certificate/' . $certificate->id);
@@ -192,6 +278,57 @@ class CertificateController extends Controller
         return redirect ('/admin');
     }
 
+    // Function to review a certificate
+    public function reviewCertificate($id)
+    {
+        if (Auth::check()) {
+            $certificate = Certificate::find($id);
+            
+            if (!$certificate) {
+                return back()->with('error', 'Certificate not found.');
+            }
+            
+            if (Auth::user()->id != $certificate->review_by_id) {
+                return back()->with('error', 'Unauthorized: You are not assigned to review this certificate.');
+            }
+            
+            $certificate->status = 'Pending Approval';      /// Pending Review-> Pending Approval ->Approved
+            $certificate->reviewed_at = Carbon::now();
+            $certificate->save();
+            
+            return redirect('/view-certificate/' . $certificate->id);
+        }
+        
+        return redirect('/admin');
+    }
+
+    // Function to approve a certificate
+    public function approveCertificate($id)
+    {
+        if (Auth::check()) {
+            $certificate = Certificate::find($id);
+            
+            if (!$certificate) {
+                return back()->with('error', 'Certificate not found.');
+            }
+            
+            if (Auth::user()->id != $certificate->approval_by_id) {
+                return back()->with('error', 'Unauthorized: You are not assigned to approve this certificate.');
+            }
+            
+            if ($certificate->status !== 'Pending Approval') {      
+                return back()->with('error', 'Certificate must be reviewed before approval.');
+            }
+            
+            $certificate->status = 'Approved';       /// Pending Review-> Pending Approval ->Approved
+            $certificate->approved_at = Carbon::now();
+            $certificate->save();
+            
+            return back()->with('success', 'Certificate approved successfully.');
+        }
+        
+        return redirect('/admin');
+    }
 
     public function deleteCertificate($id)
     {
@@ -199,33 +336,12 @@ class CertificateController extends Controller
         {
             $certificate = Certificate::find($id);
             $certificate_number = $certificate->certificate_number . " (Deleted)";
+            $certificate->status = "Deleted";
             $deleted_by = Auth::user()->name;
             DB::table('certificates')->where('id', $id)->update(array('certificate_number' => $certificate_number)); ///Concat "(Deleted)" with cert number to prevent duplicate certificate number error. 
             DB::table('certificates')->where('id', $id)->update(array('deleted_by' => $deleted_by));    ///Add user's name to deleted by column.
             Certificate::where('id',$id)->delete();
             return back()->with('Certificate_Deleted','Certificate details has been deleted successfully');
-        }
-        return redirect ('/admin');
-    }
-
-    public function adminSearch(Request $request)           ///Not requied if Live Search is used instead
-    {
-        if (Auth::check())
-        {
-            $certificates = Certificate::where('certificate_number', 'LIKE', '%' . ($request->search) . '%')
-            ->orWhere('participant_name','LIKE','%'.($request->search).'%')     ///search using % and LIKE to find words in query
-            ->orWhere('passport_nid','=',($request->search))
-            ->orWhere('driving_license','=',($request->search))
-            ->orWhere('company','LIKE','%'.($request->search).'%')
-            ->orWhere('training_name','LIKE','%'.($request->search).'%')
-            ->orWhere('location','LIKE','%'.($request->search).'%')
-            ->orWhere('trainer','LIKE','%'.($request->search).'%')
-            ->orWhere('training_date','LIKE','%'.($request->search).'%')
-            ->orWhere('training_end','LIKE','%'.($request->search).'%')
-            ->orWhere('issue_date','LIKE','%'.($request->search).'%')
-            ->orWhere('expiry_date','LIKE','%'.($request->search).'%')
-            ->paginate(100); 
-            return view('dashboard',compact('certificates'));
         }
         return redirect ('/admin');
     }
@@ -240,21 +356,23 @@ class CertificateController extends Controller
             if (empty($userInput)) {
                 // If the search input is empty, return all certificates ordered by certificate_number descending with pagination
                 $result = Certificate::orderBy('certificate_number', 'desc')->paginate($perPage);
-            } else {
-                $result = Certificate::where('certificate_number', 'LIKE', '%' . $userInput . '%')
-                    ->orWhere('participant_name', 'LIKE', '%' . $userInput . '%')
-                    ->orWhere('passport_nid', '=', $userInput)
-                    ->orWhere('driving_license', '=', $userInput)
-                    ->orWhere('company', 'LIKE', '%' . $userInput . '%')
-                    ->orWhere('training_name', 'LIKE', '%' . $userInput . '%')
-                    ->orWhere('location', 'LIKE', '%' . $userInput . '%')
-                    ->orWhere('trainer', 'LIKE', '%' . $userInput . '%')
-                    ->orWhere('training_date', 'LIKE', '%' . $userInput . '%')
-                    ->orWhere('training_end', 'LIKE', '%' . $userInput . '%')
-                    ->orWhere('issue_date', 'LIKE', '%' . $userInput . '%')
-                    ->orWhere('expiry_date', 'LIKE', '%' . $userInput . '%')
-                    ->orderBy('certificate_number', 'desc')
-                    ->paginate($perPage); // Ensure the result is paginated
+            } else {                
+                $result = Certificate::where(function ($query) use ($userInput) {
+                    $query->whereRaw('LOWER(certificate_number) LIKE ?', ['%' . strtolower($userInput) . '%'])
+                        ->orWhereRaw('LOWER(participant_name) LIKE ?', ['%' . strtolower($userInput) . '%'])
+                        ->orWhereRaw('passport_nid = ?', [$userInput])
+                        ->orWhereRaw('driving_license = ?', [$userInput])
+                        ->orWhereRaw('LOWER(company) LIKE ?', ['%' . strtolower($userInput) . '%'])
+                        ->orWhereRaw('LOWER(training_name) LIKE ?', ['%' . strtolower($userInput) . '%'])
+                        ->orWhereRaw('LOWER(location) LIKE ?', ['%' . strtolower($userInput) . '%'])
+                        ->orWhereRaw('LOWER(trainer) LIKE ?', ['%' . strtolower($userInput) . '%'])
+                        ->orWhereRaw('training_date LIKE ?', ['%' . $userInput . '%'])
+                        ->orWhereRaw('training_end LIKE ?', ['%' . $userInput . '%'])
+                        ->orWhereRaw('issue_date LIKE ?', ['%' . $userInput . '%'])
+                        ->orWhereRaw('expiry_date LIKE ?', ['%' . $userInput . '%']);
+                })
+                ->orderBy('certificate_number', 'desc')
+                ->paginate($perPage);
             }
     
             return response()->json(['data' => $result]);
@@ -262,6 +380,112 @@ class CertificateController extends Controller
             return redirect('/admin');
         }
     }
+
+    public function liveSearchDeleted(Request $request)     // To search within deleted certificates only
+    {
+        if (Auth::check()) {
+            $perPage = 100; // Number of certificates per page
+            $userInput = $request->input('userInput', '');
+    
+            if (empty($userInput)) {
+                // If the search input is empty, return all certificates ordered by certificate_number descending with pagination
+                $result = Certificate::onlyTrashed()->orderBy('certificate_number', 'desc')->paginate($perPage);
+            } else {
+                $result = Certificate::onlyTrashed()
+                ->where(function ($query) use ($userInput) {
+                    $query->whereRaw('LOWER(certificate_number) LIKE ?', ['%' . strtolower($userInput) . '%'])
+                        ->orWhereRaw('LOWER(participant_name) LIKE ?', ['%' . strtolower($userInput) . '%'])
+                        ->orWhereRaw('passport_nid = ?', [$userInput])
+                        ->orWhereRaw('driving_license = ?', [$userInput])
+                        ->orWhereRaw('LOWER(company) LIKE ?', ['%' . strtolower($userInput) . '%'])
+                        ->orWhereRaw('LOWER(training_name) LIKE ?', ['%' . strtolower($userInput) . '%'])
+                        ->orWhereRaw('LOWER(location) LIKE ?', ['%' . strtolower($userInput) . '%'])
+                        ->orWhereRaw('LOWER(trainer) LIKE ?', ['%' . strtolower($userInput) . '%'])
+                        ->orWhereRaw('training_date LIKE ?', ['%' . $userInput . '%'])
+                        ->orWhereRaw('training_end LIKE ?', ['%' . $userInput . '%'])
+                        ->orWhereRaw('issue_date LIKE ?', ['%' . $userInput . '%'])
+                        ->orWhereRaw('expiry_date LIKE ?', ['%' . $userInput . '%']);
+                })
+                ->orderBy('certificate_number', 'desc')
+                ->paginate($perPage);
+            }
+    
+            return response()->json(['data' => $result]);
+        } else {
+            return redirect('/admin');
+        }
+    }
+
+    public function liveSearchPending(Request $request)
+    {
+        if (Auth::check()) {
+            $perPage = 100; // Number of certificates per page
+            $userInput = $request->input('userInput', '');
+            $userId = Auth::user()->id;
+            $userName = Auth::user()->name;
+    
+            if (empty($userInput)) {
+                // If the search input is empty, return only pending review and approval certificates assigned to the logged-in user
+                $result = Certificate::where(function ($query) use ($userId, $userName) {
+                    $query->where(function ($q) use ($userId, $userName) {
+                        $q->where('status', 'Pending Review')
+                          ->where(function ($subQuery) use ($userId, $userName) {
+                              $subQuery->where('review_by_id', $userId)
+                                       ->orWhere('review_by', $userName);
+                          });
+                    })
+                    ->orWhere(function ($q) use ($userId, $userName) {
+                        $q->where('status', 'Pending Approval')
+                          ->where(function ($subQuery) use ($userId, $userName) {
+                              $subQuery->where('approval_by_id', $userId)
+                                       ->orWhere('approval_by', $userName);
+                          });
+                    });
+                })
+                ->orderBy('certificate_number', 'desc')
+                ->paginate($perPage);
+            } else {
+                // Search within pending review and approval certificates assigned to the logged-in user
+                $result = Certificate::where(function ($query) use ($userInput) {
+                    $query->whereRaw('LOWER(certificate_number) LIKE ?', ['%' . strtolower($userInput) . '%'])
+                        ->orWhereRaw('LOWER(participant_name) LIKE ?', ['%' . strtolower($userInput) . '%'])
+                        ->orWhereRaw('passport_nid = ?', [$userInput])
+                        ->orWhereRaw('driving_license = ?', [$userInput])
+                        ->orWhereRaw('LOWER(company) LIKE ?', ['%' . strtolower($userInput) . '%'])
+                        ->orWhereRaw('LOWER(training_name) LIKE ?', ['%' . strtolower($userInput) . '%'])
+                        ->orWhereRaw('LOWER(location) LIKE ?', ['%' . strtolower($userInput) . '%'])
+                        ->orWhereRaw('LOWER(trainer) LIKE ?', ['%' . strtolower($userInput) . '%'])
+                        ->orWhereRaw('training_date LIKE ?', ['%' . $userInput . '%'])
+                        ->orWhereRaw('training_end LIKE ?', ['%' . $userInput . '%'])
+                        ->orWhereRaw('issue_date LIKE ?', ['%' . $userInput . '%'])
+                        ->orWhereRaw('expiry_date LIKE ?', ['%' . $userInput . '%']);
+                })
+                ->where(function ($query) use ($userId, $userName) {
+                    $query->where(function ($q) use ($userId, $userName) {
+                        $q->where('status', 'Pending Review')
+                          ->where(function ($subQuery) use ($userId, $userName) {
+                              $subQuery->where('review_by_id', $userId)
+                                       ->orWhere('review_by', $userName);
+                          });
+                    })
+                    ->orWhere(function ($q) use ($userId, $userName) {
+                        $q->where('status', 'Pending Approval')
+                          ->where(function ($subQuery) use ($userId, $userName) {
+                              $subQuery->where('approval_by_id', $userId)
+                                       ->orWhere('approval_by', $userName);
+                          });
+                    });
+                })
+                ->orderBy('certificate_number', 'desc')
+                ->paginate($perPage);
+            }
+    
+            return response()->json(['data' => $result]);
+        } else {
+            return redirect('/admin');
+        }
+    }
+        
 
     public function importExportView()
     {
@@ -294,13 +518,3 @@ class CertificateController extends Controller
     }
 
 }
-
-    // public function generateQRCode($id)     ///function not used anymore as goQR api is implemented.
-    // {
-    //     if (Auth::check())
-    //     {
-    //         $certificate = Certificate::find($id);
-    //         return view('qrcode', compact('certificate'));  ///send certificate data to view page
-    //     }
-    //     return redirect('/admin');
-    // }

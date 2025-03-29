@@ -42,11 +42,11 @@
     <div class="footer">
         <div>
             <img src="{{ asset('favicon.ico') }}" alt="Favicon" style="width: 30px; height: 30px;"> 
-            {{ 'TUVAT BD Certificate Verification System v2.0.0' }}
+            {{ 'TUVAT BD Certificate Verification System v2.1.0' }}
         </div>
         <div>
             @auth
-            {{ 'Developed in-house by ' }}<a href="mailto:swad.mahfuz@gmail.com">Swad Ahmed Mahfuz</a> &copy; 2024
+            {{ 'Developed in-house by ' }}<a href="mailto:swad.mahfuz@gmail.com">Swad Ahmed Mahfuz</a> &copy; {{ date('Y') }}
             @endauth
         </div>
         <div>

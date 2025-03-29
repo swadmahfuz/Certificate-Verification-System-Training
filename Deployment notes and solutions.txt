@@ -1,2 +1,5 @@
-2025-02-15
+30-03-2025
+1. While migrating the new structure of certificates table, inspection_certificates table needs to be dropped. If there is already data in it, take a backup, drop the table and then migrate.
+
+15-02-2025
 1. If app does not run after deployment, navigate to root->storage->framework and make the necessary folders if they are not there: "cache" , "sessions" , "views"

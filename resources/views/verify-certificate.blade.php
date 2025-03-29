@@ -8,7 +8,7 @@
       }
     </style>
     <meta charset="utf-8" />
-    <title>Certificate Verification</title>
+    <title>TÜV Austria BIC CVS - Certificate Verification System</title>
     <meta content="width=device-width, initial-scale=1" name="viewport" />
     <link
       href={{ URL::asset('public/main.css'); }} 

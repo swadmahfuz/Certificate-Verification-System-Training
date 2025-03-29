@@ -5,6 +5,45 @@
     <title>Bulk Imports/Exports</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+            .container {
+                max-width: 99%;
+            }
+            .table-container {
+                overflow-x: auto;
+            }
+            .table-striped tbody td, .table-striped thead th {
+                vertical-align: middle; /* Centers the content vertically in table cells */
+            }
+            .table-striped thead th {
+                text-align: left; /* Centers the text horizontally in table headers */
+                position: sticky;
+                top: 0; /* Keeps the header at the top */
+                background-color: rgb(243, 243, 243); /* Non-transparent background */
+                border-right: 1px solid #dee2e6; /* Adds a border to the right of each header cell */
+            }
+            .table-striped thead th:last-child {
+                border-right: none; /* Removes the border for the last header cell */
+            }
+            .btn {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 10px 15px;
+                border-radius: 8px;
+                font-size: 14px;
+                font-weight: bold;
+                transition: all 0.3s ease;
+            }
+            .btn i {
+                font-size: 16px;
+            }
+            .btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            }
+        </style>
 </head>
 <body background="images/tuv-login-background1.jpg">
    
@@ -12,11 +51,31 @@
         <div class="card bg-light mt-3">
             <div class="card-header" style="padding-top: 20px; padding-bottom: 20px;">
                 <center>
-                    <h3 style="padding-bottom: 5px">Import/Export Certificate Data</h3>
-                    <a href="dashboard" class="btn btn-primary">Dashboard</a>
-                    <a class="btn btn-warning" href="{{ route('export') }}">Export Database</a>
-                    <a href="./downloads/Data Import Template.xlsx" class="btn btn-success" download="CVS Training Data Import Template.xlsx">Download Data Import Template</a>
-                    <a href="logout" class="btn btn-danger">Log Out</a>
+                    <h3 style="padding-bottom: 5px">TÜV Austria BIC CVS - Import/Export Certificate Data</h3>
+                    <table style="width:42%; margin: auto;">
+                        <tr>
+                            <td>
+                                <a href="dashboard" class="btn btn-success d-flex align-items-center">
+                                    <i class="fa-solid fa-table-columns me-1"></i> Dashboard
+                                </a>
+                            </td>
+                            <td>
+                                <a href="{{ route('export') }}" class="btn btn-primary d-flex align-items-center">
+                                    <i class="fa-solid fa-file-export me-1"></i> Export Database 
+                                </a>
+                            </td>
+                            <td>
+                                <a href="./downloads/TUVAT CVS Data Import Template.xlsx" class="btn btn-info d-flex align-items-center">
+                                    <i class="fa-solid fa-download me-1"> </i> Download Data Import Template
+                                </a>
+                            </td>
+                            <td>
+                                <a href="logout" class="btn btn-danger d-flex align-items-center">
+                                    <i class="fa-solid fa-right-from-bracket me-1"></i> Log Out
+                                </a>
+                            </td>
+                        </tr>
+                    </table>
                 </center>
             </div>
             <div class="card-body">

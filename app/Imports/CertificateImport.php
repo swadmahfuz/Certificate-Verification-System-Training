@@ -3,6 +3,7 @@
 namespace App\Imports;
 
 use App\Models\Certificate;
+use App\Models\User;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
@@ -22,9 +23,14 @@ class CertificateImport implements ToModel, WithHeadingRow
     * @param array $row
     *
     * @return \Illuminate\Database\Eloquent\Model|null
-    */
+    */      
     public function model(array $row)
     {
+        // Check if the user exists in the database and then using the email to get the user ID and name to store in the database
+        $createdUser  = User::where('email', $row['created_by_email'])->first();   
+        $reviewUser   = User::where('email', $row['review_by_email'])->first();
+        $approvalUser = User::where('email', $row['approval_by_email'])->first();
+
         return new Certificate([
             'certificate_number' => $row['certificate_number'],
             'participant_name' => $row['participant_name'],
@@ -38,7 +44,13 @@ class CertificateImport implements ToModel, WithHeadingRow
             'training_end' => $row['training_end'],
             'issue_date' => $row['issue_date'],
             'expiry_date' => $row['expiry_date'],
-            'created_by' => $row['created_by'],
+            'created_by' => $createdUser ? $createdUser->name : null,
+            'created_by_id' => $createdUser ? $createdUser->id : null,
+            'review_by' => $reviewUser ? $reviewUser->name : null,
+            'review_by_id' => $reviewUser ? $reviewUser->id : null,
+            'approval_by' => $approvalUser ? $approvalUser->name : null,
+            'approval_by_id' => $approvalUser ? $approvalUser->id : null,
+            'status' => 'Pending Review', ///Default status "Pending Review" 
         ]);
     }
 }

@@ -29,6 +29,7 @@ Route::get('/logout',[CertificateController::class,'logout']);
 
 //Logged-in user Routes
 Route::get('/dashboard', [CertificateController::class,'getDashboard'])->name('dashboard');
+Route::get('/pending-certificates', [CertificateController::class,'getPendingCertificates'])->name('pendingCertificates');
 Route::get('/deleted-certificates', [CertificateController::class,'getDeletedCertificates'])->name('deletedCertificates');
 Route::get('/add-certificate',[CertificateController::class,'addCertificate']);
 Route::post('/add-certificate',[CertificateController::class,'createCertificate'])->name('certificate.create');
@@ -36,8 +37,12 @@ Route::get('/view-certificate/{id}',[CertificateController::class,'viewCertifica
 Route::get('/edit-certificate/{id}',[CertificateController::class,'editCertificate']);
 Route::post('/update-certificate',[CertificateController::class,'updateCertificate'])->name('certificate.update');
 Route::get('/delete-certificate/{id}',[CertificateController::class,'deleteCertificate']);
+Route::get('/review-certificate/{id}', [CertificateController::class, 'reviewCertificate'])->name('certificate.review');
+Route::get('/approve-certificate/{id}', [CertificateController::class, 'approveCertificate'])->name('certificate.approve');
 Route::get('/admin-search',[CertificateController::class,'adminSearch'])->name('certificate.adminSearch');
 Route::get('/imports-exports', [CertificateController::class,'importExportView']);
 Route::get('/export', [CertificateController::class, 'export'])->name('export');
 Route::post('/import', [CertificateController::class, 'import'])->name('import');
 Route::get('/live-search', [CertificateController::class, 'liveSearch'])->name('liveSearch');
+Route::get('/live-search-pending', [CertificateController::class, 'liveSearchPending'])->name('liveSearchPending');
+Route::get('/live-search-deleted', [CertificateController::class, 'liveSearchDeleted'])->name('liveSearchDeleted');

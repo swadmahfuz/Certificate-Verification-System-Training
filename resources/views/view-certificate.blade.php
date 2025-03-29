@@ -8,6 +8,32 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A==" crossorigin="anonymous" referrerpolicy="no-referrer" />     
         <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
+        <style>
+            .btn {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 10px 15px;
+                border-radius: 8px;
+                font-size: 14px;
+                font-weight: bold;
+                transition: all 0.3s ease;
+                white-space: nowrap;
+            }
+            .btn i {
+                font-size: 16px;
+            }
+            .btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            }
+            .btn-container {
+                display: flex;
+                justify-content: center;
+                gap: 10px;
+                flex-wrap: wrap;
+            }
+        </style>
     </head>
     <body background="../images/tuv-login-background1.jpg">
         <section style="padding-top: 60px;">
@@ -15,12 +41,32 @@
                 <div class="row">
                     <div class="col-md-12 ">
                         <div class="card">
-                            <div class="card-header" ><center><h3>Detailed Certificate Information</h3></center>
+                            <div class="card-header" ><center><h3>TÜV Austria BIC CVS - Detailed Certificate Information</h3></center>
                                 <center>
-                                    <a href="../dashboard" class="btn btn-primary">Go back to Dashboard</a>
-                                    <a href="../add-certificate" class="btn btn-success">Add New Certificate</a> 
-                                    <a href="../edit-certificate/{{ $certificate->id }}" class="btn btn-warning">Edit Certificate</a>
-                                    <a href="../delete-certificate/{{ $certificate->id }}" class="btn btn-danger">Delete Certificate</a>
+                                    <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
+                                        <a href="../dashboard" class="btn btn-primary d-flex align-items-center">
+                                            <i class="fa-solid fa-arrow-left me-1"></i> Go back to Dashboard
+                                        </a>
+                                        <a href="../add-certificate" class="btn btn-success d-flex align-items-center">
+                                            <i class="fa-solid fa-plus me-1"></i> Add New Certificate
+                                        </a>
+                                        <a href="../edit-certificate/{{ $certificate->id }}" class="btn btn-warning d-flex align-items-center">
+                                            <i class="fa-solid fa-pen-to-square me-1"></i> Edit Certificate
+                                        </a>  
+                                        @if(Auth::check() && (Auth::user()->id == $certificate->review_by_id || Auth::user()->name == $certificate->review_by) && $certificate->status == 'Pending Review')
+                                            <a href="{{ route('certificate.review', $certificate->id) }}" class="btn btn-info d-flex align-items-center">
+                                                <i class="fa-solid fa-thumbs-up me-1"></i> Mark as Reviewed
+                                            </a>
+                                        @endif
+                                        @if(Auth::check() && (Auth::user()->id == $certificate->approval_by_id || Auth::user()->name == $certificate->approval_by) && $certificate->status == 'Pending Approval')
+                                            <a href="{{ route('certificate.approve', $certificate->id) }}" class="btn btn-success d-flex align-items-center">
+                                                <i class="fa-solid fa-check me-1"></i> Mark as Approved
+                                            </a>
+                                        @endif
+                                        <a href="../delete-certificate/{{ $certificate->id }}" class="btn btn-danger d-flex align-items-center">
+                                            <i class="fa-solid fa-trash me-1"></i> Delete Certificate
+                                        </a>
+                                    </div>
                                 </center> 
                             </div>
                             <div class="card-body">
@@ -31,12 +77,27 @@
                                         <td>{{ $certificate->certificate_number }}</td>
                                     </tr>
                                     <tr>
-                                        <th>Certificate Status</th>
+                                        <th>Certificate Validity</th>
                                         <td>
                                             @if (empty($certificate->expiry_date) || \Carbon\Carbon::now() <= \Carbon\Carbon::parse($certificate->expiry_date))
                                                 <span style="color: green;">Certificate Valid! ✅</span>
                                             @else
                                                 <span style="color: red;">Certificate Expired! ⚠️</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        
+                                        <th>Approval Status</th>
+                                        <td>
+                                            @if($certificate->status == 'Pending')
+                                                {{ $certificate->status }} Review ⚠️
+                                            @elseif($certificate->status == 'Reviewed')
+                                                {{ $certificate->status }}. Pending Approval ⚠️
+                                            @elseif($certificate->status == 'Approved')
+                                                {{ $certificate->status }} ✅
+                                            @else
+                                                {{ $certificate->status }}
                                             @endif
                                         </td>
                                     </tr>
@@ -89,8 +150,12 @@
                                         @endif
                                     </tr>
                                     <tr>
-                                        <th>Created by</th>
-                                        <td>{{ $certificate->created_by }}</td>
+                                        <th>Review by</th>
+                                        <td>{{ $certificate->review_by }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Approval by</th>
+                                        <td>{{ $certificate->approval_by }}</td>
                                     </tr>
                                     <tr>
                                         <th>QR Code</th>
@@ -101,6 +166,13 @@
                                         {{-- The line below uses generate qr code image --}}
                                         <td><img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ $verification_url }}"/></td>
                                     </tr>
+                                    <tr>
+                                        <th>Created by</th>
+                                        <td>{{ $certificate->created_by }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Created on</th>
+                                        <td>{{ $certificate->created_at->format('d M Y \a\t H:i:s') }}</td>
                                     <tr>
                                         <th>Last Updated by</th>
                                         <td>{{ $certificate->updated_by }}</td>

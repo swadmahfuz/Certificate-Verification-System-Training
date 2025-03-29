@@ -111,6 +111,29 @@
                                         @enderror
                                         <input type="date" name="expiry_date" class="form-control" placeholder="Enter Certificate Expiry Date" value="{{ $certificate->expiry_date }}">
                                         <br>
+                                        
+                                        <label for="review_by">Review by</label>
+                                        <select name="review_by" class="form-control">
+                                            <option value="">Select Reviewer</option>
+                                            @foreach($users as $user)
+                                                <option value="{{ $user->name }}" {{ $user->name == $certificate->review_by ? 'selected' : '' }}>
+                                                    {{ $user->name }} | {{ $user->designation }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        <br>
+
+                                        <label for="approval_by">Approval by</label>
+                                        <select name="approval_by" class="form-control">
+                                            <option value="">Select Approver</option>
+                                            @foreach($users as $user)
+                                                <option value="{{ $user->name }}" {{ $user->name == $certificate->approval_by ? 'selected' : '' }}>
+                                                    {{ $user->name }} | {{ $user->designation }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        <br>
+
                                         <center><button type="submit" class="btn btn-success">Update Certificate</button></center>
                                 </form>
                             </div>
