@@ -37,7 +37,7 @@
                 justify-content: center;
                 padding: 10px 15px;
                 border-radius: 8px;
-                font-size: 14px;
+                font-size: 10px;
                 font-weight: bold;
                 transition: all 0.3s ease;
             }
@@ -47,6 +47,9 @@
             .btn:hover {
                 transform: translateY(-2px);
                 box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            }
+            .table-striped {
+                font-size: 11px; /* Adjusts the font size of the table */
             }
         </style>
     </head>
@@ -59,7 +62,7 @@
                             <div class="card-header" style="padding-top: 20px; padding-bottom: 0px;">
                                 <h6 style="text-align: right; margin-bottom: 10px;">Logged in User: <b>{{ auth()->user()->name }} ({{ auth()->user()->designation }})</b></h6>
                                 <center><h3 style="margin-bottom: 20px;">TÜV Austria BIC - Training Certificate Verification System (CVS)</h3></center>
-                                <table style="width:42%; margin: auto;">
+                                <table style="width:80%; margin: auto;">
                                     <tr>
                                         <td>
                                             <a href="add-certificate" class="btn btn-success d-flex align-items-center">
@@ -149,7 +152,7 @@
                                                     $verification_url = $url.'?search='.$certificate->certificate_number;   ///concat server url with verification link and certificate number
                                                 @endphp
                                                 {{-- The code below uses goqr.me api to generate qr code image --}}
-                                                <td> <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ $verification_url }}"/> </td>
+                                                <td> <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data={{ $verification_url }}"/> </td>
                                                 <td>
                                                     {{-- Action buttons --}}
                                                     <a href="view-certificate/{{ $certificate->id }}" style="margin-bottom: 5px" target="_blank"><i class="fa-solid fa-circle-info" title="View Certificate Details"></i></a>
@@ -243,7 +246,7 @@
                 }
         
                 function generateQRCode(url) {
-                    return 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=' + encodeURIComponent(url);
+                    return 'https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=' + encodeURIComponent(url);
                 }
         
                 function generatePaginationLinks(data) {

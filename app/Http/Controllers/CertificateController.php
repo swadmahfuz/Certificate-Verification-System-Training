@@ -32,11 +32,12 @@ class CertificateController extends Controller
         if ($request->search == null) {
             return view('/verify-certificate');
         }
-        $certificate = Certificate::where('certificate_number','=',($request->search))->paginate(1);
+        $certificate = Certificate::where('certificate_number','=',($request->search))->where('status', 'Approved')->paginate(1);
         return view('verify-certificate',['certificates'=>$certificate]);
     }
 
-    ///Authentication functions
+
+    ///Authenticated functions
     public function addCredentials(Request $request)
     {
         $credentials = $request->only('email', 'password');

@@ -8,10 +8,11 @@
         .footer {
             display: flex;
             justify-content: space-between;
-            padding: 10px 20px;
+            padding: 10px 10px;
             background-color: #f4f4f4;
             border-top: 1px solid #ddd;
             font-family: Arial, sans-serif;
+            font-size: 11px;
         }
         .footer div {
             margin: 0 10px;
@@ -42,7 +43,7 @@
     <div class="footer">
         <div>
             <img src="{{ asset('favicon.ico') }}" alt="Favicon" style="width: 30px; height: 30px;"> 
-            {{ 'TUVAT BD Certificate Verification System v2.1.0' }}
+            {{ 'TUVAT BD Certificate Verification System v3.0.1' }}
         </div>
         <div>
             @auth
