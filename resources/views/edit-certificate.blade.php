@@ -4,145 +4,122 @@
     <meta charset="utf-8">
     <meta name="robots" content="noindex">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
     <title>Edit Certificate Details</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
+    <style>
+        body {
+            font-size: 13px;
+        }
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        .btn i {
+            font-size: 14px;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .card-header {
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        label {
+            font-weight: 600;
+        }
+    </style>
 </head>
-    <body background="../images/tuv-login-background1.jpg">
-        <section style="padding-top: 60px;">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-7 offset-md-3">
-                        <div class="card">
-                            <div class="card-header" ><center><h3>Edit Certificate Information</h3></center>
-                                <center>
-                                    <a href="../dashboard" class="btn btn-primary">Go back to Dashboard</a> 
-                                    <a href="../delete-certificate/{{ $certificate->id }}" class="btn btn-danger">Delete Certificate</a>
-                                    <h6 style="text-align: right">* Required fields</h6>
-                                </center> 
-                            </div>
-                            <div class="card-body">
-                                @if (Session::has('Edited details successflly'))
-                                    <div class="alert alert-success" role="alert">
-                                        {{ Session::get('Details_Edited') }}
-                                    </div>
-                                @endif
-                                <form action="{{ route('certificate.update') }}" method="POST">
-                                    @csrf
-                                    <div class="form-group">
-                                        <input type="hidden" name="id" value="{{ $certificate->id }}">
-                                        
-                                        <label for="certificate_number">Certificate Number*</label>
-                                        @error('certificate_number')
-                                            <span class="text-danger">{{$message}}</span> <br> 
-                                        @enderror
-                                        <input type="text" name="certificate_number" class="form-control" placeholder="Enter Certificate Number" value="{{ $certificate->certificate_number }}">
-                                        <br>
+<body background="../images/tuv-login-background1.jpg">
 
-                                        <label for="participant_name">Participant Name*</label>
-                                        @error('participant_name')
-                                            <span class="text-danger">{{$message}}</span> <br> 
-                                        @enderror
-                                        <input type="text" name="participant_name" class="form-control" placeholder="Enter Participant Name" value="{{ $certificate->participant_name }}">
-                                        <br>
-
-                                        <label for="passport_nid">NID/Passport Number*</label>
-                                        @error('passport_nid')
-                                            <span class="text-danger">{{$message}}</span> <br> 
-                                        @enderror
-                                        <input type="text" name="passport_nid" class="form-control" placeholder="Enter NID/Passport Number" value="{{ $certificate->passport_nid }}">
-                                        <br>
-
-                                        <label for="driving_license">Driving License</label>
-                                        <input type="text" name="driving_license" class="form-control" placeholder="Enter Driving License Number (if available)" value="{{ $certificate->driving_license }}">
-                                        <br>
-
-                                        <label for="company">Company</label>
-                                        <input type="text" name="company" class="form-control" placeholder="Enter Company Name" value="{{ $certificate->company }}">
-                                        <br>
-
-                                        <label for="training_name">Training Name*</label>
-                                        @error('training_name')
-                                            <span class="text-danger">{{$message}}</span> <br> 
-                                        @enderror
-                                        <input type="text" name="training_name" class="form-control" placeholder="Enter Training Name" value="{{ $certificate->training_name }}">
-                                        <br>
-                                        
-                                        <label for="location">Training Location*</label>
-                                        @error('location')
-                                            <span class="text-danger">{{$message}}</span> <br> 
-                                        @enderror
-                                        <input type="text" name="location" class="form-control" placeholder="Enter Training Location" value="{{ $certificate->location }}">
-                                        <br>
-
-
-                                        <label for="trainer">Trainer Name*</label>
-                                        @error('trainer')
-                                            <span class="text-danger">{{$message}}</span> <br> 
-                                        @enderror
-                                        <input type="text" name="trainer" class="form-control" placeholder="Enter Trainer Name" value="{{ $certificate->trainer }}">
-                                        <br>
-
-                                        <label for="training_date">Training Start Date*</label>
-                                        @error('training_date')
-                                            <span class="text-danger">{{$message}}</span> <br> 
-                                        @enderror
-                                        <input type="date" name="training_date" class="form-control" placeholder="Enter Training Date" value="{{ $certificate->training_date }}">
-                                        <br>
-
-                                        <label for="training_end">Training End Date*</label>
-                                        @error('training_end')
-                                            <span class="text-danger">{{$message}}</span> <br> 
-                                        @enderror
-                                        <input type="date" name="training_end" class="form-control" placeholder="Enter Training End Date" value="{{ $certificate->training_end }}">
-                                        <br>
-
-                                        <label for="issue_date">Issue Date*</label>
-                                        @error('issue_date')
-                                            <span class="text-danger">{{$message}}</span> <br> 
-                                        @enderror
-                                        <input type="date" name="issue_date" class="form-control" placeholder="Enter Certificate Issue Date" value="{{ $certificate->issue_date }}">
-                                        <br>
-
-                                        <label for="expiry_date">Expiry Date*</label>
-                                        @error('expiry_date')
-                                            <span class="text-danger">{{$message}}</span> <br> 
-                                        @enderror
-                                        <input type="date" name="expiry_date" class="form-control" placeholder="Enter Certificate Expiry Date" value="{{ $certificate->expiry_date }}">
-                                        <br>
-                                        
-                                        <label for="review_by">Review by</label>
-                                        <select name="review_by" class="form-control">
-                                            <option value="">Select Reviewer</option>
-                                            @foreach($users as $user)
-                                                <option value="{{ $user->name }}" {{ $user->name == $certificate->review_by ? 'selected' : '' }}>
-                                                    {{ $user->name }} | {{ $user->designation }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        <br>
-
-                                        <label for="approval_by">Approval by</label>
-                                        <select name="approval_by" class="form-control">
-                                            <option value="">Select Approver</option>
-                                            @foreach($users as $user)
-                                                <option value="{{ $user->name }}" {{ $user->name == $certificate->approval_by ? 'selected' : '' }}>
-                                                    {{ $user->name }} | {{ $user->designation }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        <br>
-
-                                        <center><button type="submit" class="btn btn-success">Update Certificate</button></center>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
+<section class="pt-5">
+    <div class="container">
+        <div class="card">
+            <div class="card-header text-center">
+                <h3>Edit Certificate Information</h3>
+                <div class="d-flex justify-content-center gap-2 flex-wrap mt-3">
+                    <a href="../dashboard" class="btn btn-primary"><i class="fa-solid fa-arrow-left me-1"></i> Go back to Dashboard</a>
+                    <a href="../delete-certificate/{{ $certificate->id }}" class="btn btn-danger"><i class="fa-solid fa-trash me-1"></i> Delete Certificate</a>
                 </div>
+                <p class="text-end mt-2 mb-0" style="font-style: italic;">* Required fields</p>
             </div>
-        </section>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
-    </body>
-    <footer> @include('layouts.footer')  <!-- Including the footer Blade file --> </footer>
+            <div class="card-body">
+                @if(session('success'))
+                    <div class="alert alert-success">{{ session('success') }}</div>
+                @endif
+
+                <form action="{{ route('certificate.update') }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="id" value="{{ $certificate->id }}">
+
+                    @foreach([
+                        'certificate_number' => 'Certificate Number',
+                        'participant_name' => 'Participant Name',
+                        'passport_nid' => 'NID/Passport Number',
+                        'driving_license' => 'Driving License',
+                        'company' => 'Company',
+                        'training_name' => 'Training Name',
+                        'location' => 'Training Location',
+                        'trainer' => 'Trainer Name',
+                        'training_date' => 'Training Start Date',
+                        'training_end' => 'Training End Date',
+                        'issue_date' => 'Issue Date',
+                        'expiry_date' => 'Expiry Date'
+                    ] as $field => $label)
+                        <div class="mb-3">
+                            <label for="{{ $field }}">{{ $label }}@if(in_array($field, ['certificate_number', 'participant_name', 'passport_nid', 'training_name', 'location', 'trainer', 'training_date', 'training_end', 'issue_date'])) * @endif</label>
+                            @error($field)
+                                <div class="text-danger">{{ $message }}</div>
+                            @enderror
+                            <input type="{{ in_array($field, ['training_date', 'training_end', 'issue_date', 'expiry_date']) ? 'date' : 'text' }}"
+                                   name="{{ $field }}" class="form-control"
+                                   value="{{ old($field, $certificate->$field) }}"
+                                   placeholder="Enter {{ $label }}">
+                        </div>
+                    @endforeach
+
+                    <div class="mb-3">
+                        <label for="review_by">Review by</label>
+                        <select name="review_by" class="form-control">
+                            <option value="">Select Reviewer</option>
+                            @foreach($users as $user)
+                                <option value="{{ $user->name }}" {{ $user->name == $certificate->review_by ? 'selected' : '' }}>
+                                    {{ $user->name }} | {{ $user->designation }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="approval_by">Approval by</label>
+                        <select name="approval_by" class="form-control">
+                            <option value="">Select Approver</option>
+                            @foreach($users as $user)
+                                <option value="{{ $user->name }}" {{ $user->name == $certificate->approval_by ? 'selected' : '' }}>
+                                    {{ $user->name }} | {{ $user->designation }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-success"><i class="fa-solid fa-check me-1"></i> Update Certificate</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+@include('layouts.footer')
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
 </html>

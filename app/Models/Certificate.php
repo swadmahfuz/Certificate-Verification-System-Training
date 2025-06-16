@@ -12,4 +12,5 @@ class Certificate extends Model
     use SoftDeletes;
     protected $table = "certificates";
     protected $guarded = [];  
+    protected $dates = ['deleted_at'];
 }

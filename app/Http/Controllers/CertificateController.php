@@ -335,17 +335,27 @@ class CertificateController extends Controller
     {
         if (Auth::check())
         {
-            $certificate = Certificate::find($id);
-            $certificate_number = $certificate->certificate_number . " (Deleted)";
+            $certificate = Certificate::findOrFail($id);
+
+            // Append "(Deleted)" to the certificate number to avoid duplicates
+            $certificate->certificate_number .= " (Deleted)";
+
+            // Update status and deleted_by fields
             $certificate->status = "Deleted";
-            $deleted_by = Auth::user()->name;
-            DB::table('certificates')->where('id', $id)->update(array('certificate_number' => $certificate_number)); ///Concat "(Deleted)" with cert number to prevent duplicate certificate number error. 
-            DB::table('certificates')->where('id', $id)->update(array('deleted_by' => $deleted_by));    ///Add user's name to deleted by column.
-            Certificate::where('id',$id)->delete();
-            return back()->with('Certificate_Deleted','Certificate details has been deleted successfully');
+            $certificate->deleted_by = Auth::user()->name;
+
+            // Save the updates before soft-deleting
+            $certificate->save();
+
+            // Soft delete the certificate
+            $certificate->delete();
+
+            return back()->with('Certificate_Deleted', 'Certificate details have been deleted successfully');
         }
-        return redirect ('/admin');
+
+        return redirect('/admin');
     }
+
 
     ///Live-Search in Dashboard
     public function liveSearch(Request $request)
