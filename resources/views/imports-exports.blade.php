@@ -54,7 +54,7 @@
     <div class="card bg-light mt-3">
         <div class="card-header" style="padding-top: 20px; padding-bottom: 20px;">
             <center>
-                <h3 style="padding-bottom: 5px">TÜV Austria BIC CVS - Import/Export Certificate Data</h3>
+                <h3 style="padding-bottom: 5px">TÜV Austria BIC CVS | Import/Export Certificate Data</h3>
                 <table style="width:64%; margin: auto;">
                     <tr>
                         <td>

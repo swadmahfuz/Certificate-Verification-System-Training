@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="robots" content="noindex">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Edit Certificate Details</title>
+    <title>TÜV Austria BIC CVS | Edit Certificate Details</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
     <style>

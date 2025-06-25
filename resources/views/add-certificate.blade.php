@@ -41,7 +41,7 @@
     <div class="container">
         <div class="card">
             <div class="card-header text-center">
-                <h3>TÜV Austria BIC CVS - Add New Certificate</h3>
+                <h3>TÜV Austria BIC CVS | Add New Certificate</h3>
                 <div class="mt-3 d-flex justify-content-center">
                     <a href="./dashboard" class="btn btn-primary me-2"><i class="fa-solid fa-arrow-left me-1"></i> Go back to Dashboard</a>
                 </div>

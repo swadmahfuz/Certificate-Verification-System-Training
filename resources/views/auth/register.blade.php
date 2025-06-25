@@ -26,9 +26,22 @@
                             </div>
                         </div>
 
+                        {{-- Department --}}
+                        <div class="row mb-3">
+                            <label for="department" class="col-md-4 col-form-label text-md-end">{{ __('Department') }}</label>
+                            <div class="col-md-6">
+                                <input id="department" type="text"
+                                    class="form-control @error('department') is-invalid @enderror"
+                                    name="department" value="{{ old('department') }}" required autocomplete="organization-title">
+                                @error('department')
+                                    <span class="invalid-feedback d-block" role="alert"><strong>{{ $message }}</strong></span>
+                                @enderror
+                            </div>
+                        </div>
+                        
                         {{-- Designation --}}
                         <div class="row mb-3">
-                            <label for="designation" class="col-md-4 col-form-label text-md-end">{{ __('Designation & Department') }}</label>
+                            <label for="designation" class="col-md-4 col-form-label text-md-end">{{ __('Designation') }}</label>
                             <div class="col-md-6">
                                 <input id="designation" type="text"
                                     class="form-control @error('designation') is-invalid @enderror"

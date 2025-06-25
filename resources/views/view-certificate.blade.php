@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="robots" content="noindex">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>View Certificate Information</title>
+    <title>TÜV Austria BIC CVS | View Certificate Information</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
     <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
@@ -74,6 +74,10 @@
                             <td>
                                 @if ($certificate->status === 'Deleted')
                                     <span class="text-danger">This certificate has been deleted ❌</span>
+                                @elseif ($certificate->status === 'Pending Review')
+                                    <span class="text-warning">Certificate Pending Review ⚠️</span>
+                                @elseif ($certificate->status === 'Pending Approval')
+                                    <span class="text-warning">Certificate Pending Approval ⚠️</span>
                                 @elseif (empty($certificate->expiry_date) || \Carbon\Carbon::now() <= \Carbon\Carbon::parse($certificate->expiry_date))
                                     <span class="text-success">Certificate Valid! ✅</span>
                                 @else

@@ -46,3 +46,4 @@ Route::post('/import', [CertificateController::class, 'import'])->name('import')
 Route::get('/live-search', [CertificateController::class, 'liveSearch'])->name('liveSearch');
 Route::get('/live-search-pending', [CertificateController::class, 'liveSearchPending'])->name('liveSearchPending');
 Route::get('/live-search-deleted', [CertificateController::class, 'liveSearchDeleted'])->name('liveSearchDeleted');
+Route::get('/all-users', [CertificateController::class, 'showAllUsers'])->name('allUsers');

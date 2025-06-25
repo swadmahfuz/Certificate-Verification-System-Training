@@ -18,7 +18,7 @@ use DB;
 | Developed by: Swad Ahmed Mahfuz (Head of Divison - Business Assurance & Training, Bangladesh)
 | Contact: swad.mahfuz@gmail.com, +1-725-867-7718, +88 01733 023 008
 | Project Start: 12 October 2022
-| Latest Stable Release: v3.0.0 -  30 March 2025
+| Latest Stable Release: v3.0.1 -  25 June 2025
 |--------------------------------------------------------------------------
 */
 
@@ -60,7 +60,7 @@ class CertificateController extends Controller
             return redirect('/admin');
         }
 
-        return redirect('/admin');;
+        return redirect()->route('certificate.search');
     }
     
     
@@ -73,8 +73,19 @@ class CertificateController extends Controller
             return view('dashboard',compact('certificates'));
         }
 
-        return redirect('/admin');
+        return redirect()->route('certificate.search');
     }
+
+    public function showAllUsers()
+    {
+        if (Auth::check())
+        {
+            $users = \App\Models\User::all();
+            return view('all-users', compact('users'));
+        }
+        return redirect()->route('certificate.search');
+    }
+
 
     public function getDeletedCertificates()
     {
@@ -84,7 +95,7 @@ class CertificateController extends Controller
             return view('deleted-certificates',compact('certificates'));
         }
 
-        return redirect('/admin');
+        return redirect()->route('certificate.search');
     }
     
     public function getPendingCertificates()
@@ -121,7 +132,7 @@ class CertificateController extends Controller
             return view('pending-certificates', compact('certificates'));
         }
     
-        return redirect('/admin');
+        return redirect()->route('certificate.search');
     }
 
     public function addCertificate()
@@ -135,7 +146,7 @@ class CertificateController extends Controller
         }
         else
         {
-            return redirect('/admin');
+            return redirect()->route('certificate.search');
         }
     }
 
@@ -197,7 +208,7 @@ class CertificateController extends Controller
             $certificate->save();
             return redirect('/view-certificate/' . $certificate->id);
         }
-        return redirect ('/admin');
+        return redirect()->route('certificate.search');
     }
 
     public function viewCertificate($id)
@@ -207,7 +218,7 @@ class CertificateController extends Controller
             $certificate = Certificate::withTrashed()->find($id);   ///Ensure deleted certificate info can also be viewed by using withTrashed method.
             return view('view-certificate',compact('certificate'));
         }
-        return redirect ('/admin');
+        return redirect()->route('certificate.search');
     }
 
     public function editCertificate($id)
@@ -218,7 +229,7 @@ class CertificateController extends Controller
             $certificate = Certificate::find($id);
             return view('edit-certificate',compact('certificate', 'users'));
         }
-        return redirect ('/admin');
+        return redirect()->route('certificate.search');
     }
 
     public function updateCertificate(Request $request)
@@ -276,7 +287,7 @@ class CertificateController extends Controller
             $certificate->save();
             return redirect('/view-certificate/' . $certificate->id);
         }
-        return redirect ('/admin');
+        return redirect()->route('certificate.search');
     }
 
     // Function to review a certificate
@@ -300,7 +311,7 @@ class CertificateController extends Controller
             return redirect('/view-certificate/' . $certificate->id);
         }
         
-        return redirect('/admin');
+        return redirect()->route('certificate.search');
     }
 
     // Function to approve a certificate
@@ -327,8 +338,8 @@ class CertificateController extends Controller
             
             return back()->with('success', 'Certificate approved successfully.');
         }
-        
-        return redirect('/admin');
+
+        return redirect()->route('certificate.search');
     }
 
     public function deleteCertificate($id)
@@ -353,7 +364,7 @@ class CertificateController extends Controller
             return back()->with('Certificate_Deleted', 'Certificate details have been deleted successfully');
         }
 
-        return redirect('/admin');
+        return redirect()->route('certificate.search');
     }
 
 
@@ -388,7 +399,7 @@ class CertificateController extends Controller
     
             return response()->json(['data' => $result]);
         } else {
-            return redirect('/admin');
+            return redirect()->route('certificate.search');
         }
     }
 
@@ -423,7 +434,7 @@ class CertificateController extends Controller
     
             return response()->json(['data' => $result]);
         } else {
-            return redirect('/admin');
+            return redirect()->route('certificate.search');
         }
     }
 
@@ -493,7 +504,7 @@ class CertificateController extends Controller
     
             return response()->json(['data' => $result]);
         } else {
-            return redirect('/admin');
+            return redirect()->route('certificate.search');
         }
     }
         
@@ -504,7 +515,7 @@ class CertificateController extends Controller
         {
             return view('imports-exports');
         }
-       return redirect('/admin');
+       return redirect()->route('certificate.search');
     }
 
     public function export() 
@@ -515,7 +526,7 @@ class CertificateController extends Controller
             $fileName = 'TUV Austria BIC Certificate DB on '.$today.'.xlsx';
             return Excel::download(new CertificateExport, $fileName);
         }
-        return redirect('/admin');
+        return redirect()->route('certificate.search');
     }
 
     public function import()
@@ -525,7 +536,7 @@ class CertificateController extends Controller
         Excel::import(new CertificateImport,request()->file('file'));
         return redirect ('/dashboard');
         }
-        return redirect ('/admin');
+        return redirect()->route('certificate.search');
     }
 
 }

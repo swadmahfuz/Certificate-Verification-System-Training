@@ -28,6 +28,15 @@ class CreateCertificatesTable extends Migration
             $table->string('issue_date');
             $table->string('expiry_date')->nullable();
             $table->string('created_by')->default('Bulk uploaded');
+            ///Only use below lines while creating the table for the first time. ///
+            // $table->string('created_by_id')->nullable();
+            // $table->string('review_by')->nullable()->after('created_by_id'); ///User name in DB is collected in case user name is changed
+            // $table->string('review_by_id')->nullable()->after('review_by');     ///User id in DB is collected in case user name is changed
+            // $table->string('approval_by')->nullable()->after('review_by_id');
+            // $table->string('approval_by_id')->nullable()->after('approval_by'); ///User id in DB is collected in case user name is changed
+            // $table->string('status')->default('Approved')->after('approval_by_id'); ///Default status "approved" while migration as previously approved certificates will be migrated. status flow: Pending Review-> Pending Approval ->Approved
+            // $table->timestamp('reviewed_at')->nullable()->after('created_at');
+            // $table->timestamp('approved_at')->nullable()->after('reviewed_at');
             $table->string('updated_by')->nullable();
             $table->string('deleted_by')->nullable();
             $table->timestamps();

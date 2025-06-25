@@ -33,7 +33,7 @@ class AddReviewedAndApprovedToCertificatesTable extends Migration
      */
     public function down()
     {
-        Schema::table('certificates_training', function (Blueprint $table) {
+        Schema::table('certificates', function (Blueprint $table) {
             $table->dropColumn(['review_by', 'review_by_id', 'approval_by', 'approval_by_id', 'status', 'reviewed_at', 'approved_at']);
         });
     }
