@@ -358,7 +358,7 @@ class CertificateController extends Controller
                       ->orWhere('review_by', $user->name);
             })
             ->update([
-                'status' => 'Reviewed',
+                'status' => 'Pending Approval',
                 'updated_by' => $user->name,
                 'updated_at' => Carbon::now()
             ]);
