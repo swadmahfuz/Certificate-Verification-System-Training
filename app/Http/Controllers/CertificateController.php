@@ -360,6 +360,7 @@ class CertificateController extends Controller
             ->update([
                 'status' => 'Pending Approval',
                 'updated_by' => $user->name,
+                'reviewed_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ]);
     
@@ -380,6 +381,7 @@ class CertificateController extends Controller
             ->update([
                 'status' => 'Approved',
                 'updated_by' => $user->name,
+                'approved_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ]);
     
