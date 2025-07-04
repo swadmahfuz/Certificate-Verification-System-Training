@@ -39,6 +39,8 @@ Route::post('/update-certificate',[CertificateController::class,'updateCertifica
 Route::get('/delete-certificate/{id}',[CertificateController::class,'deleteCertificate']);
 Route::get('/review-certificate/{id}', [CertificateController::class, 'reviewCertificate'])->name('certificate.review');
 Route::get('/approve-certificate/{id}', [CertificateController::class, 'approveCertificate'])->name('certificate.approve');
+Route::get('/bulk-review', [CertificateController::class, 'bulkReview'])->name('bulkReview');
+Route::get('/bulk-approve', [CertificateController::class, 'bulkApprove'])->name('bulkApprove');
 Route::get('/admin-search',[CertificateController::class,'adminSearch'])->name('certificate.adminSearch');
 Route::get('/imports-exports', [CertificateController::class,'importExportView']);
 Route::get('/export', [CertificateController::class, 'export'])->name('export');

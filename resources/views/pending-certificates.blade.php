@@ -55,9 +55,21 @@
                                 <td><a href="add-certificate" class="btn btn-success"><i class="fa-solid fa-plus me-1"></i> Add New Certificate</a></td>
                                 <td><a href="dashboard" class="btn btn-primary"><i class="fa-solid fa-arrow-left me-1"></i> Dashboard</a></td>
                                 <td><a href="imports-exports" class="btn btn-warning"><i class="fa-solid fa-file-import me-1"></i> Import/Export</a></td>
+                                <td><a href="all-users" class="btn btn-secondary"><i class="fa-solid fa-users me-1"></i> View All Users</a></td>
                                 <td><a href="logout" class="btn btn-danger"><i class="fa-solid fa-right-from-bracket me-1"></i> Log Out</a></td>
                             </tr>
                         </table>
+
+                        <!-- New Action Buttons -->
+                        <div class="d-flex justify-content-center gap-3 mb-3 flex-wrap">
+                            <a href="{{ url('/bulk-review') }}" class="btn btn-info">
+                                <i class="fa-solid fa-thumbs-up me-1"></i> Mark All as Reviewed
+                            </a>
+                            <a href="{{ url('/bulk-approve') }}" class="btn btn-success">
+                                <i class="fa-solid fa-check-double me-1"></i> Mark All as Approved
+                            </a>
+                        </div>
+
                         <table class="mx-auto mb-2" style="width: 35%;">
                             <tr><td><input type="text" class="form-control search-input" placeholder="Search Certificates"/></td></tr>
                         </table>

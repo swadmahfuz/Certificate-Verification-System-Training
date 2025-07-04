@@ -76,16 +76,20 @@ class CertificateController extends Controller
         return redirect()->route('certificate.search');
     }
 
+
     public function showAllUsers()
     {
-        if (Auth::check())
-        {
-            $users = \App\Models\User::all();
+        if (Auth::check()) {
+            $users = \App\Models\User::withCount([
+                'certificatesCreated',
+                'certificatesReviewed',
+                'certificatesApproved',
+            ])->get();
+
             return view('all-users', compact('users'));
         }
         return redirect()->route('certificate.search');
     }
-
 
     public function getDeletedCertificates()
     {
@@ -340,6 +344,46 @@ class CertificateController extends Controller
         }
 
         return redirect()->route('certificate.search');
+    }
+
+    public function bulkReview()
+    {
+        $user = Auth::user();
+    
+        // Mark all 'Pending Review' certificates assigned to the logged-in reviewer
+        $updated = DB::table('certificates')
+            ->where('status', 'Pending Review')
+            ->where(function ($query) use ($user) {
+                $query->where('review_by_id', $user->id)
+                      ->orWhere('review_by', $user->name);
+            })
+            ->update([
+                'status' => 'Reviewed',
+                'updated_by' => $user->name,
+                'updated_at' => Carbon::now()
+            ]);
+    
+        return redirect()->back()->with('success', "$updated certificate(s) marked as Reviewed.");
+    }
+    
+    public function bulkApprove()
+    {
+        $user = Auth::user();
+    
+        // Mark all 'Pending Approval' certificates assigned to the logged-in approver
+        $updated = DB::table('certificates')
+            ->where('status', 'Pending Approval')
+            ->where(function ($query) use ($user) {
+                $query->where('approval_by_id', $user->id)
+                      ->orWhere('approval_by', $user->name);
+            })
+            ->update([
+                'status' => 'Approved',
+                'updated_by' => $user->name,
+                'updated_at' => Carbon::now()
+            ]);
+    
+        return redirect()->back()->with('success', "$updated certificate(s) marked as Approved.");
     }
 
     public function deleteCertificate($id)

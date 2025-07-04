@@ -43,4 +43,28 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    /**
+     * Relationship: Certificates Created by the User
+     */
+    public function certificatesCreated()
+    {
+        return $this->hasMany(\App\Models\Certificate::class, 'created_by_id');
+    }
+
+    /**
+     * Relationship: Certificates Reviewed by the User
+     */
+    public function certificatesReviewed()
+    {
+        return $this->hasMany(\App\Models\Certificate::class, 'review_by_id');
+    }
+
+    /**
+     * Relationship: Certificates Approved by the User
+     */
+    public function certificatesApproved()
+    {
+        return $this->hasMany(\App\Models\Certificate::class, 'approval_by_id');
+    }
 }
