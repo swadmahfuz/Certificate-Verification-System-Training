@@ -18,7 +18,7 @@ use DB;
 | Developed by: Swad Ahmed Mahfuz (Head of Divison - Business Assurance & Training, Bangladesh)
 | Contact: swad.mahfuz@gmail.com, +1-725-867-7718, +88 01733 023 008
 | Project Start: 12 October 2022
-| Latest Stable Release: v3.0.1 -  25 June 2025
+| Latest Stable Release: v3.1.0 -  05 July 2025
 |--------------------------------------------------------------------------
 */
 
@@ -413,6 +413,64 @@ class CertificateController extends Controller
         return redirect()->route('certificate.search');
     }
 
+    public function uploadPdf(Request $request, $id)
+    {
+        $request->validate([
+            'certificate_pdf' => 'required|mimes:pdf|max:20480', // max 20MB
+        ]);
+
+        $certificate = Certificate::findOrFail($id);
+
+        // Ensure only creator, reviewer, or approver can upload
+        $user = Auth::user();
+        $isAuthorized = (
+            $user->id == $certificate->review_by_id ||
+            $user->id == $certificate->approval_by_id ||
+            $user->id == $certificate->created_by_id ||
+            $user->name == $certificate->review_by ||
+            $user->name == $certificate->approval_by ||
+            $user->name == $certificate->created_by
+        );
+
+        if (!$isAuthorized) {
+            return back()->with('error', 'You are not authorized to upload this certificate.');
+        }
+
+        // Create directory if not exists
+        $destinationPath = base_path('downloads/Certificate PDFs');     ///Saved in root->downloads/pdf certificates
+        if (!file_exists($destinationPath)) {
+            mkdir($destinationPath, 0755, true);
+        }
+
+        // Move file to desired location
+        $pdfFile = $request->file('certificate_pdf');
+        $timestamp = Carbon::now()->format('YmdHi');
+        $fileName = 'TUVAT Training Cert - ' . $certificate->participant_name . ' ' . $timestamp . '.' . $pdfFile->getClientOriginalExtension();
+        //$fileName = 'TUVAT Training Cert - ' . $certificate->participant_name . ' ' . time() . '.' . $pdfFile->getClientOriginalExtension();
+        $pdfFile->move($destinationPath, $fileName);
+
+        // Update certificate record
+        $certificate->certificate_pdf = $fileName;
+        $certificate->pdf_uploaded_by = $user->name;
+        $certificate->pdf_uploaded_by_id = $user->id;
+        $certificate->pdf_uploaded_at = now();
+        $certificate->save();
+
+        return back()->with('success', 'Certificate PDF uploaded successfully.');
+    }
+
+    public function downloadPdf($id)
+    {
+        $certificate = Certificate::findOrFail($id);
+        
+        $filePath = base_path('downloads/Certificate PDFs/' . $certificate->certificate_pdf); // Fixed path
+
+        if (!file_exists($filePath)) {
+            return back()->with('error', 'PDF file not found.');
+        }
+
+        return response()->download($filePath, $certificate->certificate_pdf);
+    }
 
     ///Live-Search in Dashboard
     public function liveSearch(Request $request)

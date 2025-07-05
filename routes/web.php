@@ -49,3 +49,5 @@ Route::get('/live-search', [CertificateController::class, 'liveSearch'])->name('
 Route::get('/live-search-pending', [CertificateController::class, 'liveSearchPending'])->name('liveSearchPending');
 Route::get('/live-search-deleted', [CertificateController::class, 'liveSearchDeleted'])->name('liveSearchDeleted');
 Route::get('/all-users', [CertificateController::class, 'showAllUsers'])->name('allUsers');
+Route::post('/upload-pdf/{id}', [CertificateController::class, 'uploadPdf'])->name('certificate.uploadPdf');
+Route::get('/download-pdf/{id}', [CertificateController::class, 'downloadPdf'])->name('certificate.downloadPdf');

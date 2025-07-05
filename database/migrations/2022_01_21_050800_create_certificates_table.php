@@ -28,19 +28,27 @@ class CreateCertificatesTable extends Migration
             $table->string('issue_date');
             $table->string('expiry_date')->nullable();
             $table->string('created_by')->default('Bulk uploaded');
-            ///Only use below lines while creating the table for the first time. ///
+
+            // 👉 Un-comment the following lines ONLY when setting up a fresh database:
             // $table->string('created_by_id')->nullable();
-            // $table->string('review_by')->nullable()->after('created_by_id'); ///User name in DB is collected in case user name is changed
-            // $table->string('review_by_id')->nullable()->after('review_by');     ///User id in DB is collected in case user name is changed
-            // $table->string('approval_by')->nullable()->after('review_by_id');
-            // $table->string('approval_by_id')->nullable()->after('approval_by'); ///User id in DB is collected in case user name is changed
-            // $table->string('status')->default('Approved')->after('approval_by_id'); ///Default status "approved" while migration as previously approved certificates will be migrated. status flow: Pending Review-> Pending Approval ->Approved
-            // $table->timestamp('reviewed_at')->nullable()->after('created_at');
-            // $table->timestamp('approved_at')->nullable()->after('reviewed_at');
+            // $table->string('review_by')->nullable(); /// User name preserved even if account name changes
+            // $table->string('review_by_id')->nullable(); /// User ID preserved
+            // $table->string('approval_by')->nullable();
+            // $table->string('approval_by_id')->nullable();
+            // $table->string('status')->default('Approved'); /// Default for migrated data
             $table->string('updated_by')->nullable();
             $table->string('deleted_by')->nullable();
             $table->timestamps();
-            $table->softDeletes(); ///create 'deleted at' column
+            // $table->timestamp('reviewed_at')->nullable()->after('created_at');
+            // $table->timestamp('approved_at')->nullable()->after('reviewed_at');
+
+            // --- PDF Upload ---
+            // $table->string('certificate_pdf')->nullable(); /// File path of uploaded PDF
+            // $table->string('pdf_uploaded_by')->nullable(); /// Name of user who uploaded PDF
+            // $table->string('pdf_uploaded_by_id')->nullable(); /// ID of user who uploaded PDF
+            // $table->timestamp('pdf_uploaded_at')->nullable(); /// Timestamp of PDF upload
+
+            $table->softDeletes(); // Creates 'deleted_at' column
         });
     }
 

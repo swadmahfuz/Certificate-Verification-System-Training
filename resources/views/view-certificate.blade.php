@@ -54,6 +54,11 @@
                     @if($certificate->status !== 'Deleted')
                         <a href="../add-certificate" class="btn btn-success"><i class="fa-solid fa-plus me-1"></i> Add New Certificate</a>
                         <a href="../edit-certificate/{{ $certificate->id }}" class="btn btn-warning"><i class="fa-solid fa-pen-to-square me-1"></i> Edit Certificate</a>
+                        @if($certificate->certificate_pdf)
+                            <a href="{{ route('certificate.downloadPdf', $certificate->id) }}" target="_blank" class="btn btn-secondary">
+                                <i class="fa-solid fa-file-pdf me-1"></i> Download Certificate PDF
+                            </a>
+                        @endif
                         @if(Auth::check() && (Auth::user()->id == $certificate->review_by_id || Auth::user()->name == $certificate->review_by) && $certificate->status == 'Pending Review')
                             <a href="{{ route('certificate.review', $certificate->id) }}" class="btn btn-info"><i class="fa-solid fa-thumbs-up me-1"></i> Mark as Reviewed</a>
                         @endif
@@ -63,6 +68,32 @@
                         <a href="../delete-certificate/{{ $certificate->id }}" class="btn btn-danger"><i class="fa-solid fa-trash me-1"></i> Delete Certificate</a>
                     @endif
                 </div>
+
+                {{-- PDF Upload Form --}}
+                @if(Auth::check() &&
+                    (
+                        Auth::user()->id == $certificate->created_by_id || Auth::user()->name == $certificate->created_by ||
+                        Auth::user()->id == $certificate->review_by_id || Auth::user()->name == $certificate->review_by ||
+                        Auth::user()->id == $certificate->approval_by_id || Auth::user()->name == $certificate->approval_by
+                    )
+                )
+                    <form action="{{ route('certificate.uploadPdf', $certificate->id) }}" method="POST" enctype="multipart/form-data" class="mt-3">
+                        @csrf
+                        <div class="input-group justify-content-center" style="max-width: 600px; margin: 0 auto;">
+                            <input type="file" name="certificate_pdf" class="form-control" accept="application/pdf" required>
+                            <button class="btn btn-primary" type="submit">
+                                <i class="fa-solid fa-upload me-1"></i>
+                                {{ $certificate->certificate_pdf ? 'Re-upload Certificate' : 'Upload Certificate' }}
+                            </button>
+                        </div>
+                    </form>
+                @endif
+
+                @if($certificate->certificate_pdf)
+                    <div class="mt-2 text-muted small">
+                        Last Uploaded by: <strong>{{ $certificate->pdf_uploaded_by }}</strong> on {{ \Carbon\Carbon::parse($certificate->pdf_uploaded_at)->format('d M Y \a\t H:i') }}
+                    </div>
+                @endif
             </div>
 
             <div class="card-body table-responsive">
@@ -116,6 +147,35 @@
                                     {{ \Carbon\Carbon::parse($certificate->expiry_date)->format('d M Y') }}
                                 @else
                                     No Expiry Date
+                                @endif
+                            </td>
+                        </tr>
+                        <tr><th>Certificate PDF File</th>
+                            <td>
+                                @if($certificate->certificate_pdf)
+                                <a href="{{ route('certificate.downloadPdf', $certificate->id) }}" target="_blank">
+                                    <strong>{{ $certificate->certificate_pdf }}</strong><br>
+                                </a>
+                                @else
+                                    <span class="text-danger">No certificate PDF uploaded yet ❌</span>
+                                @endif
+                            </td>
+                        </tr>
+                        <tr><th>PDF Uploaded by</th>
+                            <td>
+                                @if($certificate->certificate_pdf)
+                                    {{ $certificate->pdf_uploaded_by }}
+                                @else
+                                    <span class="text-danger">No certificate PDF uploaded yet ❌</span>
+                                @endif
+                            </td>
+                        </tr>
+                        <tr><th>Certificate Uploaded at</th>
+                            <td>
+                                @if($certificate->certificate_pdf)
+                                    {{ \Carbon\Carbon::parse($certificate->pdf_uploaded_at)->format('d M Y \a\t H:i:s') }}
+                                @else
+                                    <span class="text-danger">No certificate PDF uploaded yet ❌</span>
                                 @endif
                             </td>
                         </tr>

@@ -96,6 +96,19 @@
                                 </td>
                             </tr>
                         </table>
+
+                        @if ($certificate->certificate_pdf)
+                            <div class="text-center mt-3 mb-4">
+                                <a href="{{ url('downloads/Certificate PDFs/' . $certificate->certificate_pdf) }}" class="btn btn-secondary" target="_blank">
+                                    <i class="fa-solid fa-file-pdf me-1"></i> Download Certificate
+                                </a>
+                            </div>
+                        @else
+                            <div class="alert alert-warning text-center">
+                                Certificate is not available for download.
+                            </div>
+                        @endif
+
                     </div>
                 @endforeach
             </div>
