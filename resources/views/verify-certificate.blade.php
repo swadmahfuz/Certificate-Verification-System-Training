@@ -99,8 +99,8 @@
 
                         @if ($certificate->certificate_pdf)
                             <div class="text-center mt-3 mb-4">
-                                <a href="{{ url('downloads/Certificate PDFs/' . $certificate->certificate_pdf) }}" class="btn btn-secondary" target="_blank">
-                                    <i class="fa-solid fa-file-pdf me-1"></i> Download Certificate
+                                <a href="{{ route('certificate.downloadPdf', $certificate->id) }}" class="btn btn-secondary" target="_blank">
+                                    <i class="fa-solid fa-file-pdf me-1"></i> Download Certificate PDF
                                 </a>
                             </div>
                         @else

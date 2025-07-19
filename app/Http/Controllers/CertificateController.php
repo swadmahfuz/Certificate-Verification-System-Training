@@ -420,7 +420,7 @@ class CertificateController extends Controller
         ]);
 
         $certificate = Certificate::findOrFail($id);
-
+        
         // Ensure only creator, reviewer, or approver can upload
         $user = Auth::user();
         $isAuthorized = (
@@ -436,20 +436,18 @@ class CertificateController extends Controller
             return back()->with('error', 'You are not authorized to upload this certificate.');
         }
 
+        $destinationPath = public_path('Certificate PDFs'); // Now inside public
         // Create directory if not exists
-        $destinationPath = base_path('downloads/Certificate PDFs');     ///Saved in root->downloads/pdf certificates
         if (!file_exists($destinationPath)) {
             mkdir($destinationPath, 0755, true);
         }
 
-        // Move file to desired location
         $pdfFile = $request->file('certificate_pdf');
         $timestamp = Carbon::now()->format('YmdHi');
         $fileName = 'TUVAT Training Cert - ' . $certificate->participant_name . ' ' . $timestamp . '.' . $pdfFile->getClientOriginalExtension();
-        //$fileName = 'TUVAT Training Cert - ' . $certificate->participant_name . ' ' . time() . '.' . $pdfFile->getClientOriginalExtension();
+
         $pdfFile->move($destinationPath, $fileName);
 
-        // Update certificate record
         $certificate->certificate_pdf = $fileName;
         $certificate->pdf_uploaded_by = $user->name;
         $certificate->pdf_uploaded_by_id = $user->id;
@@ -463,13 +461,28 @@ class CertificateController extends Controller
     {
         $certificate = Certificate::findOrFail($id);
         
-        $filePath = base_path('downloads/Certificate PDFs/' . $certificate->certificate_pdf); // Fixed path
+        $filePath = public_path('Certificate PDFs/' . $certificate->certificate_pdf);
 
         if (!file_exists($filePath)) {
             return back()->with('error', 'PDF file not found.');
         }
 
         return response()->download($filePath, $certificate->certificate_pdf);
+    }
+
+    public function viewPdf($id)
+    {
+        $certificate = Certificate::findOrFail($id);
+        $filePath = public_path('Certificate PDFs/' . $certificate->certificate_pdf);
+
+        if (!file_exists($filePath)) {
+            abort(404, 'PDF not found.');
+        }
+
+        return response()->file($filePath, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . $certificate->certificate_pdf . '"'
+        ]);
     }
 
     ///Live-Search in Dashboard
