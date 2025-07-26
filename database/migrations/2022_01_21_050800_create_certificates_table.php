@@ -38,17 +38,15 @@ class CreateCertificatesTable extends Migration
             // $table->string('status')->default('Approved'); /// Default for migrated data
             $table->string('updated_by')->nullable();
             $table->string('deleted_by')->nullable();
-            $table->timestamps();
-            // $table->timestamp('reviewed_at')->nullable()->after('created_at');
-            // $table->timestamp('approved_at')->nullable()->after('reviewed_at');
-
-            // --- PDF Upload ---
             // $table->string('certificate_pdf')->nullable(); /// File path of uploaded PDF
             // $table->string('pdf_uploaded_by')->nullable(); /// Name of user who uploaded PDF
             // $table->string('pdf_uploaded_by_id')->nullable(); /// ID of user who uploaded PDF
-            // $table->timestamp('pdf_uploaded_at')->nullable(); /// Timestamp of PDF upload
-
+            $table->timestamp('created_at');
+            // $table->timestamp('reviewed_at')->nullable();
+            // $table->timestamp('approved_at')->nullable();
+            $table->timestamp('updated_at');
             $table->softDeletes(); // Creates 'deleted_at' column
+            // $table->timestamp('pdf_uploaded_at')->nullable(); /// Timestamp of PDF upload
         });
     }
 
