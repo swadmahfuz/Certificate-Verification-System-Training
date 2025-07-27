@@ -67,4 +67,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(\App\Models\Certificate::class, 'approval_by_id');
     }
+
+    /**
+     * Relationship: Certificates Uploaded by the User
+     */
+    public function certificatesUploaded()
+    {
+        return $this->hasMany(\App\Models\Certificate::class, 'pdf_uploaded_by_id');
+    }
 }

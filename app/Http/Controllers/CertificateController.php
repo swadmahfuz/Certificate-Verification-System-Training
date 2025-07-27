@@ -13,12 +13,12 @@ use DB;
 
 /*
 |--------------------------------------------------------------------------
-| Certificate Verification System (CVS) 
+| Training Certificate Verification System (CVS) 
 | TUV Austria Bureau of Inspection & Certification 
 | Developed by: Swad Ahmed Mahfuz (Head of Divison - Business Assurance & Training, Bangladesh)
 | Contact: swad.mahfuz@gmail.com, +1-725-867-7718, +88 01733 023 008
 | Project Start: 12 October 2022
-| Latest Stable Release: v3.1.0 -  05 July 2025
+| Latest Stable Release: v3.1.1 -  27 July 2025
 |--------------------------------------------------------------------------
 */
 

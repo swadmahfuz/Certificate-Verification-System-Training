@@ -62,8 +62,9 @@
                                 <table style="width:80%; margin: auto;">
                                     <tr>
                                         <td><a href="add-certificate" class="btn btn-success"><i class="fa-solid fa-plus me-1"></i> Add New Certificate</a></td>
-                                        <td><a href="dashboard" class="btn btn-primary"><i class="fa-solid fa-arrows-rotate me-1"></i> Return to Dashboard</a></td>
-                                        <td><a href="imports-exports" class="btn btn-warning"><i class="fa-solid fa-file-import me-1"></i> Import/Export Data</a></td>
+                                        <td><a href="dashboard" class="btn btn-primary"><i class="fa-solid fa-arrow-left me-1"></i> Dashboard</a></td>
+                                        <td><a href="imports-exports" class="btn btn-warning"><i class="fa-solid fa-file-import me-1"></i> Import/Export</a></td>
+                                        <td><a href="all-users" class="btn btn-secondary"><i class="fa-solid fa-users me-1"></i> View All Users</a></td>
                                         <td><a href="logout" class="btn btn-danger"><i class="fa-solid fa-right-from-bracket me-1"></i> Log Out</a></td>
                                     </tr>
                                 </table>
