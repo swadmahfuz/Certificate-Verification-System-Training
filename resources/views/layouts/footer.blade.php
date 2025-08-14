@@ -2,7 +2,7 @@
     <div class="d-flex flex-wrap justify-content-between align-items-center small px-3">
         <div class="d-flex align-items-center">
             <img src="{{ asset('favicon.ico') }}" alt="Favicon" width="24" height="24" class="me-2">
-            <span class="text-muted">TÜVAT BD Certificate Verification System v3.1.1</span>
+            <span class="text-muted">TÜVAT BD Certificate Verification System v3.2.1</span>
         </div>
 
         @auth

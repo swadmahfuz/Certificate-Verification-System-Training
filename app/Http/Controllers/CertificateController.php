@@ -13,12 +13,12 @@ use DB;
 
 /*
 |--------------------------------------------------------------------------
-| Training Certificate Verification System (CVS) 
+| Certificate Verification System (CVS) - Training
 | TUV Austria Bureau of Inspection & Certification 
 | Developed by: Swad Ahmed Mahfuz (Head of Divison - Business Assurance & Training, Bangladesh)
 | Contact: swad.mahfuz@gmail.com, +1-725-867-7718, +88 01733 023 008
 | Project Start: 12 October 2022
-| Latest Stable Release: v3.1.1 -  27 July 2025
+| Latest Stable Release: v3.2.1 -  14 August 2025
 |--------------------------------------------------------------------------
 */
 
@@ -208,6 +208,9 @@ class CertificateController extends Controller
             $certificate->review_by_id = $review_by_user_id;
             $certificate->approval_by = $request->approval_by;
             $certificate->approval_by_id = $approval_by_user_id;
+            $certificate->updated_by = Auth::user()->name;
+            $certificate->updated_by_id = Auth::user()->id;
+            $certificate->updated_at = Carbon::now();
             $certificate->status = "Pending Review";       ///Certificate status flow: Pending Review-> Pending Approval ->Approved
             $certificate->save();
             return redirect('/view-certificate/' . $certificate->id);
@@ -284,10 +287,14 @@ class CertificateController extends Controller
             $certificate->expiry_date = $request->expiry_date;
             $certificate->review_by = $request->review_by;
             $certificate->review_by_id = $review_by_user_id;
+            $certificate->reviewed_at = null;
             $certificate->approval_by = $request->approval_by;
             $certificate->approval_by_id = $approval_by_user_id;
+            $certificate->approved_at = null;
             $certificate->status = "Pending Review";       ///Status changed back to pending if any update is made and will again require review and approval 
             $certificate->updated_by = Auth::user()->name;
+            $certificate->updated_by_id = Auth::user()->id;
+            $certificate->updated_at = Carbon::now();
             $certificate->save();
             return redirect('/view-certificate/' . $certificate->id);
         }
@@ -310,6 +317,9 @@ class CertificateController extends Controller
             
             $certificate->status = 'Pending Approval';      /// Pending Review-> Pending Approval ->Approved
             $certificate->reviewed_at = Carbon::now();
+            $certificate->updated_by = Auth::user()->name;
+            $certificate->updated_by_id = Auth::user()->id;
+            $certificate->updated_at = Carbon::now();
             $certificate->save();
             
             return redirect('/view-certificate/' . $certificate->id);
@@ -338,6 +348,9 @@ class CertificateController extends Controller
             
             $certificate->status = 'Approved';       /// Pending Review-> Pending Approval ->Approved
             $certificate->approved_at = Carbon::now();
+            $certificate->updated_by = Auth::user()->name;
+            $certificate->updated_by_id = Auth::user()->id;
+            $certificate->updated_at = Carbon::now();
             $certificate->save();
             
             return back()->with('success', 'Certificate approved successfully.');
@@ -360,8 +373,10 @@ class CertificateController extends Controller
             ->update([
                 'status' => 'Pending Approval',
                 'updated_by' => $user->name,
+                'updated_by_id' => $user->id,
+                'updated_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
                 'reviewed_at' => Carbon::now(),
-                'updated_at' => Carbon::now()
             ]);
     
         return redirect()->back()->with('success', "$updated certificate(s) marked as Reviewed.");
@@ -381,8 +396,9 @@ class CertificateController extends Controller
             ->update([
                 'status' => 'Approved',
                 'updated_by' => $user->name,
+                'updated_by_id' => $user->id,
+                'updated_at' => Carbon::now(),
                 'approved_at' => Carbon::now(),
-                'updated_at' => Carbon::now()
             ]);
     
         return redirect()->back()->with('success', "$updated certificate(s) marked as Approved.");
@@ -400,6 +416,12 @@ class CertificateController extends Controller
             // Update status and deleted_by fields
             $certificate->status = "Deleted";
             $certificate->deleted_by = Auth::user()->name;
+            $certificate->deleted_by_id = Auth::user()->id;
+            $certificate->reviewed_at = null;
+            $certificate->approved_at = null;
+            $certificate->updated_by = Auth::user()->name;
+            $certificate->updated_by_id = Auth::user()->id;
+            $certificate->updated_at = Carbon::now();
 
             // Save the updates before soft-deleting
             $certificate->save();
@@ -452,6 +474,9 @@ class CertificateController extends Controller
         $certificate->pdf_uploaded_by = $user->name;
         $certificate->pdf_uploaded_by_id = $user->id;
         $certificate->pdf_uploaded_at = now();
+        $certificate->updated_by = Auth::user()->name;
+        $certificate->updated_by_id = Auth::user()->id;
+        $certificate->updated_at = Carbon::now();
         $certificate->save();
 
         return back()->with('success', 'Certificate PDF uploaded successfully.');

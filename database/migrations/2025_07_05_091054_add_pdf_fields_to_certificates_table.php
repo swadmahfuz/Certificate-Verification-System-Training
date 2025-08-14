@@ -14,10 +14,10 @@ class AddPdfFieldsToCertificatesTable extends Migration
     public function up()
     {
         Schema::table('certificates', function (Blueprint $table) {
-            $table->string('certificate_pdf')->nullable()->after('deleted_by'); ///PDF file path for the certificate, nullable to allow existing records without a PDF
+            $table->string('certificate_pdf')->nullable()->after('deleted_at'); ///PDF file path for the certificate, nullable to allow existing records without a PDF
             $table->string('pdf_uploaded_by')->nullable()->after('certificate_pdf'); ///User name in DB is collected in case user name is changed
             $table->string('pdf_uploaded_by_id')->nullable()->after('pdf_uploaded_by'); ///User id in DB is collected in case user name is changed
-            $table->timestamp('pdf_uploaded_at')->nullable()->after('deleted_at'); ///Timestamp for when the PDF was uploaded    
+            $table->timestamp('pdf_uploaded_at')->nullable()->after('pdf_uploaded_by_id'); ///Timestamp for when the PDF was uploaded    
         });
     }
 
