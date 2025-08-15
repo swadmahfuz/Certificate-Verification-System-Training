@@ -1,10 +1,10 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.0
+-- version 5.1.0
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 15, 2025 at 06:27 AM
--- Server version: 10.4.25-MariaDB
+-- Generation Time: Aug 15, 2025 at 08:17 PM
+-- Server version: 10.4.19-MariaDB
 -- PHP Version: 7.4.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `verifycert_blank`
+-- Database: `verifycertexp`
 --
 
 -- --------------------------------------------------------
@@ -195,7 +195,8 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (150, '2025_07_05_091054_add_pdf_fields_to_certificates_table', 5),
 (151, '2025_07_26_000001_add_review_approval_pdf_to_inspection_certificates_table', 6),
 (153, '2025_08_14_093412_add_deleted_by_to_certificates_table', 6),
-(154, '2025_08_14_083528_create_calibration_certificates_table', 7);
+(156, '2025_08_14_083528_create_calibration_certificates_table', 7),
+(157, '2025_08_16_000343_create_sessions_table', 8);
 
 -- --------------------------------------------------------
 
@@ -225,6 +226,21 @@ CREATE TABLE `personal_access_tokens` (
   `last_used_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `sessions`
+--
+
+CREATE TABLE `sessions` (
+  `id` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `user_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `ip_address` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_agent` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `payload` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `last_activity` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -315,6 +331,14 @@ ALTER TABLE `personal_access_tokens`
   ADD KEY `personal_access_tokens_tokenable_type_tokenable_id_index` (`tokenable_type`,`tokenable_id`);
 
 --
+-- Indexes for table `sessions`
+--
+ALTER TABLE `sessions`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `sessions_user_id_index` (`user_id`),
+  ADD KEY `sessions_last_activity_index` (`last_activity`);
+
+--
 -- Indexes for table `users`
 --
 ALTER TABLE `users`
@@ -353,7 +377,7 @@ ALTER TABLE `inspection_certificates`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=155;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=158;
 
 --
 -- AUTO_INCREMENT for table `personal_access_tokens`
