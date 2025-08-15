@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 14, 2025 at 07:06 PM
+-- Generation Time: Aug 15, 2025 at 06:32 AM
 -- Server version: 10.4.25-MariaDB
 -- PHP Version: 7.4.30
 
@@ -38,10 +38,9 @@ CREATE TABLE `calibration_certificates` (
   `equipment_id` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `calibration_date` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `report_issue_date` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `calibration_due_date` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `validity_date` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `calibration_remarks` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `inspection_internal_notes` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `calibration_internal_notes` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `status` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Approved',
   `created_by` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Bulk uploaded',
   `created_by_id` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -3868,7 +3867,7 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (150, '2025_07_05_091054_add_pdf_fields_to_certificates_table', 5),
 (151, '2025_07_26_000001_add_review_approval_pdf_to_inspection_certificates_table', 6),
 (153, '2025_08_14_093412_add_deleted_by_to_certificates_table', 6),
-(154, '2025_08_14_083528_create_calibration_certificates_table', 7);
+(156, '2025_08_14_083528_create_calibration_certificates_table', 7);
 
 -- --------------------------------------------------------
 
@@ -4026,7 +4025,7 @@ ALTER TABLE `inspection_certificates`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=155;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=157;
 
 --
 -- AUTO_INCREMENT for table `personal_access_tokens`

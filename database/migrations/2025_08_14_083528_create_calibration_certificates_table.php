@@ -26,10 +26,9 @@ class CreateCalibrationCertificatesTable extends Migration
             $table->string('equipment_id');
             $table->string('calibration_date');
             $table->string('report_issue_date');
-            $table->string('calibration_due_date')->nullable();
             $table->string('validity_date')->nullable();
             $table->text('calibration_remarks')->nullable();
-            $table->text('inspection_internal_notes')->nullable();
+            $table->text('calibration_internal_notes')->nullable();
             $table->string('status')->default('Approved'); /// Default for migrated data
             $table->string('created_by')->default('Bulk uploaded');
             $table->string('created_by_id')->nullable();
