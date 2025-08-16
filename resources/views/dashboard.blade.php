@@ -9,18 +9,11 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <!-- Include jQuery for AJAX functionality (Required for live search)-->
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
         <style>
-            .container {
-                max-width: 99%;
-            }
-            .table-container {
-                overflow-x: auto;
-            }
-            .table-striped tbody td, .table-striped thead th {
-                vertical-align: middle; /* Centers the content vertically in table cells */
-            }
+            .container { max-width: 99%; }
+            .table-container { overflow-x: auto; }
+            .table-striped tbody td, .table-striped thead th { vertical-align: middle; } /* Vertically centers the text in table cells */
             .table-striped thead th {
                 text-align: left; /* Centers the text horizontally in table headers */
                 position: sticky;
@@ -28,9 +21,8 @@
                 background-color: rgb(243, 243, 243); /* Non-transparent background */
                 border-right: 1px solid #dee2e6; /* Adds a border to the right of each header cell */
             }
-            .table-striped thead th:last-child {
-                border-right: none; /* Removes the border for the last header cell */
-            }
+            .table-striped thead th:last-child { border-right: none; } /* Removes the right border from the last header cell */
+            .table-striped { font-size: 11px; } /* Sets the font size for the table */
             .btn {
                 display: flex;
                 align-items: center;
@@ -41,15 +33,10 @@
                 font-weight: bold;
                 transition: all 0.3s ease;
             }
-            .btn i {
-                font-size: 16px;
-            }
+            .btn i { font-size: 16px; }
             .btn:hover {
                 transform: translateY(-2px);
                 box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-            }
-            .table-striped {
-                font-size: 11px; /* Adjusts the font size of the table */
             }
         </style>
     </head>
@@ -62,6 +49,31 @@
                             <div class="card-header" style="padding-top: 20px; padding-bottom: 0px;">
                                 <h6 style="text-align: right; margin-bottom: 10px;">Logged in User: <b>{{ auth()->user()->name }} ({{ auth()->user()->designation }})</b></h6>
                                 <center><h3 style="margin-bottom: 20px;">TÜV Austria BIC - Training Certificate Verification System (CVS)</h3></center>
+                                @php
+                                    $currentDomain = request()->getHost();   // e.g., "training.example.com"
+                                    $baseDomain = preg_replace('/^[^.]+\./', '', $currentDomain); // e.g., "example.com"
+                                @endphp
+                                <!-- The above code is used to capture the current subdomain and base domain, but will only work on cPanel not Local Host (XAMPP) -->
+                                 <!-- The two buttons below will also only work if app is hosted on cPanel -->
+                                <table style="width:80%; margin: auto;">
+                                    <tr>
+                                        <td>
+                                            <a href="https://training.{{ $baseDomain }}/dashboard" class="btn btn-dark d-flex align-items-center" target="_blank">
+                                                <i class="fa-solid fa-graduation-cap me-1"></i> Training CVS Portal
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <a href="https://inspection.{{ $baseDomain }}/dashboard" class="btn btn-dark d-flex align-items-center" target="_blank">
+                                                <i class="fa-solid fa-magnifying-glass me-1"></i> Inspection CVS Portal
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <a href="https://calibration.{{ $baseDomain }}/dashboard" class="btn btn-dark d-flex align-items-center" target="_blank">
+                                                <i class="fa-solid fa-wrench me-1"></i> Calibration CVS Portal
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </table>
                                 <table style="width:80%; margin: auto;">
                                     <tr>
                                         <td>
