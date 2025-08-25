@@ -18,7 +18,7 @@ use DB;
 | Developed by: Swad Ahmed Mahfuz (Head of Divison - Business Assurance & Training, Bangladesh)
 | Contact: swad.mahfuz@gmail.com, +1-725-867-7718, +88 01733 023 008
 | Project Start: 12 October 2022
-| Latest Stable Release: v3.2.2 -  16 August 2025
+| Latest Stable Release: v3.3.1 -  25 August 2025
 |--------------------------------------------------------------------------
 */
 

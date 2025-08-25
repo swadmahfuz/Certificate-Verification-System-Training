@@ -41,13 +41,13 @@ class CreateCertificatesTable extends Migration
             $table->string('updated_by')->nullable();
             //$table->string('updated_by_id')->nullable();
             $table->timestamp('updated_at');
-            $table->string('deleted_by')->nullable();
-            //$table->string('deleted_by_id')->nullable();
-            $table->softDeletes(); // Creates 'deleted_at' column
             // $table->string('certificate_pdf')->nullable(); /// File path of uploaded PDF
             // $table->string('pdf_uploaded_by')->nullable(); /// Name of user who uploaded PDF
             // $table->string('pdf_uploaded_by_id')->nullable(); /// ID of user who uploaded PDF
             // $table->timestamp('pdf_uploaded_at')->nullable(); /// Timestamp of PDF upload
+            $table->string('deleted_by')->nullable();
+            //$table->string('deleted_by_id')->nullable();
+            $table->softDeletes(); // Creates 'deleted_at' column
         });
     }
 

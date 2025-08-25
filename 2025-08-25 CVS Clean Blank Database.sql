@@ -1,10 +1,10 @@
 -- phpMyAdmin SQL Dump
--- version 5.1.0
+-- version 5.2.0
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 15, 2025 at 08:17 PM
--- Server version: 10.4.19-MariaDB
+-- Generation Time: Aug 25, 2025 at 10:36 AM
+-- Server version: 10.4.25-MariaDB
 -- PHP Version: 7.4.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -18,16 +18,16 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `verifycertexp`
+-- Database: `verifycert_blank`
 --
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `calibration_certificates`
+-- Table structure for table `certificates_calibration`
 --
 
-CREATE TABLE `calibration_certificates` (
+CREATE TABLE `certificates_calibration` (
   `id` int(10) UNSIGNED NOT NULL,
   `certificate_number` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `client_name` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -66,68 +66,10 @@ CREATE TABLE `calibration_certificates` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `certificates`
+-- Table structure for table `certificates_inspection`
 --
 
-CREATE TABLE `certificates` (
-  `id` int(10) UNSIGNED NOT NULL,
-  `certificate_number` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `participant_name` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `passport_nid` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `driving_license` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `company` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `training_name` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `location` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `trainer` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `training_date` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `training_end` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `issue_date` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `expiry_date` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `status` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '''Approved''',
-  `created_by` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Bulk uploaded',
-  `created_by_id` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `review_by` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `review_by_id` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `reviewed_at` timestamp NULL DEFAULT NULL,
-  `approval_by` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `approval_by_id` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `approved_at` timestamp NULL DEFAULT NULL,
-  `updated_by` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `updated_by_id` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  `deleted_by` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `deleted_by_id` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `deleted_at` timestamp NULL DEFAULT NULL,
-  `certificate_pdf` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `pdf_uploaded_by` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `pdf_uploaded_by_id` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `pdf_uploaded_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `failed_jobs`
---
-
-CREATE TABLE `failed_jobs` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `uuid` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `connection` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `queue` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `payload` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `exception` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `failed_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `inspection_certificates`
---
-
-CREATE TABLE `inspection_certificates` (
+CREATE TABLE `certificates_inspection` (
   `id` int(10) UNSIGNED NOT NULL,
   `certificate_number` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `inspector` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -156,13 +98,112 @@ CREATE TABLE `inspection_certificates` (
   `updated_by` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `updated_by_id` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `deleted_by` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `deleted_by_id` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `deleted_at` timestamp NULL DEFAULT NULL,
   `certificate_pdf` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `pdf_uploaded_by` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `pdf_uploaded_by_id` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `pdf_uploaded_at` timestamp NULL DEFAULT NULL
+  `pdf_uploaded_at` timestamp NULL DEFAULT NULL,
+  `deleted_by` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `deleted_by_id` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `certificates_report`
+--
+
+CREATE TABLE `certificates_report` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `certificate_number` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `client_name` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `location` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `team_members` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `report_prepared_by` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `report_approved_by` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `report_issue_date` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `report_validity_date` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `report_revision` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `report_remarks` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `report_internal_notes` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Approved',
+  `created_by` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Bulk uploaded',
+  `created_by_id` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `review_by` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `review_by_id` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `reviewed_at` timestamp NULL DEFAULT NULL,
+  `approval_by` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `approval_by_id` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `approved_at` timestamp NULL DEFAULT NULL,
+  `updated_by` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `updated_by_id` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `certificate_pdf` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `pdf_uploaded_by` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `pdf_uploaded_by_id` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `pdf_uploaded_at` timestamp NULL DEFAULT NULL,
+  `deleted_by` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `deleted_by_id` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `certificates_training`
+--
+
+CREATE TABLE `certificates_training` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `certificate_number` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `participant_name` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `passport_nid` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `driving_license` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `company` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `training_name` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `location` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `trainer` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `training_date` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `training_end` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `issue_date` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `expiry_date` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '''Approved''',
+  `created_by` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Bulk uploaded',
+  `created_by_id` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `review_by` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `review_by_id` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `reviewed_at` timestamp NULL DEFAULT NULL,
+  `approval_by` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `approval_by_id` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `approved_at` timestamp NULL DEFAULT NULL,
+  `updated_by` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `updated_by_id` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `certificate_pdf` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `pdf_uploaded_by` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `pdf_uploaded_by_id` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `pdf_uploaded_at` timestamp NULL DEFAULT NULL,
+  `deleted_by` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `deleted_by_id` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `failed_jobs`
+--
+
+CREATE TABLE `failed_jobs` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `uuid` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `connection` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `queue` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `payload` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `exception` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `failed_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -196,7 +237,9 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (151, '2025_07_26_000001_add_review_approval_pdf_to_inspection_certificates_table', 6),
 (153, '2025_08_14_093412_add_deleted_by_to_certificates_table', 6),
 (156, '2025_08_14_083528_create_calibration_certificates_table', 7),
-(157, '2025_08_16_000343_create_sessions_table', 8);
+(157, '2025_08_16_000343_create_sessions_table', 8),
+(158, '2025_08_25_121502_rename_certificate_tables', 9),
+(160, '2025_08_25_140129_create_report_certificates_tables', 10);
 
 -- --------------------------------------------------------
 
@@ -269,7 +312,7 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`id`, `name`, `email`, `department`, `designation`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`) VALUES
 (1, 'Muhammad Masud Rana', 'am.sales@tuvat.com.bd', 'Energy & Production', 'Assistant Sales Manager', NULL, '$2y$10$wqbgOiQQvDhwheew/jzImOe3FvX295iSf8lQZLMMbiusWg5o8IMei', 'wAvuGefskEA8gOLxas6KKkELIzS9Fcsgh9jJ6MlgsqWuNhcIMcwDrgiv7O5W', '2023-10-31 18:19:06', '2023-11-01 08:15:47'),
 (3, 'Md. Borhanuddin', 'hse.ine01@tuvat.com.bd', 'Energy & Production', 'HSE Engineer', NULL, '$2y$10$f1ZLMBXnS/26ktllK8q3NOhG.wVuL3FPu4l5C7nZjXQCWjzwSZ2da', 'v4NlGC5G5oOgKNzLCcRRsSVGAubU87fzJS3nTkC8NkZSlLiiyl2m4AMRiOCJ', '2023-10-31 18:20:00', '2023-11-10 16:40:04'),
-(4, 'Afsana Akter', 'admin.executive@tuvat.com.bd', 'Business Assurance & Training', 'Admin Executive', NULL, '$2y$10$xO4owTFWYXbOHW92o/JoTuCiYDISKJvhdwcOJhyFc9xEog/ZcFiTq', '9Dhll138kXFTH4UNU2SrimHqoapul3doY92dINpztVba5jGnp0PlAQU2CetT', '2023-10-31 19:07:25', '2023-11-12 05:06:49'),
+(4, 'Afsana Akter', 'admin.executive@tuvat.com.bd', 'Business Assurance & Training', 'Admin Executive', NULL, '$2y$10$xO4owTFWYXbOHW92o/JoTuCiYDISKJvhdwcOJhyFc9xEog/ZcFiTq', '9g21ybOVjnky1VETyeVYSMWozgGymzKtQXENwnwMBQ2B5Z9GW7SeHNr8aqUV', '2023-10-31 19:07:25', '2023-11-12 05:06:49'),
 (5, 'Shohidul Islam', 'manager.ine@tuvat.com.bd', 'Energy & Production', 'Country Manager', NULL, '$2y$10$Kdlug3imnNtAwItATovifOD.CWCpgYRGF3nylS5N/K4It/P7EnR/y', NULL, '2023-10-31 19:09:41', '2023-10-31 19:09:41'),
 (6, 'Md. Shimul Hossain Shaon', 'am.ine01@tuvat.com.bd', 'Energy & Production', 'Technical Manager', NULL, '$2y$10$gnOlKWWW0vrOTTRfnnrq9ujMcrhrRqV8LFfvVDAWcsuVx7rUWPyiy', NULL, '2023-10-31 19:10:27', '2023-10-31 19:10:27'),
 (7, 'Ahmad Rafiq', 'buh.ine@tuvat.com.pk', 'Energy & Production', 'Business Unit Head', NULL, '$2y$10$0Mbz0VyruSnVTD56McyFteZPejg.uKyihzB53X43eP.7FV9u6Nvg.', NULL, '2023-10-31 19:14:18', '2023-10-31 19:14:18'),
@@ -283,16 +326,30 @@ INSERT INTO `users` (`id`, `name`, `email`, `department`, `designation`, `email_
 --
 
 --
--- Indexes for table `calibration_certificates`
+-- Indexes for table `certificates_calibration`
 --
-ALTER TABLE `calibration_certificates`
+ALTER TABLE `certificates_calibration`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `calibration_certificates_certificate_number_unique` (`certificate_number`);
 
 --
--- Indexes for table `certificates`
+-- Indexes for table `certificates_inspection`
 --
-ALTER TABLE `certificates`
+ALTER TABLE `certificates_inspection`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `inspection_certificates_certificate_number_unique` (`certificate_number`);
+
+--
+-- Indexes for table `certificates_report`
+--
+ALTER TABLE `certificates_report`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `certificates_report_certificate_number_unique` (`certificate_number`);
+
+--
+-- Indexes for table `certificates_training`
+--
+ALTER TABLE `certificates_training`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `certificates_certificate_number_unique` (`certificate_number`);
 
@@ -302,13 +359,6 @@ ALTER TABLE `certificates`
 ALTER TABLE `failed_jobs`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `failed_jobs_uuid_unique` (`uuid`);
-
---
--- Indexes for table `inspection_certificates`
---
-ALTER TABLE `inspection_certificates`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `inspection_certificates_certificate_number_unique` (`certificate_number`);
 
 --
 -- Indexes for table `migrations`
@@ -350,15 +400,27 @@ ALTER TABLE `users`
 --
 
 --
--- AUTO_INCREMENT for table `calibration_certificates`
+-- AUTO_INCREMENT for table `certificates_calibration`
 --
-ALTER TABLE `calibration_certificates`
+ALTER TABLE `certificates_calibration`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `certificates`
+-- AUTO_INCREMENT for table `certificates_inspection`
 --
-ALTER TABLE `certificates`
+ALTER TABLE `certificates_inspection`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `certificates_report`
+--
+ALTER TABLE `certificates_report`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `certificates_training`
+--
+ALTER TABLE `certificates_training`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
@@ -368,16 +430,10 @@ ALTER TABLE `failed_jobs`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `inspection_certificates`
---
-ALTER TABLE `inspection_certificates`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=158;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=161;
 
 --
 -- AUTO_INCREMENT for table `personal_access_tokens`
