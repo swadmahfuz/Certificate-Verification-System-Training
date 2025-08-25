@@ -159,7 +159,7 @@ class CertificateController extends Controller
         if (Auth::check())
         {
             $validate = $request->validate([
-                'certificate_number' => 'required|unique:certificates', ///check if certificate is unique from "Certificates" table
+                'certificate_number' => 'required|unique:certificates_training', ///check if certificate is unique from "Certificates" table
                 'participant_name' => 'required',
                 'passport_nid' => 'required',
                 'training_name' => 'required',
@@ -364,7 +364,7 @@ class CertificateController extends Controller
         $user = Auth::user();
     
         // Mark all 'Pending Review' certificates assigned to the logged-in reviewer
-        $updated = DB::table('certificates')
+        $updated = DB::table('certificates_training')
             ->where('status', 'Pending Review')
             ->where(function ($query) use ($user) {
                 $query->where('review_by_id', $user->id)
@@ -374,7 +374,6 @@ class CertificateController extends Controller
                 'status' => 'Pending Approval',
                 'updated_by' => $user->name,
                 'updated_by_id' => $user->id,
-                'updated_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
                 'reviewed_at' => Carbon::now(),
             ]);
@@ -387,7 +386,7 @@ class CertificateController extends Controller
         $user = Auth::user();
     
         // Mark all 'Pending Approval' certificates assigned to the logged-in approver
-        $updated = DB::table('certificates')
+        $updated = DB::table('certificates_training')
             ->where('status', 'Pending Approval')
             ->where(function ($query) use ($user) {
                 $query->where('approval_by_id', $user->id)
