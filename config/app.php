@@ -177,6 +177,7 @@ return [
         //'Spatie\LittleGateKeeper\LittleGateKeeperServiceProvider',
         Maatwebsite\Excel\ExcelServiceProvider::class,
         //SimpleSoftwareIO\QrCode\QrCodeServiceProvider::class,
+        Davcpas1234\LaravelPdfViewer\LaravelPdfViewerServiceProvider::class,
     ],
 
     /*

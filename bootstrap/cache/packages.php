@@ -10,6 +10,13 @@
       'Debugbar' => 'Barryvdh\\Debugbar\\Facades\\Debugbar',
     ),
   ),
+  'davcpas1234/laravelpdfviewer' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Davcpas1234\\LaravelPdfViewer\\LaravelPdfViewerServiceProvider',
+    ),
+  ),
   'facade/ignition' => 
   array (
     'providers' => 

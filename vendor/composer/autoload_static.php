@@ -168,6 +168,7 @@ class ComposerStaticInitc6698babcd7fcf6b7bb3150d56b328b3
             'Dflydev\\DotAccessData\\' => 22,
             'DeepCopy\\' => 9,
             'DebugBar\\' => 9,
+            'Davcpas1234\\LaravelPdfViewer\\' => 29,
             'Database\\Seeders\\' => 17,
             'Database\\Factories\\' => 19,
         ),
@@ -514,6 +515,10 @@ class ComposerStaticInitc6698babcd7fcf6b7bb3150d56b328b3
         array (
             0 => __DIR__ . '/..' . '/maximebf/debugbar/src/DebugBar',
         ),
+        'Davcpas1234\\LaravelPdfViewer\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/davcpas1234/laravelpdfviewer/src',
+        ),
         'Database\\Seeders\\' => 
         array (
             0 => __DIR__ . '/../..' . '/database/seeders',
@@ -773,6 +778,8 @@ class ComposerStaticInitc6698babcd7fcf6b7bb3150d56b328b3
         'Cron\\MonthField' => __DIR__ . '/..' . '/dragonmantank/cron-expression/src/Cron/MonthField.php',
         'Database\\Factories\\UserFactory' => __DIR__ . '/../..' . '/database/factories/UserFactory.php',
         'Database\\Seeders\\DatabaseSeeder' => __DIR__ . '/../..' . '/database/seeders/DatabaseSeeder.php',
+        'Davcpas1234\\LaravelPdfViewer\\Facade\\LaravelPdfViewer' => __DIR__ . '/..' . '/davcpas1234/laravelpdfviewer/src/Facade/LaravelPdfViewer.php',
+        'Davcpas1234\\LaravelPdfViewer\\LaravelPdfViewerServiceProvider' => __DIR__ . '/..' . '/davcpas1234/laravelpdfviewer/src/LaravelPdfViewerServiceProvider.php',
         'DebugBar\\Bridge\\CacheCacheCollector' => __DIR__ . '/..' . '/maximebf/debugbar/src/DebugBar/Bridge/CacheCacheCollector.php',
         'DebugBar\\Bridge\\DoctrineCollector' => __DIR__ . '/..' . '/maximebf/debugbar/src/DebugBar/Bridge/DoctrineCollector.php',
         'DebugBar\\Bridge\\MonologCollector' => __DIR__ . '/..' . '/maximebf/debugbar/src/DebugBar/Bridge/MonologCollector.php',

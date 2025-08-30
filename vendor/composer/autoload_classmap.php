@@ -208,6 +208,8 @@ return array(
     'Cron\\MonthField' => $vendorDir . '/dragonmantank/cron-expression/src/Cron/MonthField.php',
     'Database\\Factories\\UserFactory' => $baseDir . '/database/factories/UserFactory.php',
     'Database\\Seeders\\DatabaseSeeder' => $baseDir . '/database/seeders/DatabaseSeeder.php',
+    'Davcpas1234\\LaravelPdfViewer\\Facade\\LaravelPdfViewer' => $vendorDir . '/davcpas1234/laravelpdfviewer/src/Facade/LaravelPdfViewer.php',
+    'Davcpas1234\\LaravelPdfViewer\\LaravelPdfViewerServiceProvider' => $vendorDir . '/davcpas1234/laravelpdfviewer/src/LaravelPdfViewerServiceProvider.php',
     'DebugBar\\Bridge\\CacheCacheCollector' => $vendorDir . '/maximebf/debugbar/src/DebugBar/Bridge/CacheCacheCollector.php',
     'DebugBar\\Bridge\\DoctrineCollector' => $vendorDir . '/maximebf/debugbar/src/DebugBar/Bridge/DoctrineCollector.php',
     'DebugBar\\Bridge\\MonologCollector' => $vendorDir . '/maximebf/debugbar/src/DebugBar/Bridge/MonologCollector.php',

@@ -366,6 +366,62 @@
             "install-path": "./semver"
         },
         {
+            "name": "davcpas1234/laravelpdfviewer",
+            "version": "1.0.1",
+            "version_normalized": "1.0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/davcpas1234/laravel-pdf-viewer.git",
+                "reference": "be0a3a8ff9719708cc62a12db091551ba91c2f5f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/davcpas1234/laravel-pdf-viewer/zipball/be0a3a8ff9719708cc62a12db091551ba91c2f5f",
+                "reference": "be0a3a8ff9719708cc62a12db091551ba91c2f5f",
+                "shasum": ""
+            },
+            "time": "2021-05-31T12:18:40+00:00",
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Davcpas1234\\LaravelPdfViewer\\LaravelPdfViewerServiceProvider"
+                    ]
+                }
+            },
+            "installation-source": "dist",
+            "autoload": {
+                "psr-4": {
+                    "Davcpas1234\\LaravelPdfViewer\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Goodness Toluwanimi Kayode",
+                    "email": "gtkbrain@gmail.com"
+                },
+                {
+                    "name": "David Passmore",
+                    "email": "david.passmore@verscreative.co.uk"
+                }
+            ],
+            "description": "A Laravel Package for viewing PDF files or documents on Web App",
+            "keywords": [
+                "ViewerJS",
+                "laravel",
+                "laravel-viewerJS",
+                "pdf-viewer"
+            ],
+            "support": {
+                "source": "https://github.com/davcpas1234/laravel-pdf-viewer/tree/v1.0.1"
+            },
+            "install-path": "../davcpas1234/laravelpdfviewer"
+        },
+        {
             "name": "dflydev/dot-access-data",
             "version": "v3.0.3",
             "version_normalized": "3.0.3.0",

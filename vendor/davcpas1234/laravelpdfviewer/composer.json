@@ -1,0 +1,31 @@
+{
+    "name": "davcpas1234/laravelpdfviewer",
+    "description": "A Laravel Package for viewing PDF files or documents on Web App",
+    "version": "1.0.1",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Davcpas1234\\LaravelPdfViewer\\": "src/"
+        }
+    },
+    "keywords": ["laravel","pdf-viewer","laravel-viewerJS","ViewerJS"],
+    "authors": [
+        {
+            "name": "Goodness Toluwanimi Kayode",
+            "email": "gtkbrain@gmail.com"
+        },
+        {
+            "name": "David Passmore",
+            "email": "david.passmore@verscreative.co.uk"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {},
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Davcpas1234\\LaravelPdfViewer\\LaravelPdfViewerServiceProvider"
+            ]
+        }
+    }
+}

@@ -242,6 +242,84 @@
                         </tr>
                     </tbody>
                 </table>
+                {{-- Toggleable Inline PDF Viewer (toggle is in the header title area) --}}
+                @if($certificate->certificate_pdf)
+                    @php
+                        // Build ViewerJS URL (assets published under /public/laraview/)
+                        // If your server exposes /laraview/ directly, change to asset('laraview/index.html')
+                        $viewerBase = asset('public/laraview/index.html');
+                        $pdfFolder  = 'Certificate PDFs';
+                        $viewerSrc  = $viewerBase
+                                      . '#../' . rawurlencode($pdfFolder)
+                                      . '/'    . rawurlencode($certificate->certificate_pdf);
+
+                        $collapseId = 'pdfViewerCollapse-' . $certificate->id;
+                        $toggleId   = 'togglePdfHeaderBtn-' . $certificate->id;
+                    @endphp
+
+                    <div class="card mt-4">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            {{-- This button looks like plain text and toggles the collapse --}}
+                            <button
+                                id="{{ $toggleId }}"
+                                class="btn btn-link header-toggle d-flex align-items-center"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#{{ $collapseId }}"
+                                aria-expanded="false"
+                                aria-controls="{{ $collapseId }}">
+                                <i class="fa-solid fa-chevron-right me-2 chev"></i>
+                                <span>Certificate PDF Preview</span>
+                            </button>
+
+                            <small class="text-muted">
+                                If it doesn’t load, <a href="{{ route('certificate.downloadPdf', $certificate->id) }}" target="_blank">download</a>.
+                            </small>
+                        </div>
+
+                        <div class="collapse" id="{{ $collapseId }}">
+                            <div class="card-body p-0" style="height: 75vh;">
+                                {{-- Lazy-load the viewer only when opened --}}
+                                <iframe
+                                    data-viewer-src="{{ $viewerSrc }}"
+                                    title="Certificate PDF"
+                                    style="width:100%; height:100%; border:0;"
+                                    allow="fullscreen"
+                                    loading="lazy"></iframe>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Toggle & lazy-load logic --}}
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function () {
+                            const collapseEl = document.getElementById('{{ $collapseId }}');
+                            const btn        = document.getElementById('{{ $toggleId }}');
+                            if (!collapseEl || !btn) return;
+
+                            const iframe = collapseEl.querySelector('iframe');
+
+                            collapseEl.addEventListener('show.bs.collapse', function () {
+                                // Load the viewer src only on first open
+                                if (!iframe.getAttribute('src')) {
+                                    iframe.setAttribute('src', iframe.dataset.viewerSrc);
+                                }
+                                btn.setAttribute('aria-expanded', 'true');
+                            });
+
+                            collapseEl.addEventListener('hide.bs.collapse', function () {
+                                btn.setAttribute('aria-expanded', 'false');
+                                // Optional: unload to free memory
+                                // iframe.removeAttribute('src');
+                            });
+                        });
+                    </script>
+                @else
+                    <div class="alert alert-warning mt-4">
+                        <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                        No certificate PDF uploaded yet.
+                    </div>
+                @endif
             </div>
         </div>
     </div>
