@@ -77,6 +77,11 @@
                                                 <i class="fa-solid fa-file-lines me-1"></i> Reports CVS Portal
                                             </a>
                                         </td>
+                                        <td>
+                                            <a href="https://certification.{{ $baseDomain }}/dashboard" class="btn btn-dark d-flex align-items-center" target="_blank">
+                                                <i class="fa-solid fa-certificate me-1"></i> BA Certification Portal
+                                            </a>
+                                        </td> 
                                     </tr>
                                 </table>
                                 <table style="width:80%; margin: auto;">
