@@ -4,14 +4,18 @@
     <meta charset="utf-8">
     <meta name="robots" content="noindex">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <title>TÜV Austria BIC CVS | View Certificate Information</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
     <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
+
     <style>
         body {
             font-size: 13px;
         }
+
         .btn {
             display: flex;
             align-items: center;
@@ -23,67 +27,155 @@
             transition: all 0.3s ease;
             white-space: nowrap;
         }
+
         .btn i {
             font-size: 14px;
         }
+
         .btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+
         .btn-container {
             display: flex;
             justify-content: center;
             gap: 10px;
             flex-wrap: wrap;
         }
+
         .card-header {
             background-color: #f4f4f4;
             padding: 20px;
         }
     </style>
 </head>
+
 <body background="../images/tuv-login-background1.jpg">
 
 <section class="pt-5">
     <div class="container">
         <div class="card">
+
             <div class="card-header text-center">
-                <h3>TÜV Austria BIC CVS - Detailed Certificate Information</h3>
+                <h3>
+                    TÜV Austria BIC CVS - Detailed Certificate Information
+                </h3>
+
                 <div class="btn-container mt-3">
-                    <a href="../dashboard" class="btn btn-primary"><i class="fa-solid fa-arrow-left me-1"></i> Go back to Dashboard</a>
+
+                    <a href="../dashboard" class="btn btn-primary">
+                        <i class="fa-solid fa-arrow-left me-1"></i>
+                        Go back to Dashboard
+                    </a>
+
                     @if($certificate->status !== 'Deleted')
-                        <a href="../add-certificate" class="btn btn-success"><i class="fa-solid fa-plus me-1"></i> Add New Certificate</a>
-                        <a href="../edit-certificate/{{ $certificate->id }}" class="btn btn-warning"><i class="fa-solid fa-pen-to-square me-1"></i> Edit Certificate</a>
+
+                        <a href="../add-certificate" class="btn btn-success">
+                            <i class="fa-solid fa-plus me-1"></i>
+                            Add New Certificate
+                        </a>
+
+                        <a href="../edit-certificate/{{ $certificate->id }}" class="btn btn-warning">
+                            <i class="fa-solid fa-pen-to-square me-1"></i>
+                            Edit Certificate
+                        </a>
+
                         @if($certificate->certificate_pdf)
-                            <a href="{{ route('certificate.downloadPdf', $certificate->id) }}" target="_blank" class="btn btn-secondary">
-                                <i class="fa-solid fa-file-pdf me-1"></i> Download Certificate PDF
+                            <a
+                                href="{{ route('certificate.downloadPdf', $certificate->id) }}"
+                                target="_blank"
+                                class="btn btn-secondary"
+                            >
+                                <i class="fa-solid fa-file-pdf me-1"></i>
+                                Download Certificate PDF
                             </a>
                         @endif
-                        @if(Auth::check() && (Auth::user()->id == $certificate->review_by_id || Auth::user()->name == $certificate->review_by) && $certificate->status == 'Pending Review')
-                            <a href="{{ route('certificate.review', $certificate->id) }}" class="btn btn-info"><i class="fa-solid fa-thumbs-up me-1"></i> Mark as Reviewed</a>
+
+                        @if(
+                            Auth::check() &&
+                            (
+                                Auth::user()->id == $certificate->review_by_id ||
+                                Auth::user()->name == $certificate->review_by
+                            ) &&
+                            $certificate->status == 'Pending Review'
+                        )
+                            <a
+                                href="{{ route('certificate.review', $certificate->id) }}"
+                                class="btn btn-info"
+                            >
+                                <i class="fa-solid fa-thumbs-up me-1"></i>
+                                Mark as Reviewed
+                            </a>
                         @endif
-                        @if(Auth::check() && (Auth::user()->id == $certificate->approval_by_id || Auth::user()->name == $certificate->approval_by) && $certificate->status == 'Pending Approval')
-                            <a href="{{ route('certificate.approve', $certificate->id) }}" class="btn btn-success"><i class="fa-solid fa-check me-1"></i> Mark as Approved</a>
+
+                        @if(
+                            Auth::check() &&
+                            (
+                                Auth::user()->id == $certificate->approval_by_id ||
+                                Auth::user()->name == $certificate->approval_by
+                            ) &&
+                            $certificate->status == 'Pending Approval'
+                        )
+                            <a
+                                href="{{ route('certificate.approve', $certificate->id) }}"
+                                class="btn btn-success"
+                            >
+                                <i class="fa-solid fa-check me-1"></i>
+                                Mark as Approved
+                            </a>
                         @endif
-                        <a href="../delete-certificate/{{ $certificate->id }}" class="btn btn-danger"><i class="fa-solid fa-trash me-1"></i> Delete Certificate</a>
+
+                        <a
+                            href="../delete-certificate/{{ $certificate->id }}"
+                            class="btn btn-danger"
+                        >
+                            <i class="fa-solid fa-trash me-1"></i>
+                            Delete Certificate
+                        </a>
+
                     @endif
                 </div>
 
                 {{-- PDF Upload Form --}}
-                @if(Auth::check() &&
+                @if(
+                    Auth::check() &&
                     (
-                        Auth::user()->id == $certificate->created_by_id || Auth::user()->name == $certificate->created_by ||
-                        Auth::user()->id == $certificate->review_by_id || Auth::user()->name == $certificate->review_by ||
-                        Auth::user()->id == $certificate->approval_by_id || Auth::user()->name == $certificate->approval_by
+                        Auth::user()->id == $certificate->created_by_id ||
+                        Auth::user()->name == $certificate->created_by ||
+                        Auth::user()->id == $certificate->review_by_id ||
+                        Auth::user()->name == $certificate->review_by ||
+                        Auth::user()->id == $certificate->approval_by_id ||
+                        Auth::user()->name == $certificate->approval_by
                     )
                 )
-                    <form action="{{ route('certificate.uploadPdf', $certificate->id) }}" method="POST" enctype="multipart/form-data" class="mt-3">
+                    <form
+                        action="{{ route('certificate.uploadPdf', $certificate->id) }}"
+                        method="POST"
+                        enctype="multipart/form-data"
+                        class="mt-3"
+                    >
                         @csrf
-                        <div class="input-group justify-content-center" style="max-width: 600px; margin: 0 auto;">
-                            <input type="file" name="certificate_pdf" class="form-control" accept="application/pdf" required>
+
+                        <div
+                            class="input-group justify-content-center"
+                            style="max-width: 600px; margin: 0 auto;"
+                        >
+                            <input
+                                type="file"
+                                name="certificate_pdf"
+                                class="form-control"
+                                accept="application/pdf"
+                                required
+                            >
+
                             <button class="btn btn-primary" type="submit">
                                 <i class="fa-solid fa-upload me-1"></i>
-                                {{ $certificate->certificate_pdf ? 'Re-upload Certificate' : 'Upload Certificate' }}
+
+                                {{ $certificate->certificate_pdf
+                                    ? 'Re-upload Certificate'
+                                    : 'Upload Certificate'
+                                }}
                             </button>
                         </div>
                     </form>
@@ -91,55 +183,139 @@
 
                 @if($certificate->certificate_pdf)
                     <div class="mt-2 text-muted small">
-                        Last Uploaded by: <strong>{{ $certificate->pdf_uploaded_by }}</strong> on {{ \Carbon\Carbon::parse($certificate->pdf_uploaded_at)->format('d M Y \a\t H:i') }}
+                        Last Uploaded by:
+
+                        <strong>
+                            {{ $certificate->pdf_uploaded_by }}
+                        </strong>
+
+                        on
+
+                        {{ \Carbon\Carbon::parse($certificate->pdf_uploaded_at)->format('d M Y \a\t H:i') }}
                     </div>
                 @endif
             </div>
 
             <div class="card-body table-responsive">
+
                 <table class="table table-striped table-bordered w-100">
                     <tbody>
-                        <tr><th>Certificate Number</th><td>{{ $certificate->certificate_number }}</td></tr>
-                        <tr><th>Certificate Type</th><td>{{ $certificate->certificate_type ?: 'Not Specified' }}</td></tr>
+
+                        <tr>
+                            <th>Certificate Number</th>
+                            <td>{{ $certificate->certificate_number }}</td>
+                        </tr>
+
+                        <tr>
+                            <th>Certificate Type</th>
+                            <td>
+                                {{ $certificate->certificate_type ?: 'Not Specified' }}
+                            </td>
+                        </tr>
+
                         <tr>
                             <th>Certificate Validity</th>
+
                             <td>
-                                @if ($certificate->status === 'Deleted')
-                                    <span class="text-danger">This certificate has been deleted ❌</span>
-                                @elseif ($certificate->status === 'Pending Review')
-                                    <span class="text-warning">Certificate Pending Review ⚠️</span>
-                                @elseif ($certificate->status === 'Pending Approval')
-                                    <span class="text-warning">Certificate Pending Approval ⚠️</span>
-                                @elseif (empty($certificate->expiry_date) || \Carbon\Carbon::now() <= \Carbon\Carbon::parse($certificate->expiry_date))
-                                    <span class="text-success">Certificate Valid! ✅</span>
+                                @if($certificate->status === 'Deleted')
+
+                                    <span class="text-danger">
+                                        This certificate has been deleted ❌
+                                    </span>
+
+                                @elseif($certificate->status === 'Pending Review')
+
+                                    <span class="text-warning">
+                                        Certificate Pending Review ⚠️
+                                    </span>
+
+                                @elseif($certificate->status === 'Pending Approval')
+
+                                    <span class="text-warning">
+                                        Certificate Pending Approval ⚠️
+                                    </span>
+
+                                @elseif(
+                                    empty($certificate->expiry_date) ||
+                                    \Carbon\Carbon::now() <=
+                                    \Carbon\Carbon::parse($certificate->expiry_date)
+                                )
+
+                                    <span class="text-success">
+                                        Certificate Valid! ✅
+                                    </span>
+
                                 @else
-                                    <span class="text-danger">Certificate Expired! ⚠️</span>
+
+                                    <span class="text-danger">
+                                        Certificate Expired! ⚠️
+                                    </span>
+
                                 @endif
                             </td>
                         </tr>
+
                         <tr>
                             <th>Approval Status</th>
+
                             <td>
                                 @if($certificate->status == 'Pending')
+
                                     {{ $certificate->status }} Review ⚠️
+
                                 @elseif($certificate->status == 'Reviewed')
+
                                     {{ $certificate->status }}. Pending Approval ⚠️
+
                                 @elseif($certificate->status == 'Approved')
+
                                     {{ $certificate->status }} ✅
+
                                 @else
+
                                     {{ $certificate->status }}
+
                                 @endif
                             </td>
                         </tr>
-                        <tr><th>Name</th><td>{{ $certificate->participant_name }}</td></tr>
-                        <tr><th>Passport/NID</th><td>{{ $certificate->passport_nid }}</td></tr>
-                        <tr><th>Driving License</th><td>{{ $certificate->driving_license }}</td></tr>
-                        <tr><th>Company</th><td>{{ $certificate->company }}</td></tr>
-                        <tr><th>Training</th><td>{{ $certificate->training_name }}</td></tr>
-                        <tr><th>Training Location</th><td>{{ $certificate->location }}</td></tr>
-                        <tr><th>Trainer</th>
+
+                        <tr>
+                            <th>Name</th>
+                            <td>{{ $certificate->participant_name }}</td>
+                        </tr>
+
+                        <tr>
+                            <th>Passport/NID</th>
+                            <td>{{ $certificate->passport_nid }}</td>
+                        </tr>
+
+                        <tr>
+                            <th>Driving License</th>
+                            <td>{{ $certificate->driving_license }}</td>
+                        </tr>
+
+                        <tr>
+                            <th>Company</th>
+                            <td>{{ $certificate->company }}</td>
+                        </tr>
+
+                        <tr>
+                            <th>Training</th>
+                            <td>{{ $certificate->training_name }}</td>
+                        </tr>
+
+                        <tr>
+                            <th>Training Location</th>
+                            <td>{{ $certificate->location }}</td>
+                        </tr>
+
+                        <tr>
+                            <th>Trainer</th>
+
                             <td>
-                                <strong>{{ $certificate->trainer ?: 'Not Specified' }}</strong>
+                                <strong>
+                                    {{ $certificate->trainer ?: 'Not Specified' }}
+                                </strong>
 
                                 @if($certificate->trainer_designation)
                                     <br>
@@ -148,17 +324,23 @@
 
                                 @if($certificate->trainer_email)
                                     <br>
+
                                     <span class="text-muted">
                                         {{ $certificate->trainer_email }}
                                     </span>
                                 @endif
                             </td>
                         </tr>
+
                         <tr>
                             <th>Signatory</th>
+
                             <td>
                                 @if($certificate->signatory_name)
-                                    <strong>{{ $certificate->signatory_name }}</strong>
+
+                                    <strong>
+                                        {{ $certificate->signatory_name }}
+                                    </strong>
 
                                     @if($certificate->signatory_designation)
                                         <br>
@@ -172,140 +354,362 @@
 
                                     @if($certificate->signatory_email)
                                         <br>
+
                                         <span class="text-muted">
                                             {{ $certificate->signatory_email }}
                                         </span>
                                     @endif
+
                                 @else
+
                                     <span class="text-muted">
                                         No Additional Signatory
                                     </span>
+
                                 @endif
                             </td>
                         </tr>
-                        <tr><th>Training Start Date</th><td>{{ \Carbon\Carbon::parse($certificate->training_date)->format('d M Y') }}</td></tr>
-                        <tr><th>Training End Date</th><td>{{ \Carbon\Carbon::parse($certificate->training_end)->format('d M Y') }}</td></tr>
-                        <tr><th>Issue Date</th><td>{{ \Carbon\Carbon::parse($certificate->issue_date)->format('d M Y') }}</td></tr>
+
+                        <tr>
+                            <th>Training Start Date</th>
+
+                            <td>
+                                {{ \Carbon\Carbon::parse($certificate->training_date)->format('d M Y') }}
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th>Training End Date</th>
+
+                            <td>
+                                {{ \Carbon\Carbon::parse($certificate->training_end)->format('d M Y') }}
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th>Issue Date</th>
+
+                            <td>
+                                {{ \Carbon\Carbon::parse($certificate->issue_date)->format('d M Y') }}
+                            </td>
+                        </tr>
+
                         <tr>
                             <th>Valid Till</th>
+
                             <td>
-                                @if (!empty($certificate->expiry_date))
+                                @if(!empty($certificate->expiry_date))
+
                                     {{ \Carbon\Carbon::parse($certificate->expiry_date)->format('d M Y') }}
+
                                 @else
+
                                     No Expiry Date
+
                                 @endif
                             </td>
                         </tr>
-                        <tr><th>Certificate PDF File</th>
+
+                        {{--
+                            Determine whether this certificate contains all
+                            information needed for dynamic PDF generation.
+
+                            Legacy certificates normally do not contain:
+                            - Certificate type
+                            - Trainer signature snapshot
+                            - Optional signatory signature snapshot
+                        --}}
+                        @php
+                            $trainerSignatureExists =
+                                !empty($certificate->trainer_signature_path) &&
+                                \Illuminate\Support\Facades\Storage::exists(
+                                    $certificate->trainer_signature_path
+                                );
+
+                            $signatorySignatureExists =
+                                empty($certificate->signatory_name) ||
+                                (
+                                    !empty($certificate->signatory_signature_path) &&
+                                    \Illuminate\Support\Facades\Storage::exists(
+                                        $certificate->signatory_signature_path
+                                    )
+                                );
+
+                            $hasPdfGenerationData =
+                                !empty($certificate->certificate_type) &&
+                                !empty($certificate->trainer) &&
+                                $trainerSignatureExists &&
+                                $signatorySignatureExists;
+                        @endphp
+
+                        {{-- Hide the entire row for legacy certificates. --}}
+                        @if($hasPdfGenerationData)
+                            <tr>
+                                <th>Generate Certificate PDF</th>
+
+                                <td>
+                                    @if($certificate->status == 'Approved')
+
+                                        <a
+                                            href="{{ route('certificate.generatePdf', $certificate->id) }}"
+                                            class="btn btn-success d-inline-flex"
+                                            style="width: auto;"
+                                        >
+                                            <i class="fa-solid fa-file-pdf me-1"></i>
+                                            Generate & Download Certificate PDF
+                                        </a>
+
+                                        <br>
+
+                                        <small class="text-muted">
+                                            The PDF will be generated on demand and will not be stored in the system.
+                                        </small>
+
+                                    @else
+
+                                        <span class="text-warning">
+                                            Certificate PDF can be generated after approval.
+                                        </span>
+
+                                    @endif
+                                </td>
+                            </tr>
+                        @endif
+
+                        <tr>
+                            <th>Certificate PDF File</th>
+
                             <td>
                                 @if($certificate->certificate_pdf)
-                                <a href="{{ route('certificate.downloadPdf', $certificate->id) }}" target="_blank">
-                                    <strong>{{ $certificate->certificate_pdf }}</strong><br>
-                                </a>
+
+                                    <a
+                                        href="{{ route('certificate.downloadPdf', $certificate->id) }}"
+                                        target="_blank"
+                                    >
+                                        <strong>
+                                            {{ $certificate->certificate_pdf }}
+                                        </strong>
+                                    </a>
+
                                 @else
-                                    <span class="text-danger">No certificate PDF uploaded yet ❌</span>
+
+                                    <span class="text-danger">
+                                        No certificate PDF uploaded yet ❌
+                                    </span>
+
                                 @endif
                             </td>
                         </tr>
-                        <tr><th>PDF Uploaded by</th>
+
+                        <tr>
+                            <th>PDF Uploaded by</th>
+
                             <td>
                                 @if($certificate->certificate_pdf)
+
                                     {{ $certificate->pdf_uploaded_by }}
+
                                 @else
-                                    <span class="text-danger">No certificate PDF uploaded yet ❌</span>
+
+                                    <span class="text-danger">
+                                        No certificate PDF uploaded yet ❌
+                                    </span>
+
                                 @endif
                             </td>
                         </tr>
-                        <tr><th>Certificate Uploaded at</th>
+
+                        <tr>
+                            <th>Certificate Uploaded at</th>
+
                             <td>
                                 @if($certificate->certificate_pdf)
+
                                     {{ \Carbon\Carbon::parse($certificate->pdf_uploaded_at)->format('d M Y \a\t H:i:s') }}
+
                                 @else
-                                    <span class="text-danger">No certificate PDF uploaded yet ❌</span>
+
+                                    <span class="text-danger">
+                                        No certificate PDF uploaded yet ❌
+                                    </span>
+
                                 @endif
                             </td>
                         </tr>
-                        <tr><th>Review by</th><td>{{ $certificate->review_by }}</td></tr>
+
+                        <tr>
+                            <th>Review by</th>
+                            <td>{{ $certificate->review_by }}</td>
+                        </tr>
+
                         <tr>
                             <th>Reviewed on</th>
+
                             <td>
-                                @if ($certificate->review_by)
-                                    {{ $certificate->reviewed_at ? $certificate->reviewed_at->format('d M Y \a\t H:i:s') : 'Not yet reviewed' }}
+                                @if($certificate->review_by)
+
+                                    {{ $certificate->reviewed_at
+                                        ? $certificate->reviewed_at->format('d M Y \a\t H:i:s')
+                                        : 'Not yet reviewed'
+                                    }}
+
                                 @else
+
                                     Not yet reviewed
+
                                 @endif
                             </td>
                         </tr>
-                        <tr><th>Approval by</th><td>{{ $certificate->approval_by }}</td></tr>
+
+                        <tr>
+                            <th>Approval by</th>
+                            <td>{{ $certificate->approval_by }}</td>
+                        </tr>
+
                         <tr>
                             <th>Approved on</th>
+
                             <td>
-                                @if ($certificate->approval_by)
-                                    {{ $certificate->approved_at ? $certificate->approved_at->format('d M Y \a\t H:i:s') : 'Not yet approved' }}
+                                @if($certificate->approval_by)
+
+                                    {{ $certificate->approved_at
+                                        ? $certificate->approved_at->format('d M Y \a\t H:i:s')
+                                        : 'Not yet approved'
+                                    }}
+
                                 @else
+
                                     Not yet approved
+
                                 @endif
                             </td>
+                        </tr>
+
                         <tr>
                             <th>QR Code</th>
+
                             <td>
                                 @php
-                                    $url = url('');
-                                    $verification_url = $url . '?search=' . $certificate->certificate_number;
+                                    $verification_url = route(
+                                        'certificate.search',
+                                        [
+                                            'search' =>
+                                                $certificate->certificate_number
+                                        ]
+                                    );
                                 @endphp
-                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ $verification_url }}" />
+
+                                <img
+                                    src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&format=png&data={{ urlencode($verification_url) }}"
+                                    alt="Certificate Verification QR Code"
+                                >
                             </td>
                         </tr>
-                        <tr><th>Created by</th><td>{{ $certificate->created_by }}</td></tr>
-                        <tr><th>Created on</th><td>{{ $certificate->created_at->format('d M Y \a\t H:i:s') }}</td></tr>
-                        <tr><th>Last Updated by</th><td>{{ $certificate->updated_by }}</td></tr>
+
+                        <tr>
+                            <th>Created by</th>
+                            <td>{{ $certificate->created_by }}</td>
+                        </tr>
+
+                        <tr>
+                            <th>Created on</th>
+
+                            <td>
+                                {{ $certificate->created_at->format('d M Y \a\t H:i:s') }}
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th>Last Updated by</th>
+                            <td>{{ $certificate->updated_by }}</td>
+                        </tr>
+
                         <tr>
                             <th>Last Updated on</th>
+
                             <td>
-                                @if ($certificate->updated_by)
+                                @if($certificate->updated_by)
+
                                     {{ $certificate->updated_at->format('d M Y \a\t H:i:s') }}
+
                                 @endif
                             </td>
                         </tr>
-                        <tr><th>Deleted by</th>
+
+                        <tr>
+                            <th>Deleted by</th>
+
                             <td>
-                                @if ($certificate->status === 'Deleted')
+                                @if($certificate->status === 'Deleted')
+
                                     {{ $certificate->deleted_by }}
+
                                 @else
+
                                     N/A
+
                                 @endif
                             </td>
                         </tr>
+
                         <tr>
                             <th>Deleted on</th>
+
                             <td>
-                                @if ($certificate->deleted_by)
-                                    {{ $certificate->deleted_at ? $certificate->deleted_at->format('d M Y \a\t H:i:s') : 'N/A' }}
+                                @if($certificate->deleted_by)
+
+                                    {{ $certificate->deleted_at
+                                        ? $certificate->deleted_at->format('d M Y \a\t H:i:s')
+                                        : 'N/A'
+                                    }}
+
                                 @else
+
                                     N/A
+
                                 @endif
                             </td>
                         </tr>
+
                     </tbody>
                 </table>
-                {{-- Toggleable Inline PDF Viewer (toggle is in the header title area) --}}
-                @if($certificate->certificate_pdf)
-                    @php
-                        // Build ViewerJS URL (assets published under /public/laraview/)
-                        // If your server exposes /laraview/ directly, change to asset('laraview/index.html')
-                        $viewerBase = asset('public/laraview/index.html');
-                        $pdfFolder  = 'Certificate PDFs';
-                        $viewerSrc  = $viewerBase
-                                      . '#../' . rawurlencode($pdfFolder)
-                                      . '/'    . rawurlencode($certificate->certificate_pdf);
 
-                        $collapseId = 'pdfViewerCollapse-' . $certificate->id;
-                        $toggleId   = 'togglePdfHeaderBtn-' . $certificate->id;
+                {{-- Toggleable Inline PDF Viewer --}}
+                @if($certificate->certificate_pdf)
+
+                    @php
+                        // Build ViewerJS URL.
+                        // If the server exposes /laraview/ directly,
+                        // change this to asset('laraview/index.html').
+
+                        $viewerBase = asset(
+                            'public/laraview/index.html'
+                        );
+
+                        $pdfFolder = 'Certificate PDFs';
+
+                        $viewerSrc =
+                            $viewerBase .
+                            '#../' .
+                            rawurlencode($pdfFolder) .
+                            '/' .
+                            rawurlencode(
+                                $certificate->certificate_pdf
+                            );
+
+                        $collapseId =
+                            'pdfViewerCollapse-' .
+                            $certificate->id;
+
+                        $toggleId =
+                            'togglePdfHeaderBtn-' .
+                            $certificate->id;
                     @endphp
 
                     <div class="card mt-4">
+
                         <div class="card-header d-flex justify-content-between align-items-center">
-                            {{-- This button looks like plain text and toggles the collapse --}}
+
                             <button
                                 id="{{ $toggleId }}"
                                 class="btn btn-link header-toggle d-flex align-items-center"
@@ -313,59 +717,110 @@
                                 data-bs-toggle="collapse"
                                 data-bs-target="#{{ $collapseId }}"
                                 aria-expanded="false"
-                                aria-controls="{{ $collapseId }}">
+                                aria-controls="{{ $collapseId }}"
+                            >
                                 <i class="fa-solid fa-chevron-right me-2 chev"></i>
-                                <span>Certificate PDF Preview</span>
+
+                                <span>
+                                    Certificate PDF Preview
+                                </span>
                             </button>
 
                             <small class="text-muted">
-                                If it doesn’t load, <a href="{{ route('certificate.downloadPdf', $certificate->id) }}" target="_blank">download</a>.
+                                If it doesn’t load,
+
+                                <a
+                                    href="{{ route('certificate.downloadPdf', $certificate->id) }}"
+                                    target="_blank"
+                                >
+                                    download
+                                </a>.
                             </small>
+
                         </div>
 
                         <div class="collapse" id="{{ $collapseId }}">
-                            <div class="card-body p-0" style="height: 75vh;">
-                                {{-- Lazy-load the viewer only when opened --}}
+
+                            <div
+                                class="card-body p-0"
+                                style="height: 75vh;"
+                            >
                                 <iframe
                                     data-viewer-src="{{ $viewerSrc }}"
                                     title="Certificate PDF"
-                                    style="width:100%; height:100%; border:0;"
+                                    style="width: 100%; height: 100%; border: 0;"
                                     allow="fullscreen"
-                                    loading="lazy"></iframe>
+                                    loading="lazy"
+                                ></iframe>
                             </div>
+
                         </div>
                     </div>
 
-                    {{-- Toggle & lazy-load logic --}}
                     <script>
-                        document.addEventListener('DOMContentLoaded', function () {
-                            const collapseEl = document.getElementById('{{ $collapseId }}');
-                            const btn        = document.getElementById('{{ $toggleId }}');
-                            if (!collapseEl || !btn) return;
+                        document.addEventListener(
+                            'DOMContentLoaded',
+                            function () {
+                                const collapseEl =
+                                    document.getElementById(
+                                        '{{ $collapseId }}'
+                                    );
 
-                            const iframe = collapseEl.querySelector('iframe');
+                                const btn =
+                                    document.getElementById(
+                                        '{{ $toggleId }}'
+                                    );
 
-                            collapseEl.addEventListener('show.bs.collapse', function () {
-                                // Load the viewer src only on first open
-                                if (!iframe.getAttribute('src')) {
-                                    iframe.setAttribute('src', iframe.dataset.viewerSrc);
+                                if (!collapseEl || !btn) {
+                                    return;
                                 }
-                                btn.setAttribute('aria-expanded', 'true');
-                            });
 
-                            collapseEl.addEventListener('hide.bs.collapse', function () {
-                                btn.setAttribute('aria-expanded', 'false');
-                                // Optional: unload to free memory
-                                // iframe.removeAttribute('src');
-                            });
-                        });
+                                const iframe =
+                                    collapseEl.querySelector(
+                                        'iframe'
+                                    );
+
+                                collapseEl.addEventListener(
+                                    'show.bs.collapse',
+                                    function () {
+                                        if (
+                                            !iframe.getAttribute('src')
+                                        ) {
+                                            iframe.setAttribute(
+                                                'src',
+                                                iframe.dataset.viewerSrc
+                                            );
+                                        }
+
+                                        btn.setAttribute(
+                                            'aria-expanded',
+                                            'true'
+                                        );
+                                    }
+                                );
+
+                                collapseEl.addEventListener(
+                                    'hide.bs.collapse',
+                                    function () {
+                                        btn.setAttribute(
+                                            'aria-expanded',
+                                            'false'
+                                        );
+                                    }
+                                );
+                            }
+                        );
                     </script>
+
                 @else
+
                     <div class="alert alert-warning mt-4">
                         <i class="fa-solid fa-triangle-exclamation me-2"></i>
                         No certificate PDF uploaded yet.
                     </div>
+
                 @endif
+
             </div>
         </div>
     </div>
@@ -374,5 +829,6 @@
 @include('layouts.footer')
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>

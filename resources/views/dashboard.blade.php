@@ -192,14 +192,85 @@
                                                 <td> <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data={{ $verification_url }}"/> </td>
                                                 <td>
                                                     {{-- Action buttons --}}
-                                                    <a href="view-certificate/{{ $certificate->id }}" style="margin-bottom: 5px" target="_blank"><i class="fa-solid fa-circle-info" title="View Certificate Details"></i></a>
-                                                    <a href="edit-certificate/{{ $certificate->id }}" style="margin-bottom: 5px" target="_blank"><i class="fa-solid fa-pen-to-square" title="Edit Certificate Information"></i></a>
-                                                    <a href="delete-certificate/{{ $certificate->id }}" style="margin-bottom: 5px"><i class="fa-solid fa-trash" title="Delete Certificate"></i></a>
-                                                    @if(Auth::check() && (Auth::user()->id == $certificate->review_by_id || Auth::user()->name == $certificate->review_by) && $certificate->status == 'Pending Review')
-                                                        <a href="{{ route('certificate.review', $certificate->id) }}" style="margin-bottom: 5px">><i class="fa-solid fa-thumbs-up" title="Mark as Reviewed"></i></a>
+
+                                                    <a href="view-certificate/{{ $certificate->id }}" style="margin-bottom: 5px" target="_blank">
+                                                        <i class="fa-solid fa-circle-info" title="View Certificate Details"></i>
+                                                    </a>
+
+                                                    <a href="edit-certificate/{{ $certificate->id }}" style="margin-bottom: 5px" target="_blank">
+                                                        <i class="fa-solid fa-pen-to-square" title="Edit Certificate Information"></i>
+                                                    </a>
+
+                                                    @php
+                                                        $trainerSignatureExists =
+                                                            !empty($certificate->trainer_signature_path) &&
+                                                            \Illuminate\Support\Facades\Storage::exists(
+                                                                $certificate->trainer_signature_path
+                                                            );
+
+                                                        $signatorySignatureExists =
+                                                            empty($certificate->signatory_id) ||
+                                                            (
+                                                                !empty($certificate->signatory_signature_path) &&
+                                                                \Illuminate\Support\Facades\Storage::exists(
+                                                                    $certificate->signatory_signature_path
+                                                                )
+                                                            );
+
+                                                        $canGeneratePdf =
+                                                            $certificate->status === 'Approved' &&
+                                                            !empty($certificate->certificate_type) &&
+                                                            !empty($certificate->trainer_id) &&
+                                                            $trainerSignatureExists &&
+                                                            $signatorySignatureExists;
+                                                    @endphp
+
+                                                    @if($canGeneratePdf)
+                                                        <a
+                                                            href="{{ route('certificate.generatePdf', $certificate->id) }}"
+                                                            style="margin-bottom: 5px"
+                                                        >
+                                                            <i
+                                                                class="fa-solid fa-file-arrow-down text-danger"
+                                                                title="Generate and Download Certificate PDF"
+                                                            ></i>
+                                                        </a>
                                                     @endif
-                                                    @if(Auth::check() && (Auth::user()->id == $certificate->approval_by_id || Auth::user()->name == $certificate->approval_by) && $certificate->status == 'Pending Approval')
-                                                        <a href="{{ route('certificate.approve', $certificate->id) }}" style="margin-bottom: 5px">><i class="fa-solid fa-check" title="Mark as Approved"></i></a>
+
+                                                    <a href="delete-certificate/{{ $certificate->id }}" style="margin-bottom: 5px">
+                                                        <i class="fa-solid fa-trash" title="Delete Certificate"></i>
+                                                    </a>
+
+                                                    @if(
+                                                        Auth::check() &&
+                                                        (
+                                                            Auth::user()->id == $certificate->review_by_id ||
+                                                            Auth::user()->name == $certificate->review_by
+                                                        ) &&
+                                                        $certificate->status == 'Pending Review'
+                                                    )
+                                                        <a
+                                                            href="{{ route('certificate.review', $certificate->id) }}"
+                                                            style="margin-bottom: 5px"
+                                                        >
+                                                            <i class="fa-solid fa-thumbs-up" title="Mark as Reviewed"></i>
+                                                        </a>
+                                                    @endif
+
+                                                    @if(
+                                                        Auth::check() &&
+                                                        (
+                                                            Auth::user()->id == $certificate->approval_by_id ||
+                                                            Auth::user()->name == $certificate->approval_by
+                                                        ) &&
+                                                        $certificate->status == 'Pending Approval'
+                                                    )
+                                                        <a
+                                                            href="{{ route('certificate.approve', $certificate->id) }}"
+                                                            style="margin-bottom: 5px"
+                                                        >
+                                                            <i class="fa-solid fa-check" title="Mark as Approved"></i>
+                                                        </a>
                                                     @endif
                                                 </td>
                                             </tr>
@@ -228,7 +299,7 @@
                         },
                         dataType: 'json',
                         beforeSend: function() {
-                            $(".search-result tbody").html('<tr><td colspan="11">Searching...</td></tr>');
+                            $(".search-result tbody").html('<tr><td colspan="12">Searching...</td></tr>');
                         },
                         success: function(res) {
                             var _html = '';
@@ -247,22 +318,90 @@
                                 _html += '<td>' + data.status + '</td>';
                                 _html += '<td><img src="' + generateQRCode(verification_url) + '"/></td>';
                                 _html += '<td>';
-                                _html += '<a href="view-certificate/' + data.id + '" style="margin-bottom: 5px" target="_blank"><i class="fa-solid fa-circle-info" title="View Certificate Details"></i></a> ';
-                                _html += '<a href="edit-certificate/' + data.id + '" style="margin-bottom: 5px" target="_blank"><i class="fa-solid fa-pen-to-square" title="Edit Certificate Information"></i></a> ';
-                                _html += '<a href="delete-certificate/' + data.id + '" style="margin-bottom: 5px"><i class="fa-solid fa-trash" title="Delete Certificate"></i></a> ';
-                                
-                                if ({{ Auth::check() }} && ({{ Auth::user()->id }} == data.review_by_id || "{{ Auth::user()->name }}" == data.review_by) && data.status == 'Pending Review') {
-                                    _html += '<a href="' + "{{ url('') }}/review-certificate/" + data.id + '"><i class="fa-solid fa-thumbs-up" title="Mark as Reviewed"></i></a> ';
+
+                                _html +=
+                                    '<a href="view-certificate/' + data.id + '" ' +
+                                    'style="margin-bottom: 5px" target="_blank">' +
+                                    '<i class="fa-solid fa-circle-info" ' +
+                                    'title="View Certificate Details"></i></a> ';
+
+                                _html +=
+                                    '<a href="edit-certificate/' + data.id + '" ' +
+                                    'style="margin-bottom: 5px" target="_blank">' +
+                                    '<i class="fa-solid fa-pen-to-square" ' +
+                                    'title="Edit Certificate Information"></i></a> ';
+
+                                /*
+                                 * Show the generated-PDF button only for approved,
+                                 * non-legacy certificates containing the required
+                                 * trainer and optional signatory signature snapshots.
+                                 */
+                                var canGeneratePdf =
+                                    data.status === 'Approved' &&
+                                    data.certificate_type &&
+                                    data.trainer_id &&
+                                    data.trainer_signature_path &&
+                                    (
+                                        !data.signatory_id ||
+                                        data.signatory_signature_path
+                                    );
+
+                                if (canGeneratePdf) {
+                                    _html +=
+                                        '<a href="' +
+                                        "{{ url('generate-certificate-pdf') }}/" +
+                                        data.id +
+                                        '" style="margin-bottom: 5px">' +
+                                        '<i class="fa-solid fa-file-arrow-down text-danger" ' +
+                                        'title="Generate and Download Certificate PDF"></i>' +
+                                        '</a> ';
                                 }
-                                if ({{ Auth::check() }} && ({{ Auth::user()->id }} == data.approval_by_id || "{{ Auth::user()->name }}" == data.approval_by) && data.status == 'Pending Approval') {
-                                    _html += '<a href="' + "{{ url('') }}/approve-certificate/" + data.id + '"><i class="fa-solid fa-check" title="Mark as Approved"></i></a> ';
+
+                                _html +=
+                                    '<a href="delete-certificate/' + data.id + '" ' +
+                                    'style="margin-bottom: 5px">' +
+                                    '<i class="fa-solid fa-trash" ' +
+                                    'title="Delete Certificate"></i></a> ';
+
+                                if (
+                                    {{ Auth::check() ? 'true' : 'false' }} &&
+                                    (
+                                        {{ Auth::check() ? Auth::user()->id : 0 }} == data.review_by_id ||
+                                        @json(Auth::check() ? Auth::user()->name : '') == data.review_by
+                                    ) &&
+                                    data.status === 'Pending Review'
+                                ) {
+                                    _html +=
+                                        '<a href="' +
+                                        "{{ url('review-certificate') }}/" +
+                                        data.id +
+                                        '" style="margin-bottom: 5px">' +
+                                        '<i class="fa-solid fa-thumbs-up" ' +
+                                        'title="Mark as Reviewed"></i></a> ';
                                 }
-                                
+
+                                if (
+                                    {{ Auth::check() ? 'true' : 'false' }} &&
+                                    (
+                                        {{ Auth::check() ? Auth::user()->id : 0 }} == data.approval_by_id ||
+                                        @json(Auth::check() ? Auth::user()->name : '') == data.approval_by
+                                    ) &&
+                                    data.status === 'Pending Approval'
+                                ) {
+                                    _html +=
+                                        '<a href="' +
+                                        "{{ url('approve-certificate') }}/" +
+                                        data.id +
+                                        '" style="margin-bottom: 5px">' +
+                                        '<i class="fa-solid fa-check" ' +
+                                        'title="Mark as Approved"></i></a> ';
+                                }
+
                                 _html += '</td>';
                                 _html += '</tr>';
                             });
                             if (_html === '') {
-                                _html = '<tr><td colspan="11" class="text-center">No matching certificates found.</td></tr>';
+                                _html = '<tr><td colspan="12" class="text-center">No matching certificates found.</td></tr>';
                             }
                             $(".search-result tbody").html(_html); // Populate the tbody with new rows
         

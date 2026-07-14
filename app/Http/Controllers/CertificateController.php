@@ -5,6 +5,7 @@ use App\Models\Certificate;
 use App\Models\User;
 use App\Models\Trainer;
 use App\Models\Signatory;
+use App\Services\CertificatePdfService;
 use App\Exports\CertificateExport;
 use App\Imports\CertificateImport;
 use Illuminate\Http\Request;
@@ -20,7 +21,7 @@ use DB;
 | Developed by: Swad Ahmed Mahfuz (Head of Divison - Business Assurance & Training, Bangladesh)
 | Contact: swad.mahfuz@gmail.com, +1-725-867-7718, +88 01733 023 008
 | Project Start: 12 October 2022
-| Latest Stable Release: v4.0.0 -  14 July 2026
+| Latest Stable Release: v4.1.0 -  14 July 2026
 |--------------------------------------------------------------------------
 */
 
@@ -612,6 +613,37 @@ class CertificateController extends Controller
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'inline; filename="' . $certificate->certificate_pdf . '"'
         ]);
+    }
+
+    public function generateCertificatePdf($id, CertificatePdfService $certificatePdfService)
+    {
+        if (Auth::check())
+        {
+            $certificate = Certificate::findOrFail($id);
+
+            /// Only approved certificates may be generated as PDF.
+            if ($certificate->status != 'Approved') {
+                return back()->with('pdf_error', 'Only approved certificates can be generated as PDF.');
+            }
+
+            /// Generate the PDF in memory without permanently storing it.
+            $pdfContent = $certificatePdfService->generateTestPdf($certificate);
+
+            /// Replace characters that are unsafe in downloaded filenames.
+            $safeCertificateNumber = preg_replace('/[^A-Za-z0-9\-_.]/', '-', $certificate->certificate_number);
+
+            $filename = 'Training-Certificate-' . $safeCertificateNumber . '.pdf';
+
+            return response($pdfContent, 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+                'Content-Length' => strlen($pdfContent),
+                'Cache-Control' => 'private, no-store, no-cache, must-revalidate',
+                'Pragma' => 'no-cache',
+            ]);
+        }
+
+        return redirect()->route('certificate.search');
     }
 
     ///Live-Search in Dashboard

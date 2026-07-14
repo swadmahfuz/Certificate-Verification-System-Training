@@ -49,6 +49,7 @@ Route::get('/bulk-approve', [CertificateController::class, 'bulkApprove'])->name
 Route::post('/upload-pdf/{id}', [CertificateController::class, 'uploadPdf'])->name('certificate.uploadPdf');
 Route::get('/download-pdf/{id}', [CertificateController::class, 'downloadPdf'])->name('certificate.downloadPdf');
 Route::get('/view-pdf/{id}', [CertificateController::class, 'viewPdf'])->name('certificate.viewPdf');
+Route::get('/generate-certificate-pdf/{id}', [CertificateController::class, 'generateCertificatePdf'])->name('certificate.generatePdf');
 
     /// --- Import/Export ---
 Route::get('/imports-exports', [CertificateController::class,'importExportView']);
