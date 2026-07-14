@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="robots" content="noindex">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>TÜV Austria BIC CVS | Signatories</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-size: 13px;
+        }
+
+        .container {
+            max-width: 98%;
+            padding-top: 60px;
+            padding-bottom: 40px;
+        }
+
+        .table th {
+            background-color: #f1f1f1;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .table td, .table th {
+            font-size: 12px;
+            vertical-align: middle;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .signature-image {
+            width: 140px;
+            height: 55px;
+            object-fit: contain;
+            background-color: #ffffff;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 3px;
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .status-badge {
+            min-width: 70px;
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        .status-active {
+            color: #0f5132;
+            background-color: #d1e7dd;
+        }
+
+        .status-inactive {
+            color: #842029;
+            background-color: #f8d7da;
+        }
+    </style>
+</head>
+
+<body background="{{ asset('images/tuv-login-background1.jpg') }}">
+
+<section>
+    <div class="container">
+        <div class="card">
+
+            <div class="card-header">
+
+                <h6 class="text-end">
+                    Logged in User:
+                    <b>{{ auth()->user()->name }} ({{ auth()->user()->designation }})</b>
+                </h6>
+
+                <h3 class="text-center mb-3">
+                    TÜV Austria BIC - Training Certificate Verification System (CVS)
+                </h3>
+
+                <table style="width:65%; margin:auto;">
+                    <tr>
+                        <td class="px-2">
+                            <a href="{{ route('dashboard') }}" class="btn btn-primary w-100">
+                                <i class="fa-solid fa-arrow-left me-1"></i> Dashboard
+                            </a>
+                        </td>
+
+                        <td class="px-2">
+                            <a href="{{ route('signatories.create') }}" class="btn btn-success w-100">
+                                <i class="fa-solid fa-user-plus me-1"></i> Add New Signatory
+                            </a>
+                        </td>
+
+                        <td class="px-2">
+                            <a href="{{ route('signatories.index') }}" class="btn btn-info w-100">
+                                <i class="fa-solid fa-arrows-rotate me-1"></i> Refresh
+                            </a>
+                        </td>
+
+                        <td class="px-2">
+                            <a href="{{ url('/logout') }}" class="btn btn-danger w-100">
+                                <i class="fa-solid fa-right-from-bracket me-1"></i> Log Out
+                            </a>
+                        </td>
+                    </tr>
+                </table>
+
+            </div>
+
+            <div class="card-body table-responsive">
+
+                <h5 class="text-center mb-3">
+                    Training CVS Signatory Management
+                </h5>
+
+                @if(session('success'))
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{ session('success') }}
+
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                @endif
+
+                @php
+                    $offset = ($signatories->currentPage() - 1) * $signatories->perPage();
+                @endphp
+
+                <table class="table table-bordered table-striped text-center">
+
+                    <thead>
+                        <tr>
+                            <th>SL</th>
+                            <th>Signatory Name</th>
+                            <th>Email</th>
+                            <th>Designation</th>
+                            <th>Department</th>
+                            <th>Signature</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @forelse($signatories as $signatory)
+                            <tr>
+                                <td>{{ $loop->iteration + $offset }}</td>
+
+                                <td>
+                                    <strong>{{ $signatory->name }}</strong>
+                                </td>
+
+                                <td>{{ $signatory->email }}</td>
+
+                                <td>{{ $signatory->designation }}</td>
+
+                                <td>{{ $signatory->department ?: 'N/A' }}</td>
+
+                                <td>
+                                    @if($signatory->signature_path)
+                                        <a href="{{ route('signatories.signature', $signatory->id) }}" target="_blank">
+                                            <img
+                                                src="{{ route('signatories.signature', $signatory->id) }}"
+                                                alt="{{ $signatory->name }} Signature"
+                                                class="signature-image"
+                                            >
+                                        </a>
+                                    @else
+                                        <span class="text-muted">No signature uploaded</span>
+                                    @endif
+                                </td>
+
+                                <td>
+                                    @if($signatory->is_active)
+                                        <span class="status-badge status-active">Active</span>
+                                    @else
+                                        <span class="status-badge status-inactive">Inactive</span>
+                                    @endif
+                                </td>
+
+                                <td>
+                                    <div class="action-buttons">
+
+                                        <a href="{{ route('signatories.edit', $signatory->id) }}" class="btn btn-sm btn-warning">
+                                            <i class="fa-solid fa-pen-to-square me-1"></i> Edit
+                                        </a>
+
+                                        <form method="POST" action="{{ route('signatories.toggleStatus', $signatory->id) }}" onsubmit="return confirm('Are you sure you want to change this signatory status?');">
+                                            @csrf
+
+                                            @if($signatory->is_active)
+                                                <button type="submit" class="btn btn-sm btn-danger">
+                                                    <i class="fa-solid fa-user-slash me-1"></i> Deactivate
+                                                </button>
+                                            @else
+                                                <button type="submit" class="btn btn-sm btn-success">
+                                                    <i class="fa-solid fa-user-check me-1"></i> Activate
+                                                </button>
+                                            @endif
+                                        </form>
+
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="8">
+                                    No signatories have been added yet.
+                                </td>
+                            </tr>
+                        @endforelse
+
+                    </tbody>
+                </table>
+
+            </div>
+
+            @if($signatories->hasPages())
+                <div class="card-footer">
+                    {{ $signatories->links() }}
+                </div>
+            @endif
+
+        </div>
+    </div>
+</section>
+
+@include('layouts.footer')
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

@@ -107,9 +107,20 @@
                                             </a>
                                         </td>
                                         <td>
+                                            <a href="{{ route('trainers.index') }}" class="btn btn-dark d-flex align-items-center">
+                                                <i class="fa-solid fa-person-chalkboard me-1"></i> Trainers
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <a href="{{ route('signatories.index') }}" class="btn btn-dark d-flex align-items-center">
+                                                <i class="fa-solid fa-signature me-1"></i> Signatories
+                                            </a>
+                                        </td>
+                                        <td>
                                             <a href="all-users" class="btn btn-secondary d-flex align-items-center">
                                                 <i class="fa-solid fa-users me-1"></i> View All Users
                                             </a>
+                                        </td>
                                         <td>
                                             <a href="logout" class="btn btn-danger d-flex align-items-center">
                                                 <i class="fa-solid fa-right-from-bracket me-1"></i> Log Out

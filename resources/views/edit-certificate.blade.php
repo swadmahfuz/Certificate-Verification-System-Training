@@ -69,14 +69,13 @@
                         'company' => 'Company',
                         'training_name' => 'Training Name',
                         'location' => 'Training Location',
-                        'trainer' => 'Trainer Name',
                         'training_date' => 'Training Start Date',
                         'training_end' => 'Training End Date',
                         'issue_date' => 'Issue Date',
                         'expiry_date' => 'Expiry Date'
                     ] as $field => $label)
                         <div class="mb-3">
-                            <label for="{{ $field }}">{{ $label }}@if(in_array($field, ['certificate_number', 'participant_name', 'passport_nid', 'training_name', 'location', 'trainer', 'training_date', 'training_end', 'issue_date'])) * @endif</label>
+                            <label for="{{ $field }}">{{ $label }}@if(in_array($field, ['certificate_number', 'participant_name', 'passport_nid', 'training_name', 'location', 'training_date', 'training_end', 'issue_date'])) * @endif</label>
                             @error($field)
                                 <div class="text-danger">{{ $message }}</div>
                             @enderror
@@ -85,6 +84,81 @@
                                    value="{{ old($field, $certificate->$field) }}"
                                    placeholder="Enter {{ $label }}">
                         </div>
+                        @if($field == 'certificate_number')
+                            <div class="mb-3">
+                                <label for="certificate_type">Certificate Type *</label>
+
+                                @error('certificate_type')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
+
+                                <select name="certificate_type" id="certificate_type" class="form-control" required>
+                                    <option value="">Select Certificate Type</option>
+                                    <option value="Certificate" {{ old('certificate_type', $certificate->certificate_type) == 'Certificate' ? 'selected' : '' }}>Certificate</option>
+                                    <option value="Certificate of Achievement" {{ old('certificate_type', $certificate->certificate_type) == 'Certificate of Achievement' ? 'selected' : '' }}>Certificate of Achievement</option>
+                                    <option value="Certificate of Competency" {{ old('certificate_type', $certificate->certificate_type) == 'Certificate of Competency' ? 'selected' : '' }}>Certificate of Competency</option>
+                                    <option value="Certificate of Attendance" {{ old('certificate_type', $certificate->certificate_type) == 'Certificate of Attendance' ? 'selected' : '' }}>Certificate of Attendance</option>
+                                </select>
+                            </div>
+                        @endif
+                        @if($field == 'location')
+                            <div class="mb-3">
+                                <label for="trainer_id">Trainer *</label>
+
+                                @error('trainer_id')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
+
+                                <select name="trainer_id" id="trainer_id" class="form-control" required>
+                                    <option value="">Select Trainer</option>
+
+                                    @foreach($trainers as $trainer)
+                                        <option value="{{ $trainer->id }}" {{ old('trainer_id', $certificate->trainer_id) == $trainer->id ? 'selected' : '' }}>
+                                            {{ $trainer->name }} — {{ $trainer->designation }}
+
+                                            @if(!$trainer->is_active)
+                                                (Inactive)
+                                            @endif
+                                        </option>
+                                    @endforeach
+                                </select>
+
+                                <small class="text-muted">
+                                    The selected trainer’s name, email, designation and signature will be recorded automatically.
+                                </small>
+                            </div>
+                        @endif
+                        @if($field == 'location')
+                            <div class="mb-3">
+                                <label for="signatory_id">Signatory</label>
+
+                                @error('signatory_id')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
+
+                                <select name="signatory_id" id="signatory_id" class="form-control">
+                                    <option value="">No Additional Signatory</option>
+
+                                    @foreach($signatories as $signatory)
+                                        <option value="{{ $signatory->id }}" {{ old('signatory_id', $certificate->signatory_id) == $signatory->id ? 'selected' : '' }}>
+                                            {{ $signatory->name }} — {{ $signatory->designation }}
+
+                                            @if($signatory->department)
+                                                | {{ $signatory->department }}
+                                            @endif
+
+                                            @if(!$signatory->is_active)
+                                                (Inactive)
+                                            @endif
+                                        </option>
+                                    @endforeach
+                                </select>
+
+                                <small class="text-muted">
+                                    Optional. Select “No Additional Signatory” when the certificate should contain only the trainer’s signature.
+                                </small>
+                            </div>
+                        @endif
                     @endforeach
 
                     <div class="mb-3">

@@ -69,7 +69,7 @@
                         </td>
                         <td>
                             <a href="./downloads/TUVAT CVS Training - Data Import Template.xlsx" class="btn btn-info d-flex align-items-center">
-                                <i class="fa-solid fa-download me-1"></i> Download Blank CSV File
+                                <i class="fa-solid fa-download me-1"></i> Download Blank Excel File
                             </a>
                         </td>
                         <td>
@@ -87,10 +87,37 @@
             </center>
         </div>
         <div class="card-body">
+
+            @if(session('success'))
+                <div class="alert alert-success">
+                    {{ session('success') }}
+                </div>
+            @endif
+
+            @if(session('import_error'))
+                <div class="alert alert-danger">
+                    {{ session('import_error') }}
+                </div>
+            @endif
+
+            @if($errors->any())
+                <div class="alert alert-danger">
+                    <ul class="mb-0">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <form action="{{ route('import') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <input type="file" name="file" class="form-control">
                 <h6 style="text-align: right; font-style:italic; margin-top:5px">Please upload MS Excel sheet as per the given import template given above.</h6>
+                <h6 style="text-align: right; font-style: italic; font-weight: bold; margin-top: 5px; color: red;">The Excel file must include the columns "certificate_type", "trainer_email" and "signatory_email".</h6>
+                <h6 style="text-align: right; font-style: italic; margin-top: 5px;">Allowed certificate types: Certificate, Certificate of Achievement, Certificate of Competency, Certificate of Attendance.</h6>
+                <h6 style="text-align: right; font-style: italic; margin-top: 5px;">The trainer email must exactly match an active trainer registered in Trainer Management.</h6>
+                <h6 style="text-align: right; font-style: italic; margin-top: 5px;">The signatory email is optional. Leave it blank for a trainer-only certificate. If provided, it must exactly match an active signatory registered in Signatory Management.</h6>
                 <h6 style="text-align: right; font-style: italic; font-weight: bold; margin-top: 5px; color: red;">Do not change template formatting.</h6>
                 <h6 style="text-align: right; font-style: italic; font-weight: bold; margin-top: 5px; color: red;">All dates in excel sheet must be given in YYYY-MM-DD Format.</h6>
                 <h6 style="text-align: right; font-style: italic; font-weight: bold; margin-top: 5px; color: red;">Example: "20 May 2024" → "2024-05-20"</h6>

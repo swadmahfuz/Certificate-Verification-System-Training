@@ -100,6 +100,7 @@
                 <table class="table table-striped table-bordered w-100">
                     <tbody>
                         <tr><th>Certificate Number</th><td>{{ $certificate->certificate_number }}</td></tr>
+                        <tr><th>Certificate Type</th><td>{{ $certificate->certificate_type ?: 'Not Specified' }}</td></tr>
                         <tr>
                             <th>Certificate Validity</th>
                             <td>
@@ -136,7 +137,52 @@
                         <tr><th>Company</th><td>{{ $certificate->company }}</td></tr>
                         <tr><th>Training</th><td>{{ $certificate->training_name }}</td></tr>
                         <tr><th>Training Location</th><td>{{ $certificate->location }}</td></tr>
-                        <tr><th>Trainer</th><td>{{ $certificate->trainer }}</td></tr>
+                        <tr><th>Trainer</th>
+                            <td>
+                                <strong>{{ $certificate->trainer ?: 'Not Specified' }}</strong>
+
+                                @if($certificate->trainer_designation)
+                                    <br>
+                                    {{ $certificate->trainer_designation }}
+                                @endif
+
+                                @if($certificate->trainer_email)
+                                    <br>
+                                    <span class="text-muted">
+                                        {{ $certificate->trainer_email }}
+                                    </span>
+                                @endif
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Signatory</th>
+                            <td>
+                                @if($certificate->signatory_name)
+                                    <strong>{{ $certificate->signatory_name }}</strong>
+
+                                    @if($certificate->signatory_designation)
+                                        <br>
+                                        {{ $certificate->signatory_designation }}
+                                    @endif
+
+                                    @if($certificate->signatory_department)
+                                        <br>
+                                        {{ $certificate->signatory_department }}
+                                    @endif
+
+                                    @if($certificate->signatory_email)
+                                        <br>
+                                        <span class="text-muted">
+                                            {{ $certificate->signatory_email }}
+                                        </span>
+                                    @endif
+                                @else
+                                    <span class="text-muted">
+                                        No Additional Signatory
+                                    </span>
+                                @endif
+                            </td>
+                        </tr>
                         <tr><th>Training Start Date</th><td>{{ \Carbon\Carbon::parse($certificate->training_date)->format('d M Y') }}</td></tr>
                         <tr><th>Training End Date</th><td>{{ \Carbon\Carbon::parse($certificate->training_end)->format('d M Y') }}</td></tr>
                         <tr><th>Issue Date</th><td>{{ \Carbon\Carbon::parse($certificate->issue_date)->format('d M Y') }}</td></tr>

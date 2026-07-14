@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\CertificateController;
+use App\Http\Controllers\TrainerController;
+use App\Http\Controllers\SignatoryController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -60,3 +62,21 @@ Route::get('/live-search-deleted', [CertificateController::class, 'liveSearchDel
 
     /// --- Admin View (optional user list) ---
 Route::get('/all-users', [CertificateController::class, 'showAllUsers'])->name('allUsers');
+
+    /// --- Training CVS Trainer Management ---
+Route::get('/trainers', [TrainerController::class, 'index'])->name('trainers.index');
+Route::get('/trainers/create', [TrainerController::class, 'create'])->name('trainers.create');
+Route::post('/trainers', [TrainerController::class, 'store'])->name('trainers.store');
+Route::get('/trainers/{id}/edit', [TrainerController::class, 'edit'])->name('trainers.edit');
+Route::post('/trainers/{id}/update', [TrainerController::class, 'update'])->name('trainers.update');
+Route::post('/trainers/{id}/toggle-status', [TrainerController::class, 'toggleStatus'])->name('trainers.toggleStatus');
+Route::get('/trainers/{id}/signature', [TrainerController::class, 'signature'])->name('trainers.signature');
+
+    /// --- Training CVS Signatory Management ---
+Route::get('/signatories', [SignatoryController::class, 'index'])->name('signatories.index');
+Route::get('/signatories/create', [SignatoryController::class, 'create'])->name('signatories.create');
+Route::post('/signatories', [SignatoryController::class, 'store'])->name('signatories.store');
+Route::get('/signatories/{id}/edit', [SignatoryController::class, 'edit'])->name('signatories.edit');
+Route::post('/signatories/{id}/update', [SignatoryController::class, 'update'])->name('signatories.update');
+Route::post('/signatories/{id}/toggle-status', [SignatoryController::class, 'toggleStatus'])->name('signatories.toggleStatus');
+Route::get('/signatories/{id}/signature', [SignatoryController::class, 'signature'])->name('signatories.signature');

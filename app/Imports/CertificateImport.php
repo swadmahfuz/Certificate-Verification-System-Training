@@ -3,6 +3,8 @@
 namespace App\Imports;
 
 use App\Models\Certificate;
+use App\Models\Signatory;
+use App\Models\Trainer;
 use App\Models\User;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
@@ -32,17 +34,62 @@ class CertificateImport implements ToModel, WithHeadingRow
         $createdUser  = User::where('email', $row['created_by_email'])->first();   
         $reviewUser   = User::where('email', $row['review_by_email'])->first();
         $approvalUser = User::where('email', $row['approval_by_email'])->first();
+        $trainerEmail = strtolower(trim($row['trainer_email'] ?? ''));    // Use the trainer email to retrieve the correct active trainer and signature details
+        $trainer = Trainer::where('email', $trainerEmail)->where('is_active', true)->first();
+
+        if (!$trainer) {
+            throw new \Exception('No active trainer was found for email: ' . $trainerEmail);
+        }
+
+        if (empty($trainer->signature_path)) {
+            throw new \Exception('The trainer does not have a signature: ' . $trainerEmail);
+        }
+
+        $signatory = null;     /// Retrieve the optional signatory using the email address given in the Excel file.
+        $signatoryEmail = strtolower(trim($row['signatory_email'] ?? ''));
+
+        if (!empty($signatoryEmail)) {
+            $signatory = Signatory::where('email', $signatoryEmail) ->where('is_active', true) ->first();
+
+            if (!$signatory) {
+                throw new \Exception('No active signatory was found for email: ' . $signatoryEmail);
+            }
+
+            if (empty($signatory->signature_path)) {
+                throw new \Exception('The signatory does not have a signature: ' . $signatoryEmail);
+            }
+        }
+
+        /// Validate the certificate type
+        $certificateType = trim($row['certificate_type'] ?? '');
+        $allowedCertificateTypes = [ 'Certificate', 'Certificate of Achievement', 'Certificate of Competency', 'Certificate of Attendance', ];
+
+        if (!in_array($certificateType, $allowedCertificateTypes, true)) {
+            throw new \Exception('Invalid certificate type: ' . $certificateType);
+        }
+
         $loggedInUser = Auth::user();
 
         return new Certificate([
             'certificate_number' => $row['certificate_number'],
+            'certificate_type' => $certificateType,
             'participant_name' => $row['participant_name'],
             'passport_nid' => $row['passport_nid'],
             'driving_license' => $row['driving_license'],
             'company' => $row['company'],
             'training_name' => $row['training_name'],
             'location' => $row['location'],
-            'trainer' => $row['trainer'],
+            'trainer_id' => $trainer->id,
+            'trainer' => $trainer->name,
+            'trainer_email' => $trainer->email,
+            'trainer_designation' => $trainer->designation,
+            'trainer_signature_path' => $trainer->signature_path,
+            'signatory_id' => $signatory ? $signatory->id : null,
+            'signatory_name' => $signatory ? $signatory->name : null,
+            'signatory_email' => $signatory ? $signatory->email : null,
+            'signatory_designation' => $signatory ? $signatory->designation : null,
+            'signatory_department' => $signatory ? $signatory->department : null,
+            'signatory_signature_path' => $signatory ? $signatory->signature_path : null,
             'training_date' => $row['training_date'],
             'training_end' => $row['training_end'],
             'issue_date' => $row['issue_date'],

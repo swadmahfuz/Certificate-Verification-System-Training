@@ -14,7 +14,7 @@ class CreateCertificatesTable extends Migration
     public function up()
     {
         Schema::create('certificates', function (Blueprint $table) {
-            // 👉 Un-comment the following lines ONLY when setting up a fresh database:
+            // 👉 Un-comment the following lines ONLY when setting up a fresh database. But also done auto if all migrations are run:
             $table->increments('id');
             $table->string('certificate_number')->unique();
             $table->string('participant_name');

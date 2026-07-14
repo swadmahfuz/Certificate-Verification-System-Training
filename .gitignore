@@ -2,3 +2,5 @@ storage/
 .env
 /bootstrap/cache/*
 !bootstrap/cache/.gitignore
+bootstrap/cache/packages.php
+bootstrap/cache/services.php

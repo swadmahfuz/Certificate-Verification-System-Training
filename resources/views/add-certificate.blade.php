@@ -64,6 +64,51 @@
                     </div>
 
                     <div class="mb-3">
+                        <label for="certificate_type">Certificate Type *</label>
+
+                        @error('certificate_type')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
+
+                        <select
+                            name="certificate_type"
+                            id="certificate_type"
+                            class="form-control"
+                            required
+                        >
+                            <option value="">Select Certificate Type</option>
+
+                            <option
+                                value="Certificate"
+                                {{ old('certificate_type') == 'Certificate' ? 'selected' : '' }}
+                            >
+                                Certificate
+                            </option>
+
+                            <option
+                                value="Certificate of Achievement"
+                                {{ old('certificate_type') == 'Certificate of Achievement' ? 'selected' : '' }}
+                            >
+                                Certificate of Achievement
+                            </option>
+
+                            <option
+                                value="Certificate of Competency"
+                                {{ old('certificate_type') == 'Certificate of Competency' ? 'selected' : '' }}
+                            >
+                                Certificate of Competency
+                            </option>
+
+                            <option
+                                value="Certificate of Attendance"
+                                {{ old('certificate_type') == 'Certificate of Attendance' ? 'selected' : '' }}
+                            >
+                                Certificate of Attendance
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
                         <label for="participant_name">Participant Name *</label>
                         @error('participant_name') <div class="text-danger">{{ $message }}</div> @enderror
                         <input type="text" name="participant_name" class="form-control" value="{{ old('participant_name') }}">
@@ -98,9 +143,62 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="trainer">Trainer Name *</label>
-                        @error('trainer') <div class="text-danger">{{ $message }}</div> @enderror
-                        <input type="text" name="trainer" class="form-control" value="{{ old('trainer') }}">
+                        <label for="trainer_id">Trainer *</label>
+
+                        @error('trainer_id')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
+
+                        <select
+                            name="trainer_id"
+                            id="trainer_id"
+                            class="form-control"
+                            required
+                        >
+                            <option value="">Select Trainer</option>
+
+                            @foreach($trainers as $trainer)
+                                <option
+                                    value="{{ $trainer->id }}"
+                                    {{ old('trainer_id') == $trainer->id ? 'selected' : '' }}
+                                >
+                                    {{ $trainer->name }}
+                                    @if($trainer->designation)
+                                        — {{ $trainer->designation }}
+                                    @endif
+                                </option>
+                            @endforeach
+                        </select>
+
+                        <small class="text-muted">
+                            The selected trainer’s email, designation and signature will be
+                            recorded automatically.
+                        </small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="signatory_id">Signatory</label>
+
+                        @error('signatory_id')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
+
+                        <select name="signatory_id" id="signatory_id" class="form-control">
+                            <option value="">No Additional Signatory</option>
+
+                            @foreach($signatories as $signatory)
+                                <option value="{{ $signatory->id }}" {{ old('signatory_id') == $signatory->id ? 'selected' : '' }}>
+                                    {{ $signatory->name }} — {{ $signatory->designation }}
+                                    @if($signatory->department)
+                                        | {{ $signatory->department }}
+                                    @endif
+                                </option>
+                            @endforeach
+                        </select>
+
+                        <small class="text-muted">
+                            Optional. Leave this as “No Additional Signatory” when the certificate should contain only the trainer’s signature.
+                        </small>
                     </div>
 
                     <div class="mb-3">
