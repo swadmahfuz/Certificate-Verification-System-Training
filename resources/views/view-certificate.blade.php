@@ -305,6 +305,32 @@
                         </tr>
 
                         <tr>
+                            <th>Training Category</th>
+                            <td>
+                                @if($certificate->is_refresher)
+                                    <span class="text-primary">
+                                        Refresher Training
+                                    </span>
+                                @else
+                                    Initial Training
+                                @endif
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th>Training Sessions</th>
+                            <td>
+                                @if($certificate->has_practical)
+                                    <span class="text-success">
+                                        Theory &amp; Practical
+                                    </span>
+                                @else
+                                    Theory Only
+                                @endif
+                            </td>
+                        </tr>
+
+                        <tr>
                             <th>Training Location</th>
                             <td>{{ $certificate->location }}</td>
                         </tr>

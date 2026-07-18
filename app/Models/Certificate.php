@@ -10,7 +10,7 @@ class Certificate extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $table = "certificates_training";
+    protected $table = 'certificates_training';
 
     protected $guarded = [];
 
@@ -19,5 +19,10 @@ class Certificate extends Model
         'pdf_uploaded_at',
         'reviewed_at',
         'approved_at',
+    ];
+
+    protected $casts = [
+        'is_refresher' => 'boolean',
+        'has_practical' => 'boolean',
     ];
 }

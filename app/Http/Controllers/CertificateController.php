@@ -21,7 +21,7 @@ use DB;
 | Developed by: Swad Ahmed Mahfuz (Head of Divison - Business Assurance & Training, Bangladesh)
 | Contact: swad.mahfuz@gmail.com, +1-725-867-7718, +88 01733 023 008
 | Project Start: 12 October 2022
-| Latest Stable Release: v4.1.0 -  14 July 2026
+| Latest Stable Release: v4.1.1 -  19 July 2026
 |--------------------------------------------------------------------------
 */
 
@@ -164,8 +164,10 @@ class CertificateController extends Controller
         if (Auth::check())
         {
             $validate = $request->validate([
-                'certificate_number' => 'required|unique:certificates_training', ///check if certificate is unique from "Certificates" table
+                'certificate_number' => 'required|unique:certificates_training',
                 'certificate_type' => 'required|in:Certificate,Certificate of Achievement,Certificate of Competency,Certificate of Attendance',
+                'has_practical' => 'nullable|boolean',
+                'is_refresher' => 'nullable|boolean',
                 'participant_name' => 'required',
                 'passport_nid' => 'required',
                 'training_name' => 'required',
@@ -175,69 +177,102 @@ class CertificateController extends Controller
                 'training_date' => 'required',
                 'training_end' => 'required',
                 'issue_date' => 'required',
-                'expiry_date' => 'nullable',    /// To include certificates that do not have expiry date.
+                'expiry_date' => 'nullable',
                 'review_by' => 'required',
                 'approval_by' => 'required',
             ]);
 
             /// Retrieve the selected active trainer.
-            $trainer = Trainer::where('id', $request->trainer_id) ->where('is_active', true) ->first();
+            $trainer = Trainer::where('id', $request->trainer_id)
+                ->where('is_active', true)
+                ->first();
+
             if (!$trainer) {
-                return back()->withErrors(['trainer_id' => 'The selected trainer is unavailable or inactive.',]) ->withInput();
+                return back()
+                    ->withErrors([
+                        'trainer_id' => 'The selected trainer is unavailable or inactive.',
+                    ])
+                    ->withInput();
             }
 
             /// A trainer signature is required for future certificate generation.
             if (empty($trainer->signature_path)) {
-                return back()->withErrors(['trainer_id' => 'The selected trainer does not have a signature.',]) ->withInput();
+                return back()
+                    ->withErrors([
+                        'trainer_id' => 'The selected trainer does not have a signature.',
+                    ])
+                    ->withInput();
             }
 
             /// Retrieve the selected signatory, if one was selected.
             $signatory = null;
 
             if ($request->filled('signatory_id')) {
-                $signatory = Signatory::where('id', $request->signatory_id) ->where('is_active', true) ->first();
+                $signatory = Signatory::where('id', $request->signatory_id)
+                    ->where('is_active', true)
+                    ->first();
 
                 if (!$signatory) {
-                    return back()->withErrors(['signatory_id' => 'The selected signatory is unavailable or inactive.',]) ->withInput();
+                    return back()
+                        ->withErrors([
+                            'signatory_id' => 'The selected signatory is unavailable or inactive.',
+                        ])
+                        ->withInput();
                 }
 
                 if (empty($signatory->signature_path)) {
-                    return back()->withErrors(['signatory_id' => 'The selected signatory does not have a signature.',]) ->withInput();
+                    return back()
+                        ->withErrors([
+                            'signatory_id' => 'The selected signatory does not have a signature.',
+                        ])
+                        ->withInput();
                 }
             }
 
-            ///The following code block is to find out user IDs of reviewer and approver in case the name of user changes and there are certificates pending review or approval.
-
+            /// Find reviewer and approver user IDs.
             $review_by_user = User::where('name', $request->review_by)->first();
+
             if ($review_by_user) {
-                $review_by_user_id = $review_by_user->id; // Store the found user ID in a variable
-            } else {
-                $review_by_user_id = null; // Handle cases where no matching user is found
+                $review_by_user_id = $review_by_user->id;
+            }
+            else {
+                $review_by_user_id = null;
             }
 
             $approval_by_user = User::where('name', $request->approval_by)->first();
+
             if ($approval_by_user) {
-                $approval_by_user_id = $approval_by_user->id; // Store the found user ID in a variable
-            } else {
-                $approval_by_user_id = null; // Handle cases where no matching user is found
+                $approval_by_user_id = $approval_by_user->id;
             }
-            
+            else {
+                $approval_by_user_id = null;
+            }
+
             $certificate = new Certificate();
+
             $certificate->certificate_number = $request->certificate_number;
             $certificate->certificate_type = $request->certificate_type;
+
+            /// Store training-classification options.
+            $certificate->has_practical = $request->boolean('has_practical');
+            $certificate->is_refresher = $request->boolean('is_refresher');
+
             $certificate->participant_name = $request->participant_name;
             $certificate->passport_nid = $request->passport_nid;
             $certificate->driving_license = $request->driving_license;
             $certificate->company = $request->company;
             $certificate->training_name = $request->training_name;
             $certificate->location = $request->location;
-            /// Store the selected trainer and the trainer details applicable when this certificate is created.
+
+            /// Store trainer details applicable when this certificate is created.
             $certificate->trainer_id = $trainer->id;
             $certificate->trainer = $trainer->name;
             $certificate->trainer_email = $trainer->email;
             $certificate->trainer_designation = $trainer->designation;
             $certificate->trainer_signature_path = $trainer->signature_path;
-            if ($signatory) {     /// Store the optional signatory details applicable when this certificate is created.
+
+            /// Store optional signatory details.
+            if ($signatory) {
                 $certificate->signatory_id = $signatory->id;
                 $certificate->signatory_name = $signatory->name;
                 $certificate->signatory_email = $signatory->email;
@@ -253,6 +288,7 @@ class CertificateController extends Controller
                 $certificate->signatory_department = null;
                 $certificate->signatory_signature_path = null;
             }
+
             $certificate->training_date = $request->training_date;
             $certificate->training_end = $request->training_end;
             $certificate->issue_date = $request->issue_date;
@@ -266,10 +302,12 @@ class CertificateController extends Controller
             $certificate->updated_by = Auth::user()->name;
             $certificate->updated_by_id = Auth::user()->id;
             $certificate->updated_at = Carbon::now();
-            $certificate->status = "Pending Review";       ///Certificate status flow: Pending Review-> Pending Approval ->Approved
+            $certificate->status = 'Pending Review';
             $certificate->save();
+
             return redirect('/view-certificate/' . $certificate->id);
         }
+
         return redirect()->route('certificate.search');
     }
 
@@ -310,6 +348,8 @@ class CertificateController extends Controller
             $validate = $request->validate([
                 'certificate_number' => 'required|unique:certificates_training,certificate_number,' . $request->id,
                 'certificate_type' => 'required|in:Certificate,Certificate of Achievement,Certificate of Competency,Certificate of Attendance',
+                'has_practical' => 'nullable|boolean',
+                'is_refresher' => 'nullable|boolean',
                 'participant_name' => 'required',
                 'passport_nid' => 'required',
                 'training_name' => 'required',
@@ -319,59 +359,97 @@ class CertificateController extends Controller
                 'training_date' => 'required',
                 'training_end' => 'required',
                 'issue_date' => 'required',
-                'expiry_date' => 'nullable',        /// To include certificates that do not have expiry date.
+                'expiry_date' => 'nullable',
                 'review_by' => 'required',
                 'approval_by' => 'required',
             ]);
 
-            
-            $trainer = Trainer::find($request->trainer_id);     /// Retrieve the selected trainer.
+            /// Retrieve the selected trainer.
+            $trainer = Trainer::find($request->trainer_id);
+
             if (!$trainer) {
-                return back()->withErrors(['trainer_id' => 'The selected trainer could not be found.'])->withInput();
+                return back()
+                    ->withErrors([
+                        'trainer_id' => 'The selected trainer could not be found.',
+                    ])
+                    ->withInput();
             }
 
-            $signatory = null;     /// Retrieve the selected signatory, if one was selected.
+            /// A trainer signature is required for certificate generation.
+            if (empty($trainer->signature_path)) {
+                return back()
+                    ->withErrors([
+                        'trainer_id' => 'The selected trainer does not have a signature.',
+                    ])
+                    ->withInput();
+            }
+
+            /// Retrieve the selected signatory, if one was selected.
+            $signatory = null;
+
             if ($request->filled('signatory_id')) {
                 $signatory = Signatory::find($request->signatory_id);
 
                 if (!$signatory) {
-                    return back()->withErrors(['signatory_id' => 'The selected signatory could not be found.'])->withInput();
+                    return back()
+                        ->withErrors([
+                            'signatory_id' => 'The selected signatory could not be found.',
+                        ])
+                        ->withInput();
                 }
 
                 if (empty($signatory->signature_path)) {
-                    return back()->withErrors(['signatory_id' => 'The selected signatory does not have a signature.'])->withInput();
+                    return back()
+                        ->withErrors([
+                            'signatory_id' => 'The selected signatory does not have a signature.',
+                        ])
+                        ->withInput();
                 }
             }
 
             $review_by_user = User::where('name', $request->review_by)->first();
+
             if ($review_by_user) {
-                $review_by_user_id = $review_by_user->id; // Store the found user ID in a variable
-            } else {
-                $review_by_user_id = null; // Handle cases where no matching user is found
+                $review_by_user_id = $review_by_user->id;
+            }
+            else {
+                $review_by_user_id = null;
             }
 
             $approval_by_user = User::where('name', $request->approval_by)->first();
+
             if ($approval_by_user) {
-                $approval_by_user_id = $approval_by_user->id; // Store the found user ID in a variable
-            } else {
-                $approval_by_user_id = null; // Handle cases where no matching user is found
+                $approval_by_user_id = $approval_by_user->id;
+            }
+            else {
+                $approval_by_user_id = null;
             }
 
             $certificate = Certificate::findOrFail($request->id);
+
             $certificate->certificate_number = $request->certificate_number;
             $certificate->certificate_type = $request->certificate_type;
+
+            /// Store training-classification options.
+            $certificate->has_practical = $request->boolean('has_practical');
+            $certificate->is_refresher = $request->boolean('is_refresher');
+
             $certificate->participant_name = $request->participant_name;
             $certificate->passport_nid = $request->passport_nid;
             $certificate->driving_license = $request->driving_license;
             $certificate->company = $request->company;
             $certificate->training_name = $request->training_name;
             $certificate->location = $request->location;
-            $certificate->trainer_id = $trainer->id;    /// Store the selected trainer and the trainer details applicable when this certificate is updated.
+
+            /// Store trainer details applicable when this certificate is updated.
+            $certificate->trainer_id = $trainer->id;
             $certificate->trainer = $trainer->name;
             $certificate->trainer_email = $trainer->email;
             $certificate->trainer_designation = $trainer->designation;
             $certificate->trainer_signature_path = $trainer->signature_path;
-            if ($signatory) {   /// Store the optional signatory details applicable when this certificate is updated.
+
+            /// Store optional signatory details.
+            if ($signatory) {
                 $certificate->signatory_id = $signatory->id;
                 $certificate->signatory_name = $signatory->name;
                 $certificate->signatory_email = $signatory->email;
@@ -387,6 +465,7 @@ class CertificateController extends Controller
                 $certificate->signatory_department = null;
                 $certificate->signatory_signature_path = null;
             }
+
             $certificate->training_date = $request->training_date;
             $certificate->training_end = $request->training_end;
             $certificate->issue_date = $request->issue_date;
@@ -397,13 +476,15 @@ class CertificateController extends Controller
             $certificate->approval_by = $request->approval_by;
             $certificate->approval_by_id = $approval_by_user_id;
             $certificate->approved_at = null;
-            $certificate->status = "Pending Review";       ///Status changed back to pending if any update is made and will again require review and approval 
+            $certificate->status = 'Pending Review';
             $certificate->updated_by = Auth::user()->name;
             $certificate->updated_by_id = Auth::user()->id;
             $certificate->updated_at = Carbon::now();
             $certificate->save();
+
             return redirect('/view-certificate/' . $certificate->id);
         }
+
         return redirect()->route('certificate.search');
     }
 

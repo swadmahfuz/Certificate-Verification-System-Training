@@ -375,7 +375,7 @@ class CertificatePdfService
         $this->drawCenteredFittedLine(
             $pdf,
             $this->getCompletionWording(
-                $certificate->certificate_type
+                $certificate
             ),
             121.8,
             'Palatino',
@@ -1108,38 +1108,80 @@ class CertificatePdfService
     }
 
     /**
-     * Get the body wording for the certificate type.
+     * Get the body wording according to certificate type
+     * and training classification.
      *
-     * @param  string|null  $certificateType
+     * @param  \App\Models\Certificate  $certificate
      * @return string
      */
     private function getCompletionWording(
-        $certificateType
+        Certificate $certificate
     ) {
         $normalizedType = strtolower(
             trim(
-                (string) $certificateType
+                (string) $certificate->certificate_type
             )
         );
 
+        $hasPractical = (bool) $certificate->has_practical;
+        $isRefresher = (bool) $certificate->is_refresher;
+
+        /*
+        * Certificate of Competency continues to use
+        * assessment-specific wording.
+        */
         if (
             $normalizedType ===
             'certificate of competency'
         ) {
+            $assessmentDescription = $isRefresher
+                ? 'refresher assessment'
+                : 'assessment';
+
+            if ($hasPractical)
+            {
+                $assessmentDescription .=
+                    ' (Theory & Practical)';
+            }
+
             return
-                'Has participated in and successfully completed the assessment on';
+                'Has participated in and successfully completed the ' .
+                $assessmentDescription .
+                ' on';
         }
 
+        /*
+        * Build the training-program description for
+        * Certificate, Achievement and Attendance.
+        */
+        $programDescription = $isRefresher
+            ? 'refresher training program'
+            : 'training program';
+
+        if ($hasPractical)
+        {
+            $programDescription .=
+                ' (Theory & Practical)';
+        }
+
+        /*
+        * Attendance certificates do not state
+        * "successfully completed".
+        */
         if (
             $normalizedType ===
             'certificate of attendance'
         ) {
             return
-                'Has participated in the training program on';
+                'Has participated in the ' .
+                $programDescription .
+                ' on';
         }
 
         return
-            'Has participated in and successfully completed the training program on';
+            'Has participated in and successfully completed the ' .
+            $programDescription .
+            ' on';
     }
 
     /**
@@ -1164,19 +1206,44 @@ class CertificatePdfService
      * @param  \App\Models\Certificate  $certificate
      * @return string
      */
+
     private function getIdentificationLine(
-        Certificate $certificate
+    Certificate $certificate
     ) {
-        if (!empty($certificate->driving_license))
-        {
+        $passportNid = trim(
+            (string) $certificate->passport_nid
+        );
+
+        $drivingLicense = trim(
+            (string) $certificate->driving_license
+        );
+
+        if (
+            !empty($passportNid) &&
+            !empty($drivingLicense)
+        ) {
             return
-                'Driving License No: ' .
-                $certificate->driving_license;
+                'NID/Passport: ' .
+                $passportNid .
+                ' | Driving License: ' .
+                $drivingLicense;
         }
 
-        return
-            'NID/Passport No: ' .
-            $certificate->passport_nid;
+        if (!empty($passportNid))
+        {
+            return
+                'NID/Passport: ' .
+                $passportNid;
+        }
+
+        if (!empty($drivingLicense))
+        {
+            return
+                'Driving License: ' .
+                $drivingLicense;
+        }
+
+        return 'Identification: N/A';
     }
 
     /**
