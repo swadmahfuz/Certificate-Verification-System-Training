@@ -263,6 +263,18 @@
                             </div>
                         @enderror
 
+                        @error('internal_audit_training')
+                            <div class="text-danger">
+                                {{ $message }}
+                            </div>
+                        @enderror
+
+                        @error('online_training')
+                            <div class="text-danger">
+                                {{ $message }}
+                            </div>
+                        @enderror
+
                         <div class="training-options">
 
                             <div class="form-check mb-2">
@@ -306,6 +318,50 @@
 
                                 <div class="text-muted small">
                                     Select this when the program is a refresher training.
+                                </div>
+                            </div>
+
+                            <div class="form-check mt-2">
+                                <input
+                                    type="checkbox"
+                                    name="internal_audit_training"
+                                    id="internal_audit_training"
+                                    class="form-check-input"
+                                    value="1"
+                                    {{ old('internal_audit_training') ? 'checked' : '' }}
+                                >
+
+                                <label
+                                    for="internal_audit_training"
+                                    class="form-check-label"
+                                >
+                                    Internal Auditor Training
+                                </label>
+
+                                <div class="text-muted small">
+                                    Select this when the certificate is for an Internal Auditor training program.
+                                </div>
+                            </div>
+
+                            <div class="form-check mt-2">
+                                <input
+                                    type="checkbox"
+                                    name="online_training"
+                                    id="online_training"
+                                    class="form-check-input"
+                                    value="1"
+                                    {{ old('online_training') ? 'checked' : '' }}
+                                >
+
+                                <label
+                                    for="online_training"
+                                    class="form-check-label"
+                                >
+                                    Online Training
+                                </label>
+
+                                <div class="text-muted small">
+                                    Select this when the training program was conducted online.
                                 </div>
                             </div>
 

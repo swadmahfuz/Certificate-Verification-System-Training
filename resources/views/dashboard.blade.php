@@ -149,7 +149,7 @@
                                             <th>Certificate ID</th>
                                             <th>Name</th>
                                             <th>Company</th>
-                                            <th>Training</th>
+                                            <th>Training Title</th>
                                             <th>Trainer</th>
                                             <th>Trg Date</th>
                                             <th>Issue Date</th>
@@ -172,7 +172,13 @@
                                                 <td>{{ $certificate->certificate_number }}</td>
                                                 <td>{{ $certificate->participant_name }}</td>
                                                 <td>{{ $certificate->company }}</td>
-                                                <td>{{ $certificate->training_name }}</td>
+                                                <td>
+                                                    @if($certificate->internal_audit_training)
+                                                        Internal Auditor - {{ $certificate->training_name }}
+                                                    @else
+                                                        {{ $certificate->training_name }}
+                                                    @endif
+                                                </td>
                                                 <td>{{ $certificate->trainer }}</td>
                                                 <td>{{ \Carbon\Carbon::createFromFormat('Y-m-d', $certificate->training_date)->format('d-m-Y') }}</td> 
                                                 <td>{{ \Carbon\Carbon::createFromFormat('Y-m-d', $certificate->issue_date)->format('d-m-Y') }}</td>
@@ -310,7 +316,13 @@
                                 _html += '<td>' + data.certificate_number + '</td>';
                                 _html += '<td>' + data.participant_name + '</td>';
                                 _html += '<td>' + data.company + '</td>';
-                                _html += '<td>' + data.training_name + '</td>';
+                                var trainingTitle =
+                                    data.internal_audit_training === true ||
+                                    data.internal_audit_training == 1
+                                        ? 'Internal Auditor - ' + data.training_name
+                                        : data.training_name;
+
+                                _html += '<td>' + trainingTitle + '</td>';
                                 _html += '<td>' + data.trainer + '</td>';
                                 _html += '<td>' + formatDate(data.training_date) + '</td>';
                                 _html += '<td>' + formatDate(data.issue_date) + '</td>';

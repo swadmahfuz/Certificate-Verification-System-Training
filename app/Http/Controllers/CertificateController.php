@@ -11,8 +11,9 @@ use App\Imports\CertificateImport;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
-use DB;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,7 +22,7 @@ use DB;
 | Developed by: Swad Ahmed Mahfuz (Head of Divison - Business Assurance & Training, Bangladesh)
 | Contact: swad.mahfuz@gmail.com, +1-725-867-7718, +88 01733 023 008
 | Project Start: 12 October 2022
-| Latest Stable Release: v4.1.1 -  19 July 2026
+| Latest Stable Release: v4.1.2 -  20 July 2026
 |--------------------------------------------------------------------------
 */
 
@@ -168,6 +169,8 @@ class CertificateController extends Controller
                 'certificate_type' => 'required|in:Certificate,Certificate of Achievement,Certificate of Competency,Certificate of Attendance',
                 'has_practical' => 'nullable|boolean',
                 'is_refresher' => 'nullable|boolean',
+                'internal_audit_training' => 'nullable|boolean',
+                'online_training' => 'nullable|boolean',
                 'participant_name' => 'required',
                 'passport_nid' => 'required',
                 'training_name' => 'required',
@@ -256,6 +259,8 @@ class CertificateController extends Controller
             /// Store training-classification options.
             $certificate->has_practical = $request->boolean('has_practical');
             $certificate->is_refresher = $request->boolean('is_refresher');
+            $certificate->internal_audit_training = $request->boolean('internal_audit_training');
+            $certificate->online_training = $request->boolean('online_training');
 
             $certificate->participant_name = $request->participant_name;
             $certificate->passport_nid = $request->passport_nid;
@@ -350,6 +355,8 @@ class CertificateController extends Controller
                 'certificate_type' => 'required|in:Certificate,Certificate of Achievement,Certificate of Competency,Certificate of Attendance',
                 'has_practical' => 'nullable|boolean',
                 'is_refresher' => 'nullable|boolean',
+                'internal_audit_training' => 'nullable|boolean',
+                'online_training' => 'nullable|boolean',
                 'participant_name' => 'required',
                 'passport_nid' => 'required',
                 'training_name' => 'required',
@@ -433,6 +440,8 @@ class CertificateController extends Controller
             /// Store training-classification options.
             $certificate->has_practical = $request->boolean('has_practical');
             $certificate->is_refresher = $request->boolean('is_refresher');
+            $certificate->internal_audit_training = $request->boolean('internal_audit_training');
+            $certificate->online_training = $request->boolean('online_training');
 
             $certificate->participant_name = $request->participant_name;
             $certificate->passport_nid = $request->passport_nid;
@@ -548,46 +557,76 @@ class CertificateController extends Controller
 
     public function bulkReview()
     {
+        if (!Auth::check())
+        {
+            return redirect()->route('certificate.search');
+        }
+
         $user = Auth::user();
-    
-        // Mark all 'Pending Review' certificates assigned to the logged-in reviewer
-        $updated = DB::table('certificates_training')
-            ->where('status', 'Pending Review')
+
+        $updated = Certificate::where(
+            'status',
+            'Pending Review'
+        )
             ->where(function ($query) use ($user) {
-                $query->where('review_by_id', $user->id)
-                      ->orWhere('review_by', $user->name);
+                $query->where(
+                    'review_by_id',
+                    $user->id
+                )
+                ->orWhere(
+                    'review_by',
+                    $user->name
+                );
             })
             ->update([
                 'status' => 'Pending Approval',
+                'reviewed_at' => Carbon::now(),
                 'updated_by' => $user->name,
                 'updated_by_id' => $user->id,
                 'updated_at' => Carbon::now(),
-                'reviewed_at' => Carbon::now(),
             ]);
-    
-        return redirect()->back()->with('success', "$updated certificate(s) marked as Reviewed.");
+
+        return back()->with(
+            'success',
+            $updated . ' certificate(s) marked as Reviewed.'
+        );
     }
-    
+
     public function bulkApprove()
     {
+        if (!Auth::check())
+        {
+            return redirect()->route('certificate.search');
+        }
+
         $user = Auth::user();
-    
-        // Mark all 'Pending Approval' certificates assigned to the logged-in approver
-        $updated = DB::table('certificates_training')
-            ->where('status', 'Pending Approval')
+
+        $updated = Certificate::where(
+            'status',
+            'Pending Approval'
+        )
             ->where(function ($query) use ($user) {
-                $query->where('approval_by_id', $user->id)
-                      ->orWhere('approval_by', $user->name);
+                $query->where(
+                    'approval_by_id',
+                    $user->id
+                )
+                ->orWhere(
+                    'approval_by',
+                    $user->name
+                );
             })
             ->update([
                 'status' => 'Approved',
+                'approved_at' => Carbon::now(),
                 'updated_by' => $user->name,
                 'updated_by_id' => $user->id,
                 'updated_at' => Carbon::now(),
-                'approved_at' => Carbon::now(),
             ]);
-    
-        return redirect()->back()->with('success', "$updated certificate(s) marked as Approved.");
+
+        return back()->with(
+            'success',
+            $updated . ' certificate(s) marked as Approved.'
+        );
     }
 
     public function deleteCertificate($id)
@@ -896,14 +935,54 @@ class CertificateController extends Controller
                 'file' => 'required|file|mimes:xlsx,xls,csv|max:20480',
             ]);
 
-            try {
-                Excel::import(new CertificateImport, $request->file('file'));
+            try
+            {
+                DB::transaction(function () use ($request) {
+                    Excel::import(
+                        new CertificateImport,
+                        $request->file('file')
+                    );
+                });
 
-                return back()->with('success', 'Certificate data imported successfully.');
-            } catch (\Throwable $e) {
-                return back()->with('import_error', 'Import failed: ' . $e->getMessage());
+                return back()->with(
+                    'success',
+                    'Certificate data imported successfully.'
+                );
+            }
+            catch (\Throwable $e)
+            {
+                Log::error(
+                    'Certificate import failed.',
+                    [
+                        'user_id' => Auth::id(),
+                        'file_name' => $request->file('file')
+                            ? $request->file('file')->getClientOriginalName()
+                            : null,
+                        'error' => $e->getMessage(),
+                    ]
+                );
+
+                $errorMessage = $e->getMessage();
+
+                /*
+                * Do not expose database queries or internal SQL errors
+                * on the import page.
+                */
+                if (
+                    strpos($errorMessage, 'SQLSTATE') !== false ||
+                    strpos($errorMessage, 'Integrity constraint') !== false
+                ) {
+                    $errorMessage =
+                        'The spreadsheet contains duplicate or invalid certificate data.';
+                }
+
+                return back()->with(
+                    'import_error',
+                    'Import failed: ' . $errorMessage
+                );
             }
         }
+
         return redirect()->route('certificate.search');
     }
 

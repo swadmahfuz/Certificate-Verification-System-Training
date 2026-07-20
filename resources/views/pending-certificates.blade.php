@@ -83,7 +83,7 @@
                                     <th>Certificate ID</th>
                                     <th>Name</th>
                                     <th>Company</th>
-                                    <th>Training</th>
+                                    <th>Training Title</th>
                                     <th>Trainer</th>
                                     <th>Trg Date</th>
                                     <th>Issue Date</th>
@@ -121,7 +121,14 @@
                                 '<td>' + d.certificate_number + '</td>' +
                                 '<td>' + d.participant_name + '</td>' +
                                 '<td>' + d.company + '</td>' +
-                                '<td>' + d.training_name + '</td>' +
+                                '<td>' +
+                                    (
+                                        d.internal_audit_training === true ||
+                                        d.internal_audit_training == 1
+                                            ? 'Internal Auditor - ' + d.training_name
+                                            : d.training_name
+                                    ) +
+                                '</td>' +
                                 '<td>' + d.trainer + '</td>' +
                                 '<td>' + formatDate(d.training_date) + '</td>' +
                                 '<td>' + formatDate(d.issue_date) + '</td>' +

@@ -158,6 +158,18 @@ class CertificateImport implements ToModel, WithHeadingRow
             $row['certificate_number'] ?? ''
         );
 
+        $internalAuditTraining = $this->parseBoolean(
+            $row['internal_audit_training'] ?? null,
+            'Internal Auditor Training',
+            $row['certificate_number'] ?? ''
+        );
+
+        $onlineTraining = $this->parseBoolean(
+            $row['online_training'] ?? null,
+            'Online Training',
+            $row['certificate_number'] ?? ''
+        );
+
         $loggedInUser = Auth::user();
 
         return new Certificate([
@@ -166,6 +178,8 @@ class CertificateImport implements ToModel, WithHeadingRow
 
             'has_practical' => $hasPractical,
             'is_refresher' => $isRefresher,
+            'internal_audit_training' => $internalAuditTraining,
+            'online_training' => $onlineTraining,
 
             'participant_name' => $row['participant_name'],
             'passport_nid' => $row['passport_nid'],

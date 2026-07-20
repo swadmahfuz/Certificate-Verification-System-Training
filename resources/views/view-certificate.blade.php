@@ -300,17 +300,32 @@
                         </tr>
 
                         <tr>
-                            <th>Training</th>
-                            <td>{{ $certificate->training_name }}</td>
+                            <th>Training Title</th>
+                            <td>
+                                @if($certificate->internal_audit_training)
+                                    Internal Auditor - {{ $certificate->training_name }}
+                                @else
+                                    {{ $certificate->training_name }}
+                                @endif
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th>Training Mode</th>
+                            <td>
+                                @if($certificate->online_training)
+                                    Online
+                                @else
+                                    Physical
+                                @endif
+                            </td>
                         </tr>
 
                         <tr>
                             <th>Training Category</th>
                             <td>
                                 @if($certificate->is_refresher)
-                                    <span class="text-primary">
-                                        Refresher Training
-                                    </span>
+                                    Refresher Training
                                 @else
                                     Initial Training
                                 @endif
@@ -321,9 +336,7 @@
                             <th>Training Sessions</th>
                             <td>
                                 @if($certificate->has_practical)
-                                    <span class="text-success">
-                                        Theory &amp; Practical
-                                    </span>
+                                    Theory &amp; Practical
                                 @else
                                     Theory Only
                                 @endif
@@ -332,7 +345,13 @@
 
                         <tr>
                             <th>Training Location</th>
-                            <td>{{ $certificate->location }}</td>
+                            <td>
+                                @if($certificate->online_training)
+                                    Not Applicable
+                                @else
+                                    {{ $certificate->location }}
+                                @endif
+                            </td>
                         </tr>
 
                         <tr>

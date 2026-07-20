@@ -15,7 +15,6 @@ use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 | Certificate Verification System (CVS)
 | TUV Austria Bureau of Inspection & Certification
 | Developed by: Swad Ahmed Mahfuz
-| Project Start: 12 October 2022
 |--------------------------------------------------------------------------
 */
 
@@ -27,7 +26,7 @@ class CertificateExport implements
     ShouldAutoSize
 {
     /**
-     * Retrieve all active and deleted certificates.
+     * Retrieve active and soft-deleted certificates.
      *
      * @return \Illuminate\Support\Collection
      */
@@ -51,8 +50,21 @@ class CertificateExport implements
             $certificate->certificate_number,
             $certificate->certificate_type,
 
-            $certificate->has_practical ? 'Yes' : 'No',
-            $certificate->is_refresher ? 'Yes' : 'No',
+            $certificate->has_practical
+                ? 'Yes'
+                : 'No',
+
+            $certificate->is_refresher
+                ? 'Yes'
+                : 'No',
+
+            $certificate->internal_audit_training
+                ? 'Yes'
+                : 'No',
+
+            $certificate->online_training
+                ? 'Yes'
+                : 'No',
 
             $certificate->participant_name,
             $certificate->passport_nid,
@@ -124,6 +136,8 @@ class CertificateExport implements
             'Certificate Type',
             'Includes Practical Sessions',
             'Refresher Training',
+            'Internal Auditor Training',
+            'Online Training',
             'Participant Name',
             'Passport/NID',
             'Driving License',
@@ -164,7 +178,7 @@ class CertificateExport implements
     }
 
     /**
-     * Preserve identification numbers as text.
+     * Preserve certificate and identification numbers as text.
      *
      * @return array
      */
@@ -172,8 +186,8 @@ class CertificateExport implements
     {
         return [
             'B' => NumberFormat::FORMAT_TEXT,
-            'G' => NumberFormat::FORMAT_TEXT,
-            'H' => NumberFormat::FORMAT_TEXT,
+            'I' => NumberFormat::FORMAT_TEXT,
+            'J' => NumberFormat::FORMAT_TEXT,
         ];
     }
 }

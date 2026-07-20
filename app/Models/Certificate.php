@@ -24,5 +24,7 @@ class Certificate extends Model
     protected $casts = [
         'is_refresher' => 'boolean',
         'has_practical' => 'boolean',
+        'internal_audit_training' => 'boolean',
+        'online_training' => 'boolean',
     ];
 }

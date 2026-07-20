@@ -428,33 +428,45 @@ class CertificatePdfService
             170
         );
 
-        /// Training location.
-        $pdf->SetFont(
-            'Palatino',
-            '',
-            11
-        );
+        /// Display the training location only for physical training.
+        if (!(bool) $certificate->online_training)
+        {
+            $pdf->SetFont(
+                'Palatino',
+                '',
+                11
+            );
 
-        $this->drawCenteredLine(
-            $pdf,
-            'at',
-            157.4,
-            170,
-            20
-        );
+            $this->drawCenteredLine(
+                $pdf,
+                'at',
+                157.4,
+                170,
+                20
+            );
 
-        $this->drawCenteredFittedLine(
-            $pdf,
-            trim(
-                (string) $certificate->location
-            ),
-            163.4,
-            'Palatino',
-            '',
-            11.5,
-            8.5,
-            178
-        );
+            $this->drawCenteredFittedLine(
+                $pdf,
+                trim(
+                    (string) $certificate->location
+                ),
+                163.4,
+                'Palatino',
+                '',
+                11.5,
+                8.5,
+                178
+            );
+        }
+
+        /// Move the organizer upward for online training.
+        $organizerLabelY = (bool) $certificate->online_training
+            ? 163.4
+            : 175.1;
+
+        $organizerNameY = (bool) $certificate->online_training
+            ? 169.5
+            : 181.2;
 
         /// Organizer.
         $pdf->SetFont(
@@ -466,7 +478,7 @@ class CertificatePdfService
         $this->drawCenteredLine(
             $pdf,
             'Organized by',
-            175.1,
+            $organizerLabelY,
             170,
             20
         );
@@ -474,7 +486,7 @@ class CertificatePdfService
         $this->drawCenteredFittedLine(
             $pdf,
             'TUV Austria Bureau of Inspection and Certification (Pvt.) Ltd.',
-            181.2,
+            $organizerNameY,
             'Palatino',
             'B',
             11.5,
@@ -1117,6 +1129,24 @@ class CertificatePdfService
     private function getCompletionWording(
         Certificate $certificate
     ) {
+        $isOnline = (bool) $certificate->online_training;
+
+        /*
+        * Internal Auditor wording overrides certificate type,
+        * refresher selection and practical-session selection.
+        */
+        if ((bool) $certificate->internal_audit_training)
+        {
+            if ($isOnline)
+            {
+                return
+                    'Has successfully completed the online Internal Auditor training program on';
+            }
+
+            return
+                'Has successfully completed the Internal Auditor training program on';
+        }
+
         $normalizedType = strtolower(
             trim(
                 (string) $certificate->certificate_type
@@ -1127,16 +1157,25 @@ class CertificatePdfService
         $isRefresher = (bool) $certificate->is_refresher;
 
         /*
-        * Certificate of Competency continues to use
+        * Certificate of Competency uses
         * assessment-specific wording.
         */
         if (
             $normalizedType ===
             'certificate of competency'
         ) {
-            $assessmentDescription = $isRefresher
-                ? 'refresher assessment'
-                : 'assessment';
+            if ($isOnline)
+            {
+                $assessmentDescription = $isRefresher
+                    ? 'online refresher assessment'
+                    : 'online assessment';
+            }
+            else
+            {
+                $assessmentDescription = $isRefresher
+                    ? 'refresher assessment'
+                    : 'assessment';
+            }
 
             if ($hasPractical)
             {
@@ -1154,9 +1193,18 @@ class CertificatePdfService
         * Build the training-program description for
         * Certificate, Achievement and Attendance.
         */
-        $programDescription = $isRefresher
-            ? 'refresher training program'
-            : 'training program';
+        if ($isOnline)
+        {
+            $programDescription = $isRefresher
+                ? 'online refresher training program'
+                : 'online training program';
+        }
+        else
+        {
+            $programDescription = $isRefresher
+                ? 'refresher training program'
+                : 'training program';
+        }
 
         if ($hasPractical)
         {
@@ -1165,7 +1213,7 @@ class CertificatePdfService
         }
 
         /*
-        * Attendance certificates do not state
+        * Certificate of Attendance does not use
         * "successfully completed".
         */
         if (
