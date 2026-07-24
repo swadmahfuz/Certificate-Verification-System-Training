@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Signatory;
+use App\Services\ActivityLogService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -10,9 +11,12 @@ use Illuminate\Validation\Rule;
 
 class SignatoryController extends Controller
 {
-    public function __construct()
+    private $activityLog;
+
+    public function __construct(ActivityLogService $activityLog)
     {
         $this->middleware('auth');
+        $this->activityLog = $activityLog;
     }
 
     public function index()
@@ -40,7 +44,7 @@ class SignatoryController extends Controller
 
         $signaturePath = $request->file('signature')->store('signatory-signatures');
 
-        Signatory::create([
+        $signatory = Signatory::create([
             'name' => trim($validated['name']),
             'email' => strtolower(trim($validated['email'])),
             'designation' => trim($validated['designation']),
@@ -49,6 +53,13 @@ class SignatoryController extends Controller
             'is_active' => $request->boolean('is_active'),
             'created_by_id' => Auth::id(),
         ]);
+
+        $this->activityLog->record(
+            'signatory.created',
+            'signatory',
+            $signatory->id,
+            'Signatory ' . $signatory->name . ' was added.'
+        );
 
         return redirect()->route('signatories.index')->with('success', 'Signatory added successfully.');
     }
@@ -91,6 +102,13 @@ class SignatoryController extends Controller
 
         $signatory->save();
 
+        $this->activityLog->record(
+            'signatory.updated',
+            'signatory',
+            $signatory->id,
+            'Signatory ' . $signatory->name . ' was updated.'
+        );
+
         return redirect()->route('signatories.index')->with('success', 'Signatory updated successfully.');
     }
 
@@ -101,6 +119,14 @@ class SignatoryController extends Controller
         $signatory->save();
 
         $status = $signatory->is_active ? 'activated' : 'deactivated';
+
+        $this->activityLog->record(
+            'signatory.status_changed',
+            'signatory',
+            $signatory->id,
+            'Signatory ' . $signatory->name . ' was ' . $status . '.',
+            ['is_active' => $signatory->is_active]
+        );
 
         return redirect()->route('signatories.index')->with('success', 'Signatory ' . $status . ' successfully.');
     }

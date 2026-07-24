@@ -1,17 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="robots" content="noindex">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+@extends('layouts.admin')
 
-    <title>Add Certificate</title>
+@section('title', 'Add Certificate')
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
-    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
-
-    <style>
+@push('styles')
+<style>
         body {
             font-size: 13px;
         }
@@ -53,10 +45,9 @@
             font-weight: 500;
         }
     </style>
-</head>
+@endpush
 
-<body background="images/tuv-login-background1.jpg">
-
+@section('content')
 <section class="pt-5">
     <div class="container">
         <div class="card">
@@ -604,10 +595,4 @@
         </div>
     </div>
 </section>
-
-@include('layouts.footer')
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-
-</body>
-</html>
+@endsection

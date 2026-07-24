@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Trainer;
+use App\Services\ActivityLogService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -10,12 +11,15 @@ use Illuminate\Validation\Rule;
 
 class TrainerController extends Controller
 {
+    private $activityLog;
+
     /**
      * Only authenticated users may manage trainers.
      */
-    public function __construct()
+    public function __construct(ActivityLogService $activityLog)
     {
         $this->middleware('auth');
+        $this->activityLog = $activityLog;
     }
 
     /**
@@ -84,7 +88,7 @@ class TrainerController extends Controller
         $signaturePath = $request->file('signature')
             ->store('trainer-signatures');
 
-        Trainer::create([
+        $trainer = Trainer::create([
             'name' => trim($validated['name']),
             'email' => strtolower(trim($validated['email'])),
             'designation' => trim($validated['designation']),
@@ -92,6 +96,13 @@ class TrainerController extends Controller
             'is_active' => $request->boolean('is_active'),
             'created_by_id' => Auth::id(),
         ]);
+
+        $this->activityLog->record(
+            'trainer.created',
+            'trainer',
+            $trainer->id,
+            'Trainer ' . $trainer->name . ' was added.'
+        );
 
         return redirect()
             ->route('trainers.index')
@@ -172,6 +183,13 @@ class TrainerController extends Controller
 
         $trainer->save();
 
+        $this->activityLog->record(
+            'trainer.updated',
+            'trainer',
+            $trainer->id,
+            'Trainer ' . $trainer->name . ' was updated.'
+        );
+
         return redirect()
             ->route('trainers.index')
             ->with('success', 'Trainer updated successfully.');
@@ -188,6 +206,14 @@ class TrainerController extends Controller
         $trainer->save();
 
         $status = $trainer->is_active ? 'activated' : 'deactivated';
+
+        $this->activityLog->record(
+            'trainer.status_changed',
+            'trainer',
+            $trainer->id,
+            'Trainer ' . $trainer->name . ' was ' . $status . '.',
+            ['is_active' => $trainer->is_active]
+        );
 
         return redirect()
             ->route('trainers.index')

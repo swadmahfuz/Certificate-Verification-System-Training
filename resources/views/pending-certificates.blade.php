@@ -1,15 +1,9 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <meta name="robots" content="noindex">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>TÜV Austria BIC CVS | Pending Certificates</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
-    <style>
+@extends('layouts.admin')
+
+@section('title', 'Pending Certificates')
+
+@push('styles')
+<style>
         .container { max-width: 99%; }
         .table-container { overflow-x: auto; }
         .table-striped tbody td, .table-striped thead th {
@@ -40,8 +34,9 @@
         }
         .table-striped { font-size: 11px; }
     </style>
-</head>
-<body background="images/tuv-login-background1.jpg">
+@endpush
+
+@section('content')
 <section style="padding-top: 60px;">
     <div class="container">
         <div class="row">
@@ -62,11 +57,11 @@
 
                         <!-- New Action Buttons -->
                         <div class="d-flex justify-content-center gap-3 mb-3 flex-wrap">
-                            <a href="{{ url('/bulk-review') }}" class="btn btn-info">
-                                <i class="fa-solid fa-thumbs-up me-1"></i> Mark All as Reviewed
+                            <a href="{{ url('/bulk-review') }}" class="btn btn-info" data-confirm="Mark all certificates assigned to you for review as Reviewed?">
+                                <i class="fa-solid fa-thumbs-up me-1"></i> Mark My Assigned as Reviewed
                             </a>
-                            <a href="{{ url('/bulk-approve') }}" class="btn btn-success">
-                                <i class="fa-solid fa-check-double me-1"></i> Mark All as Approved
+                            <a href="{{ url('/bulk-approve') }}" class="btn btn-success" data-confirm="Mark all certificates assigned to you for approval as Approved?">
+                                <i class="fa-solid fa-check-double me-1"></i> Mark My Assigned as Approved
                             </a>
                         </div>
 
@@ -102,8 +97,14 @@
         </div>
     </div>
 </section>
+@endsection
+
+@push('scripts')
 <script>
     $(document).ready(function() {
+        var currentUserId = {{ Auth::id() ?? 0 }};
+        var currentUserName = @json(Auth::user()->name ?? '');
+
         function fetchCertificates(page = 1, userInput = '') {
             $.ajax({
                 url: "{{ url('live-search-pending') }}",
@@ -116,6 +117,19 @@
                     let html = '';
                     $.each(res.data.data, function(i, d) {
                         let url = "{{ url('') }}" + "?search=" + d.certificate_number;
+                        var canReview =
+                            (d.status === 'Pending Review' || d.status === 'Pending') &&
+                            (
+                                Number(d.review_by_id) === Number(currentUserId) ||
+                                d.review_by === currentUserName
+                            );
+                        var canApprove =
+                            (d.status === 'Pending Approval' || d.status === 'Reviewed') &&
+                            (
+                                Number(d.approval_by_id) === Number(currentUserId) ||
+                                d.approval_by === currentUserName
+                            );
+
                         html += '<tr>' +
                                 '<td>' + (i + 1 + (res.data.current_page - 1) * res.data.per_page) + '.</td>' +
                                 '<td>' + d.certificate_number + '</td>' +
@@ -136,11 +150,11 @@
                                 '<td>' + d.status + '</td>' +
                                 '<td><img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=' + encodeURIComponent(url) + '"/></td>' +
                                 '<td>' +
-                                    '<a href="view-certificate/' + d.id + '" target="_blank"><i class="fa-solid fa-circle-info"></i></a> ' +
-                                    '<a href="edit-certificate/' + d.id + '" target="_blank"><i class="fa-solid fa-pen-to-square"></i></a> ' +
-                                    '<a href="delete-certificate/' + d.id + '"><i class="fa-solid fa-trash"></i></a> ' +
-                                    (d.status === 'Pending Review' ? '<a href="review-certificate/' + d.id + '"><i class="fa-solid fa-thumbs-up"></i></a> ' : '') +
-                                    (d.status === 'Pending Approval' ? '<a href="approve-certificate/' + d.id + '"><i class="fa-solid fa-check"></i></a>' : '') +
+                                    '<a href="view-certificate/' + d.id + '" target="_blank" title="View"><i class="fa-solid fa-circle-info"></i></a> ' +
+                                    '<a href="edit-certificate/' + d.id + '" target="_blank" title="Edit"><i class="fa-solid fa-pen-to-square"></i></a> ' +
+                                    '<a href="delete-certificate/' + d.id + '" title="Delete"><i class="fa-solid fa-trash"></i></a> ' +
+                                    (canReview ? '<a href="review-certificate/' + d.id + '" title="Mark as Reviewed"><i class="fa-solid fa-thumbs-up"></i></a> ' : '') +
+                                    (canApprove ? '<a href="approve-certificate/' + d.id + '" title="Mark as Approved"><i class="fa-solid fa-check"></i></a>' : '') +
                                 '</td>' +
                             '</tr>';
                     });
@@ -182,6 +196,4 @@
         fetchCertificates();
     });
 </script>
-</body>
-<footer>@include('layouts.footer')</footer>
-</html>
+@endpush

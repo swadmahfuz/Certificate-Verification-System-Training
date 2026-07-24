@@ -1,17 +1,9 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <meta name="robots" content="noindex">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+@extends('layouts.admin')
 
-    <title>TÜV Austria BIC CVS | View Certificate Information</title>
+@section('title', 'Certificate Details')
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
-    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
-
-    <style>
+@push('styles')
+<style>
         body {
             font-size: 13px;
         }
@@ -49,10 +41,9 @@
             padding: 20px;
         }
     </style>
-</head>
+@endpush
 
-<body background="../images/tuv-login-background1.jpg">
-
+@section('content')
 <section class="pt-5">
     <div class="container">
         <div class="card">
@@ -802,60 +793,7 @@
                         </div>
                     </div>
 
-                    <script>
-                        document.addEventListener(
-                            'DOMContentLoaded',
-                            function () {
-                                const collapseEl =
-                                    document.getElementById(
-                                        '{{ $collapseId }}'
-                                    );
-
-                                const btn =
-                                    document.getElementById(
-                                        '{{ $toggleId }}'
-                                    );
-
-                                if (!collapseEl || !btn) {
-                                    return;
-                                }
-
-                                const iframe =
-                                    collapseEl.querySelector(
-                                        'iframe'
-                                    );
-
-                                collapseEl.addEventListener(
-                                    'show.bs.collapse',
-                                    function () {
-                                        if (
-                                            !iframe.getAttribute('src')
-                                        ) {
-                                            iframe.setAttribute(
-                                                'src',
-                                                iframe.dataset.viewerSrc
-                                            );
-                                        }
-
-                                        btn.setAttribute(
-                                            'aria-expanded',
-                                            'true'
-                                        );
-                                    }
-                                );
-
-                                collapseEl.addEventListener(
-                                    'hide.bs.collapse',
-                                    function () {
-                                        btn.setAttribute(
-                                            'aria-expanded',
-                                            'false'
-                                        );
-                                    }
-                                );
-                            }
-                        );
-                    </script>
+                    
 
                 @else
 
@@ -870,10 +808,33 @@
         </div>
     </div>
 </section>
+@endsection
 
-@include('layouts.footer')
+@if($certificate->certificate_pdf)
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const collapseEl = document.getElementById('pdfViewerCollapse-{{ $certificate->id }}');
+    const btn = document.getElementById('togglePdfHeaderBtn-{{ $certificate->id }}');
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    if (!collapseEl || !btn) {
+        return;
+    }
 
-</body>
-</html>
+    const iframe = collapseEl.querySelector('iframe');
+
+    collapseEl.addEventListener('show.bs.collapse', function () {
+        if (!iframe.getAttribute('src')) {
+            iframe.setAttribute('src', iframe.dataset.viewerSrc);
+        }
+
+        btn.setAttribute('aria-expanded', 'true');
+    });
+
+    collapseEl.addEventListener('hide.bs.collapse', function () {
+        btn.setAttribute('aria-expanded', 'false');
+    });
+});
+</script>
+@endpush
+@endif

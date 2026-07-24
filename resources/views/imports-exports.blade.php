@@ -1,12 +1,9 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta name="robots" content="noindex">
-    <title>Bulk Imports/Exports</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <style>
+@extends('layouts.admin')
+
+@section('title', 'Import / Export')
+
+@push('styles')
+<style>
         body {
             font-size: 13px;
         }
@@ -38,6 +35,7 @@
             font-size: 13px;
             font-weight: 600;
             transition: all 0.3s ease;
+            white-space: nowrap;
         }
         .btn i {
             font-size: 14px;
@@ -46,44 +44,44 @@
             transform: translateY(-2px);
             box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
         }
+        .import-export-actions {
+            display: flex;
+            flex-wrap: nowrap;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            overflow-x: auto;
+        }
+        .import-export-actions .btn {
+            flex: 0 0 auto;
+        }
     </style>
-</head>
-<body background="images/tuv-login-background1.jpg">
+@endpush
 
+@section('content')
 <div class="container">
     <div class="card bg-light mt-3">
         <div class="card-header" style="padding-top: 20px; padding-bottom: 20px;">
             <center>
                 <h3 style="padding-bottom: 5px">TÜV Austria BIC CVS | Import/Export Training Certificate Data</h3>
-                <table style="width:64%; margin: auto;">
-                    <tr>
-                        <td>
-                            <a href="dashboard" class="btn btn-success d-flex align-items-center">
-                                <i class="fa-solid fa-table-columns me-1"></i> Dashboard
-                            </a>
-                        </td>
-                        <td>
-                            <a href="{{ route('export') }}" class="btn btn-primary d-flex align-items-center">
-                                <i class="fa-solid fa-file-export me-1"></i> Export Database
-                            </a>
-                        </td>
-                        <td>
-                            <a href="./downloads/TUVAT CVS Training - Data Import Template.xlsx" class="btn btn-info d-flex align-items-center">
-                                <i class="fa-solid fa-download me-1"></i> Download Blank Excel File
-                            </a>
-                        </td>
-                        <td>
-                            <a href="./downloads/TUVAT CVS Training - Sample Data File.xlsx" class="btn btn-secondary d-flex align-items-center">
-                                <i class="fa-solid fa-file-lines me-1"></i> Download Sample Data
-                            </a>
-                        </td>
-                        <td>
-                            <a href="logout" class="btn btn-danger d-flex align-items-center">
-                                <i class="fa-solid fa-right-from-bracket me-1"></i> Log Out
-                            </a>
-                        </td>
-                    </tr>
-                </table>
+                <div class="import-export-actions">
+                    <a href="{{ route('dashboard') }}" class="btn btn-success">
+                        <i class="fa-solid fa-table-columns me-1"></i> Dashboard
+                    </a>
+                    <a href="{{ route('export') }}" class="btn btn-primary">
+                        <i class="fa-solid fa-file-export me-1"></i> Export Database
+                    </a>
+                    <a href="{{ asset('downloads/TUVAT CVS Training - Data Import Template.xlsx') }}" class="btn btn-info">
+                        <i class="fa-solid fa-download me-1"></i> Download Blank Excel File
+                    </a>
+                    <a href="{{ asset('downloads/TUVAT CVS Training - Sample Data File.xlsx') }}" class="btn btn-secondary">
+                        <i class="fa-solid fa-file-lines me-1"></i> Download Sample Data
+                    </a>
+                    <a href="{{ route('legacy.logout') }}" class="btn btn-danger">
+                        <i class="fa-solid fa-right-from-bracket me-1"></i> Log Out
+                    </a>
+                </div>
             </center>
         </div>
         <div class="card-body">
@@ -127,6 +125,4 @@
         </div>
     </div>
 </div>
-</body>
-<footer> @include('layouts.footer') </footer>
-</html>
+@endsection

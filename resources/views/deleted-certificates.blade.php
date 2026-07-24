@@ -1,14 +1,9 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta name="robots" content="noindex">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>TÜV Austria BIC CVS | Deleted Certificates</title>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
-        <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
-        <style>
+@extends('layouts.admin')
+
+@section('title', 'Deleted Certificates')
+
+@push('styles')
+<style>
             .container {
                 max-width: 99%;
             }
@@ -49,9 +44,10 @@
                 font-size: 11px;
             }
         </style>
-    </head>
-    <body background="images/tuv-login-background1.jpg">
-        <section style="padding-top: 60px;">
+@endpush
+
+@section('content')
+<section style="padding-top: 60px;">
             <div class="container">
                 <div class="row">
                     <div class="col-md-12">
@@ -147,9 +143,10 @@
                 </div>
             </div>
         </section>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-        <script>
+@endsection
+
+@push('scripts')
+<script>
             $(document).ready(function() {
                 function fetchCertificates(page = 1, userInput = '') {
                     $.ajax({
@@ -234,6 +231,4 @@
                 fetchCertificates();
             });
         </script>
-    </body>
-    <footer>@include('layouts.footer')</footer>
-</html>
+@endpush

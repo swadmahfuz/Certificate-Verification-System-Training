@@ -6,6 +6,8 @@ use App\Models\User;
 use App\Models\Trainer;
 use App\Models\Signatory;
 use App\Services\CertificatePdfService;
+use App\Services\DashboardService;
+use App\Services\ActivityLogService;
 use App\Exports\CertificateExport;
 use App\Imports\CertificateImport;
 use Illuminate\Http\Request;
@@ -22,13 +24,18 @@ use Carbon\Carbon;
 | Developed by: Swad Ahmed Mahfuz (Head of Divison - Business Assurance & Training, Bangladesh)
 | Contact: swad.mahfuz@gmail.com, +1-725-867-7718, +88 01733 023 008
 | Project Start: 12 October 2022
-| Latest Stable Release: v4.1.2 -  20 July 2026
+| Latest Stable Release: v5.0.0 -  24 July 2026
 |--------------------------------------------------------------------------
 */
 
 class CertificateController extends Controller
 {
+    private $activityLog;
 
+    public function __construct(ActivityLogService $activityLog)
+    {
+        $this->activityLog = $activityLog;
+    }
 
     ///Unauthenticated user functions
     public function search(Request $request)  ///Public function to search for certificate       
@@ -47,7 +54,12 @@ class CertificateController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
-            // Authentication passed...
+            $this->activityLog->record(
+                'auth.login',
+                'auth',
+                Auth::id(),
+                Auth::user()->name . ' logged in.'
+            );
             return redirect('/dashboard')->with('success', 'Thank You for authorizing. Please proceed.');
         }
         else{
@@ -60,6 +72,12 @@ class CertificateController extends Controller
     {
         if (Auth::check())
         {
+            $this->activityLog->record(
+                'auth.logout',
+                'auth',
+                Auth::id(),
+                Auth::user()->name . ' logged out.'
+            );
             Auth::logout();
             return redirect('/admin');
         }
@@ -69,15 +87,16 @@ class CertificateController extends Controller
     
     
     ////Admin functions
-    public function getDashboard()
+    public function getDashboard(DashboardService $dashboardService)
     {
-        if (Auth::check())
-        {
-            $certificates = Certificate::orderBy('certificate_number','DESC')->paginate(100); ///Sorted by certificate number
-            return view('dashboard',compact('certificates'));
-        }
+        return view('dashboard', $dashboardService->data());
+    }
 
-        return redirect()->route('certificate.search');
+    public function indexCertificates()
+    {
+        $certificates = Certificate::orderBy('created_at', 'DESC')->orderBy('id', 'DESC')->paginate(100);
+
+        return view('certificates.index', compact('certificates'));
     }
 
 
@@ -99,7 +118,7 @@ class CertificateController extends Controller
     {
         if (Auth::check())
         {
-            $certificates = Certificate::onlyTrashed()->orderBy('certificate_number','DESC')->paginate(100);
+            $certificates = Certificate::onlyTrashed()->orderBy('created_at', 'DESC')->orderBy('id', 'DESC')->paginate(100);
             return view('deleted-certificates',compact('certificates'));
         }
 
@@ -109,37 +128,17 @@ class CertificateController extends Controller
     public function getPendingCertificates()
     {
         if (Auth::check()) {
-            $userId = Auth::user()->id;
-            $userName = Auth::user()->name;
-    
-            $query = Certificate::where(function ($query) use ($userId, $userName) {
-                $query->where(function ($q) use ($userId, $userName) {
-                    $q->where('status', 'Pending Review')
-                      ->where(function ($subQuery) use ($userId, $userName) {
-                          $subQuery->where('review_by_id', $userId)
-                                   ->orWhere('review_by', $userName);
-                      });
+            $certificates = Certificate::where(function ($query) {
+                    $query->whereIn('status', ['Pending Review', 'Pending'])
+                        ->orWhereIn('status', ['Pending Approval', 'Reviewed']);
                 })
-                ->orWhere(function ($q) use ($userId, $userName) {
-                    $q->where('status', 'Pending Approval')
-                      ->where(function ($subQuery) use ($userId, $userName) {
-                          $subQuery->where('approval_by_id', $userId)
-                                   ->orWhere('approval_by', $userName);
-                      });
-                });
-            })
-            ->whereNotIn('status', ['Approved', 'approved', ' APPROVED']) // Explicitly exclude Approved
-            ->orderBy('certificate_number', 'DESC');
-    
-            // Debugging: Check generated SQL
-            // dd($query->toSql(), $query->getBindings());
-    
-            // Execute query
-            $certificates = $query->paginate(100);
-    
+                ->orderBy('created_at', 'DESC')
+                ->orderBy('id', 'DESC')
+                ->paginate(100);
+
             return view('pending-certificates', compact('certificates'));
         }
-    
+
         return redirect()->route('certificate.search');
     }
 
@@ -309,6 +308,14 @@ class CertificateController extends Controller
             $certificate->updated_at = Carbon::now();
             $certificate->status = 'Pending Review';
             $certificate->save();
+
+            $this->activityLog->record(
+                'certificate.created',
+                'certificate',
+                $certificate->id,
+                'Certificate ' . $certificate->certificate_number . ' was created.',
+                ['status' => $certificate->status]
+            );
 
             return redirect('/view-certificate/' . $certificate->id);
         }
@@ -491,6 +498,14 @@ class CertificateController extends Controller
             $certificate->updated_at = Carbon::now();
             $certificate->save();
 
+            $this->activityLog->record(
+                'certificate.updated',
+                'certificate',
+                $certificate->id,
+                'Certificate ' . $certificate->certificate_number . ' was updated and returned for review.',
+                ['status' => $certificate->status]
+            );
+
             return redirect('/view-certificate/' . $certificate->id);
         }
 
@@ -517,6 +532,13 @@ class CertificateController extends Controller
             $certificate->updated_by_id = Auth::user()->id;
             $certificate->updated_at = Carbon::now();
             $certificate->save();
+
+            $this->activityLog->record(
+                'certificate.reviewed',
+                'certificate',
+                $certificate->id,
+                'Certificate ' . $certificate->certificate_number . ' was reviewed.'
+            );
             
             return redirect('/view-certificate/' . $certificate->id);
         }
@@ -548,6 +570,13 @@ class CertificateController extends Controller
             $certificate->updated_by_id = Auth::user()->id;
             $certificate->updated_at = Carbon::now();
             $certificate->save();
+
+            $this->activityLog->record(
+                'certificate.approved',
+                'certificate',
+                $certificate->id,
+                'Certificate ' . $certificate->certificate_number . ' was approved.'
+            );
             
             return back()->with('success', 'Certificate approved successfully.');
         }
@@ -586,6 +615,14 @@ class CertificateController extends Controller
                 'updated_at' => Carbon::now(),
             ]);
 
+        $this->activityLog->record(
+            'certificate.bulk_reviewed',
+            'certificate',
+            null,
+            $updated . ' certificate(s) were bulk reviewed.',
+            ['count' => $updated]
+        );
+
         return back()->with(
             'success',
             $updated . ' certificate(s) marked as Reviewed.'
@@ -623,6 +660,14 @@ class CertificateController extends Controller
                 'updated_at' => Carbon::now(),
             ]);
 
+        $this->activityLog->record(
+            'certificate.bulk_approved',
+            'certificate',
+            null,
+            $updated . ' certificate(s) were bulk approved.',
+            ['count' => $updated]
+        );
+
         return back()->with(
             'success',
             $updated . ' certificate(s) marked as Approved.'
@@ -653,6 +698,13 @@ class CertificateController extends Controller
 
             // Soft delete the certificate
             $certificate->delete();
+
+            $this->activityLog->record(
+                'certificate.deleted',
+                'certificate',
+                $certificate->id,
+                'Certificate ' . $certificate->certificate_number . ' was deleted.'
+            );
 
             return back()->with('Certificate_Deleted', 'Certificate details have been deleted successfully');
         }
@@ -704,6 +756,13 @@ class CertificateController extends Controller
         $certificate->updated_at = Carbon::now();
         $certificate->save();
 
+        $this->activityLog->record(
+            'certificate.pdf_uploaded',
+            'certificate',
+            $certificate->id,
+            'A PDF was uploaded for certificate ' . $certificate->certificate_number . '.'
+        );
+
         return back()->with('success', 'Certificate PDF uploaded successfully.');
     }
 
@@ -754,6 +813,13 @@ class CertificateController extends Controller
 
             $filename = 'Training-Certificate-' . $safeCertificateNumber . '.pdf';
 
+            $this->activityLog->record(
+                'certificate.pdf_generated',
+                'certificate',
+                $certificate->id,
+                'A PDF was generated for certificate ' . $certificate->certificate_number . '.'
+            );
+
             return response($pdfContent, 200, [
                 'Content-Type' => 'application/pdf',
                 'Content-Disposition' => 'attachment; filename="' . $filename . '"',
@@ -775,7 +841,7 @@ class CertificateController extends Controller
     
             if (empty($userInput)) {
                 // If the search input is empty, return all certificates ordered by certificate_number descending with pagination
-                $result = Certificate::orderBy('certificate_number', 'desc')->paginate($perPage);
+                $result = Certificate::orderBy('created_at', 'DESC')->orderBy('id', 'DESC')->paginate($perPage);
             } else {                
                 $result = Certificate::where(function ($query) use ($userInput) {
                     $query->whereRaw('LOWER(certificate_number) LIKE ?', ['%' . strtolower($userInput) . '%'])
@@ -791,7 +857,8 @@ class CertificateController extends Controller
                         ->orWhereRaw('issue_date LIKE ?', ['%' . $userInput . '%'])
                         ->orWhereRaw('expiry_date LIKE ?', ['%' . $userInput . '%']);
                 })
-                ->orderBy('certificate_number', 'desc')
+                ->orderBy('created_at', 'DESC')
+                ->orderBy('id', 'DESC')
                 ->paginate($perPage);
             }
     
@@ -809,7 +876,7 @@ class CertificateController extends Controller
     
             if (empty($userInput)) {
                 // If the search input is empty, return all certificates ordered by certificate_number descending with pagination
-                $result = Certificate::onlyTrashed()->orderBy('certificate_number', 'desc')->paginate($perPage);
+                $result = Certificate::onlyTrashed()->orderBy('created_at', 'DESC')->orderBy('id', 'DESC')->paginate($perPage);
             } else {
                 $result = Certificate::onlyTrashed()
                 ->where(function ($query) use ($userInput) {
@@ -826,7 +893,8 @@ class CertificateController extends Controller
                         ->orWhereRaw('issue_date LIKE ?', ['%' . $userInput . '%'])
                         ->orWhereRaw('expiry_date LIKE ?', ['%' . $userInput . '%']);
                 })
-                ->orderBy('certificate_number', 'desc')
+                ->orderBy('created_at', 'DESC')
+                ->orderBy('id', 'DESC')
                 ->paginate($perPage);
             }
     
@@ -839,35 +907,17 @@ class CertificateController extends Controller
     public function liveSearchPending(Request $request)
     {
         if (Auth::check()) {
-            $perPage = 100; // Number of certificates per page
+            $perPage = 100;
             $userInput = $request->input('userInput', '');
-            $userId = Auth::user()->id;
-            $userName = Auth::user()->name;
-    
-            if (empty($userInput)) {
-                // If the search input is empty, return only pending review and approval certificates assigned to the logged-in user
-                $result = Certificate::where(function ($query) use ($userId, $userName) {
-                    $query->where(function ($q) use ($userId, $userName) {
-                        $q->where('status', 'Pending Review')
-                          ->where(function ($subQuery) use ($userId, $userName) {
-                              $subQuery->where('review_by_id', $userId)
-                                       ->orWhere('review_by', $userName);
-                          });
-                    })
-                    ->orWhere(function ($q) use ($userId, $userName) {
-                        $q->where('status', 'Pending Approval')
-                          ->where(function ($subQuery) use ($userId, $userName) {
-                              $subQuery->where('approval_by_id', $userId)
-                                       ->orWhere('approval_by', $userName);
-                          });
-                    });
-                })
-                ->orderBy('certificate_number', 'desc')
-                ->paginate($perPage);
-            } else {
-                // Search within pending review and approval certificates assigned to the logged-in user
-                $result = Certificate::where(function ($query) use ($userInput) {
-                    $query->whereRaw('LOWER(certificate_number) LIKE ?', ['%' . strtolower($userInput) . '%'])
+
+            $query = Certificate::where(function ($query) {
+                $query->whereIn('status', ['Pending Review', 'Pending'])
+                    ->orWhereIn('status', ['Pending Approval', 'Reviewed']);
+            });
+
+            if (!empty($userInput)) {
+                $query->where(function ($search) use ($userInput) {
+                    $search->whereRaw('LOWER(certificate_number) LIKE ?', ['%' . strtolower($userInput) . '%'])
                         ->orWhereRaw('LOWER(participant_name) LIKE ?', ['%' . strtolower($userInput) . '%'])
                         ->orWhereRaw('passport_nid = ?', [$userInput])
                         ->orWhereRaw('driving_license = ?', [$userInput])
@@ -879,31 +929,18 @@ class CertificateController extends Controller
                         ->orWhereRaw('training_end LIKE ?', ['%' . $userInput . '%'])
                         ->orWhereRaw('issue_date LIKE ?', ['%' . $userInput . '%'])
                         ->orWhereRaw('expiry_date LIKE ?', ['%' . $userInput . '%']);
-                })
-                ->where(function ($query) use ($userId, $userName) {
-                    $query->where(function ($q) use ($userId, $userName) {
-                        $q->where('status', 'Pending Review')
-                          ->where(function ($subQuery) use ($userId, $userName) {
-                              $subQuery->where('review_by_id', $userId)
-                                       ->orWhere('review_by', $userName);
-                          });
-                    })
-                    ->orWhere(function ($q) use ($userId, $userName) {
-                        $q->where('status', 'Pending Approval')
-                          ->where(function ($subQuery) use ($userId, $userName) {
-                              $subQuery->where('approval_by_id', $userId)
-                                       ->orWhere('approval_by', $userName);
-                          });
-                    });
-                })
-                ->orderBy('certificate_number', 'desc')
-                ->paginate($perPage);
+                });
             }
-    
+
+            $result = $query
+                ->orderBy('created_at', 'DESC')
+                ->orderBy('id', 'DESC')
+                ->paginate($perPage);
+
             return response()->json(['data' => $result]);
-        } else {
-            return redirect()->route('certificate.search');
         }
+
+        return redirect()->route('certificate.search');
     }
         
 
@@ -922,6 +959,13 @@ class CertificateController extends Controller
         {
             $today = Carbon::now()->format('d-m-Y');   ///get current date
             $fileName = 'TUV Austria BIC Certificate DB on '.$today.'.xlsx';
+            $this->activityLog->record(
+                'export.completed',
+                'export',
+                null,
+                'Certificate data was exported.',
+                ['file_name' => $fileName]
+            );
             return Excel::download(new CertificateExport, $fileName);
         }
         return redirect()->route('certificate.search');
@@ -944,6 +988,14 @@ class CertificateController extends Controller
                     );
                 });
 
+                $this->activityLog->record(
+                    'import.completed',
+                    'import',
+                    null,
+                    'Certificate data was imported.',
+                    ['file_name' => $request->file('file')->getClientOriginalName()]
+                );
+
                 return back()->with(
                     'success',
                     'Certificate data imported successfully.'
@@ -959,6 +1011,18 @@ class CertificateController extends Controller
                             ? $request->file('file')->getClientOriginalName()
                             : null,
                         'error' => $e->getMessage(),
+                    ]
+                );
+
+                $this->activityLog->record(
+                    'import.failed',
+                    'import',
+                    null,
+                    'A certificate import failed.',
+                    [
+                        'file_name' => $request->file('file')
+                            ? $request->file('file')->getClientOriginalName()
+                            : null,
                     ]
                 );
 
