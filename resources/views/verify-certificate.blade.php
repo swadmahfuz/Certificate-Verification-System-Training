@@ -107,32 +107,21 @@
 
                         @if ($certificate->certificate_pdf)
                             <div class="text-center mt-3 mb-4">
-                                <a href="{{ route('certificate.downloadPdf', $certificate->id) }}" class="btn btn-secondary" target="_blank">
+                                <a href="{{ route('certificate.publicPdf', ['id' => $certificate->id, 'download' => 1]) }}" class="btn btn-secondary" target="_blank">
                                     <i class="fa-solid fa-file-pdf me-1"></i> Download Certificate PDF
                                 </a>
                             </div>
-
-                            {{-- Inline PDF Viewer (no toggle on verify page) --}}
-                            @php
-                                // Build ViewerJS URL (assets published under /public/laraview/)
-                                // If your server exposes /laraview/ directly, change to asset('laraview/index.html')
-                                $viewerBase = asset('public/laraview/index.html');
-                                $pdfFolder  = 'Certificate PDFs';
-                                $viewerSrc  = $viewerBase
-                                            . '#../' . rawurlencode($pdfFolder)
-                                            . '/'    . rawurlencode($certificate->certificate_pdf);
-                            @endphp
 
                             <div class="card mt-4">
                                 <div class="card-header d-flex justify-content-between align-items-center">
                                     <span><i class="fa-solid fa-file-pdf me-2"></i>Certificate PDF Preview</span>
                                     <small class="text-muted">
-                                        If it doesn’t load, <a href="{{ route('certificate.downloadPdf', $certificate->id) }}" target="_blank">download</a>.
+                                        If it does not load, <a href="{{ route('certificate.publicPdf', ['id' => $certificate->id, 'download' => 1]) }}" target="_blank">download</a>.
                                     </small>
                                 </div>
                                 <div class="card-body p-0" style="height: 75vh;">
                                     <iframe
-                                        src="{{ $viewerSrc }}"
+                                        src="{{ route('certificate.publicPdf', $certificate->id) }}"
                                         title="Certificate PDF"
                                         style="width:100%; height:100%; border:0;"
                                         allow="fullscreen"

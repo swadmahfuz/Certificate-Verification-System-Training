@@ -4,79 +4,25 @@
 
 @push('styles')
 <style>
-        body {
-            background-color: #f8f9fa;
-            font-size: 13px;
-        }
-
-        .container {
-            max-width: 900px;
-            padding-top: 60px;
-            padding-bottom: 40px;
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 8px 14px;
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: bold;
-            transition: all 0.3s ease;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .required-label::after {
-            content: " *";
-            color: red;
-        }
-    </style>
+.required-label::after { content: " *"; color: red; }
+</style>
 @endpush
 
 @section('content')
-<section>
-    <div class="container">
-        <div class="card">
+<div class="page-heading">
+    <div>
+        <h1>Add Signatory</h1>
+        <p>Register a signatory and upload their signature image.</p>
+    </div>
+    <a class="btn btn-outline-primary btn-sm" href="{{ route('signatories.index') }}">
+        <i class="fa-solid fa-arrow-left me-1"></i> Back to Signatories
+    </a>
+</div>
 
-            <div class="card-header">
-
-                <h6 class="text-end">
-                    Logged in User:
-                    <b>{{ auth()->user()->name }} ({{ auth()->user()->designation }})</b>
-                </h6>
-
-                <h3 class="text-center mb-3">
-                    Add New Signatory
-                </h3>
-
-                <div class="text-center">
-                    <a href="{{ route('signatories.index') }}" class="btn btn-primary">
-                        <i class="fa-solid fa-arrow-left me-1"></i> Back to Signatories
-                    </a>
-                </div>
-
-            </div>
-
-            <div class="card-body">
-
-                @if($errors->any())
-                    <div class="alert alert-danger">
-                        <strong>Please correct the following:</strong>
-
-                        <ul class="mb-0 mt-2">
-                            @foreach($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
-
-                <form method="POST" action="{{ route('signatories.store') }}" enctype="multipart/form-data">
+<section class="admin-card">
+    <div class="admin-card-header"><h2>Details</h2></div>
+    <div class="admin-card-body">
+<form method="POST" action="{{ route('signatories.store') }}" enctype="multipart/form-data">
                     @csrf
 
                     <div class="mb-3">
@@ -152,10 +98,6 @@
                     </div>
 
                 </form>
-
-            </div>
-
-        </div>
     </div>
 </section>
 @endsection

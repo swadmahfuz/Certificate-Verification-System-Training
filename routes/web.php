@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Route;
 
 // --- Public Routes ---
 Route::get('/', [CertificateController::class, 'search'])->name('certificate.search'); /// Homepage / public certificate verification search
+Route::get('/certificate-pdf/{id}', [CertificateController::class, 'publicPdf'])->name('certificate.publicPdf'); /// Public PDF for verification page
 
 // --- Authentication ---
 Auth::routes(['register' => false]); /// Registration disabled for this application
@@ -53,16 +54,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/view-certificate/{id}', [CertificateController::class, 'viewCertificate'])->name('certificate.view'); /// Certificate details
     Route::get('/edit-certificate/{id}', [CertificateController::class, 'editCertificate'])->name('certificate.edit'); /// Edit certificate form
     Route::post('/update-certificate', [CertificateController::class, 'updateCertificate'])->name('certificate.update'); /// Save certificate updates
-    Route::match(['get', 'delete'], '/delete-certificate/{id}', [CertificateController::class, 'deleteCertificate'])
-        ->name('certificate.delete'); /// Soft-delete certificate (GET kept for legacy links)
+    Route::delete('/delete-certificate/{id}', [CertificateController::class, 'deleteCertificate'])
+        ->name('certificate.delete'); /// Soft-delete certificate
 
     /// --- Review & Approval ---
-    Route::match(['get', 'post'], '/review-certificate/{id}', [CertificateController::class, 'reviewCertificate'])
+    Route::post('/review-certificate/{id}', [CertificateController::class, 'reviewCertificate'])
         ->name('certificate.review'); /// Mark one certificate as reviewed
-    Route::match(['get', 'post'], '/approve-certificate/{id}', [CertificateController::class, 'approveCertificate'])
+    Route::post('/approve-certificate/{id}', [CertificateController::class, 'approveCertificate'])
         ->name('certificate.approve'); /// Mark one certificate as approved
-    Route::match(['get', 'post'], '/bulk-review', [CertificateController::class, 'bulkReview'])->name('bulkReview'); /// Review all assigned to current user
-    Route::match(['get', 'post'], '/bulk-approve', [CertificateController::class, 'bulkApprove'])->name('bulkApprove'); /// Approve all assigned to current user
+    Route::post('/bulk-review', [CertificateController::class, 'bulkReview'])->name('bulkReview'); /// Review all assigned to current user
+    Route::post('/bulk-approve', [CertificateController::class, 'bulkApprove'])->name('bulkApprove'); /// Approve all assigned to current user
 
     /// --- PDF Handling ---
     Route::post('/upload-pdf/{id}', [CertificateController::class, 'uploadPdf'])->name('certificate.uploadPdf'); /// Upload certificate PDF
@@ -104,6 +105,5 @@ Route::middleware('auth')->group(function () {
     Route::get('/signatories/{id}/signature', [SignatoryController::class, 'signature'])->name('signatories.signature'); /// Secure signatory signature image
 
     /// --- Logout ---
-    /// Kept temporarily for existing page links while logout buttons migrate to POST.
-    Route::get('/logout', [CertificateController::class, 'logout'])->name('legacy.logout');
+    /// POST logout is provided by Auth::routes(); no GET logout route.
 });

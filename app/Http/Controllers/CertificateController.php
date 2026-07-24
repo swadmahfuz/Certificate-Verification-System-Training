@@ -15,6 +15,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 
 /*
@@ -24,7 +25,7 @@ use Carbon\Carbon;
 | Developed by: Swad Ahmed Mahfuz (Head of Divison - Business Assurance & Training, Bangladesh)
 | Contact: swad.mahfuz@gmail.com, +1-725-867-7718, +88 01733 023 008
 | Project Start: 12 October 2022
-| Latest Stable Release: v5.0.0 -  24 July 2026
+| Latest Stable Release: v5.0.1 -  25 July 2026
 |--------------------------------------------------------------------------
 */
 
@@ -102,67 +103,50 @@ class CertificateController extends Controller
 
     public function showAllUsers()
     {
-        if (Auth::check()) {
-            $users = \App\Models\User::withCount([
-                'certificatesCreated',
-                'certificatesReviewed',
-                'certificatesApproved',
-            ])->get();
+        $users = \App\Models\User::withCount([
+            'certificatesCreated',
+            'certificatesReviewed',
+            'certificatesApproved',
+        ])->get();
 
-            return view('all-users', compact('users'));
-        }
-        return redirect()->route('certificate.search');
+        return view('all-users', compact('users'));
     }
 
     public function getDeletedCertificates()
     {
-        if (Auth::check())
-        {
-            $certificates = Certificate::onlyTrashed()->orderBy('created_at', 'DESC')->orderBy('id', 'DESC')->paginate(100);
-            return view('deleted-certificates',compact('certificates'));
-        }
+        $certificates = Certificate::onlyTrashed()->orderBy('created_at', 'DESC')->orderBy('id', 'DESC')->paginate(100);
 
-        return redirect()->route('certificate.search');
+        return view('deleted-certificates', compact('certificates'));
     }
-    
-    public function getPendingCertificates()
+
+    public function getPendingCertificates(Request $request)
     {
-        if (Auth::check()) {
-            $certificates = Certificate::where(function ($query) {
-                    $query->whereIn('status', ['Pending Review', 'Pending'])
-                        ->orWhereIn('status', ['Pending Approval', 'Reviewed']);
-                })
-                ->orderBy('created_at', 'DESC')
-                ->orderBy('id', 'DESC')
-                ->paginate(100);
+        $assignment = $request->query('assignment');
+        $query = $this->pendingCertificatesQuery($assignment);
 
-            return view('pending-certificates', compact('certificates'));
-        }
+        $certificates = $query
+            ->orderBy('created_at', 'DESC')
+            ->orderBy('id', 'DESC')
+            ->paginate(100)
+            ->withQueryString();
 
-        return redirect()->route('certificate.search');
+        return view('pending-certificates', compact('certificates', 'assignment'));
     }
 
     public function addCertificate()
     {
-        if (Auth::check())
-        {
-            $currentYear = date('Y');       ///Pass the current year as YYYY to the view file to populate certificate number
-            $currentMonthDay = date('md');  ///Pass the current year as MMDD to the view file to populate certificate number
-            $users = User::all();           ///Fetch all users and pass to view to populate "review by" and "approval by" dropdowns  
-            $trainers = Trainer::where('is_active', true) ->orderBy('name', 'asc') ->get();  /// Fetch only active trainers for the Trainer dropdown.
-            $signatories = Signatory::where('is_active', true) ->orderBy('name', 'asc') ->get();    /// Fetch only active signatories for the optional Signatory dropdown.
-            return view('add-certificate', compact('currentYear', 'currentMonthDay', 'users', 'trainers', 'signatories'));
-        }
-        else
-        {
-            return redirect()->route('certificate.search');
-        }
+        $currentYear = date('Y');       ///Pass the current year as YYYY to the view file to populate certificate number
+        $currentMonthDay = date('md');  ///Pass the current year as MMDD to the view file to populate certificate number
+        $users = User::all();           ///Fetch all users and pass to view to populate "review by" and "approval by" dropdowns
+        $trainers = Trainer::where('is_active', true)->orderBy('name', 'asc')->get();  /// Fetch only active trainers for the Trainer dropdown.
+        $signatories = Signatory::where('is_active', true)->orderBy('name', 'asc')->get();    /// Fetch only active signatories for the optional Signatory dropdown.
+
+        return view('add-certificate', compact('currentYear', 'currentMonthDay', 'users', 'trainers', 'signatories'));
     }
 
     public function createCertificate(Request $request)
     {
-        if (Auth::check())
-        {
+
             $validate = $request->validate([
                 'certificate_number' => 'required|unique:certificates_training',
                 'certificate_type' => 'required|in:Certificate,Certificate of Achievement,Certificate of Competency,Certificate of Attendance',
@@ -318,45 +302,37 @@ class CertificateController extends Controller
             );
 
             return redirect('/view-certificate/' . $certificate->id);
-        }
-
-        return redirect()->route('certificate.search');
+        
     }
 
     public function viewCertificate($id)
     {
-        if (Auth::check())
-        {
-            $certificate = Certificate::withTrashed()->find($id);   ///Ensure deleted certificate info can also be viewed by using withTrashed method.
-            return view('view-certificate',compact('certificate'));
-        }
-        return redirect()->route('certificate.search');
+        $certificate = Certificate::withTrashed()->find($id);   ///Ensure deleted certificate info can also be viewed by using withTrashed method.
+
+        return view('view-certificate', compact('certificate'));
     }
 
     public function editCertificate($id)
     {
-        if (Auth::check())
-        {
-            $users = User::all();
-            $certificate = Certificate::findOrFail($id);
+        $users = User::all();
+        $certificate = Certificate::findOrFail($id);
 
-            ///Show all active trainers. Also retain the certificate's currently selected trainer in the list, even if that trainer has since been deactivated.
-            $trainers = Trainer::where('is_active', true) ->when($certificate->trainer_id, function ($query) use ($certificate) { 
-                $query->orWhere('id', $certificate->trainer_id); } ) ->orderBy('name', 'asc') ->get();
+        ///Show all active trainers. Also retain the certificate's currently selected trainer in the list, even if that trainer has since been deactivated.
+        $trainers = Trainer::where('is_active', true)->when($certificate->trainer_id, function ($query) use ($certificate) {
+            $query->orWhere('id', $certificate->trainer_id);
+        })->orderBy('name', 'asc')->get();
 
-            /// Show all active signatories. Also retain the certificate's currently selected signatory in the list, even if that signatory has since been deactivated.
-            $signatories = Signatory::where('is_active', true) ->when($certificate->signatory_id, function ($query) use ($certificate) {
-                $query->orWhere('id', $certificate->signatory_id);}) ->orderBy('name', 'asc') ->get();
+        /// Show all active signatories. Also retain the certificate's currently selected signatory in the list, even if that signatory has since been deactivated.
+        $signatories = Signatory::where('is_active', true)->when($certificate->signatory_id, function ($query) use ($certificate) {
+            $query->orWhere('id', $certificate->signatory_id);
+        })->orderBy('name', 'asc')->get();
 
-            return view('edit-certificate', compact('certificate', 'users', 'trainers', 'signatories'));
-        }
-        return redirect()->route('certificate.search');
+        return view('edit-certificate', compact('certificate', 'users', 'trainers', 'signatories'));
     }
 
     public function updateCertificate(Request $request)
     {
-        if (Auth::check())
-        {
+
             $validate = $request->validate([
                 'certificate_number' => 'required|unique:certificates_training,certificate_number,' . $request->id,
                 'certificate_type' => 'required|in:Certificate,Certificate of Achievement,Certificate of Competency,Certificate of Attendance',
@@ -507,106 +483,80 @@ class CertificateController extends Controller
             );
 
             return redirect('/view-certificate/' . $certificate->id);
-        }
-
-        return redirect()->route('certificate.search');
+        
     }
 
     // Function to review a certificate
     public function reviewCertificate($id)
     {
-        if (Auth::check()) {
-            $certificate = Certificate::find($id);
-            
-            if (!$certificate) {
-                return back()->with('error', 'Certificate not found.');
-            }
-            
-            if (Auth::user()->id != $certificate->review_by_id) {
-                return back()->with('error', 'Unauthorized: You are not assigned to review this certificate.');
-            }
-            
-            $certificate->status = 'Pending Approval';      /// Pending Review-> Pending Approval ->Approved
-            $certificate->reviewed_at = Carbon::now();
-            $certificate->updated_by = Auth::user()->name;
-            $certificate->updated_by_id = Auth::user()->id;
-            $certificate->updated_at = Carbon::now();
-            $certificate->save();
+        $certificate = Certificate::find($id);
 
-            $this->activityLog->record(
-                'certificate.reviewed',
-                'certificate',
-                $certificate->id,
-                'Certificate ' . $certificate->certificate_number . ' was reviewed.'
-            );
-            
-            return redirect('/view-certificate/' . $certificate->id);
+        if (!$certificate) {
+            return back()->with('error', 'Certificate not found.');
         }
-        
-        return redirect()->route('certificate.search');
+
+        if (Auth::id() != $certificate->review_by_id) {
+            return back()->with('error', 'Unauthorized: You are not assigned to review this certificate.');
+        }
+
+        $certificate->status = 'Pending Approval';      /// Pending Review-> Pending Approval ->Approved
+        $certificate->reviewed_at = Carbon::now();
+        $certificate->updated_by = Auth::user()->name;
+        $certificate->updated_by_id = Auth::id();
+        $certificate->updated_at = Carbon::now();
+        $certificate->save();
+
+        $this->activityLog->record(
+            'certificate.reviewed',
+            'certificate',
+            $certificate->id,
+            'Certificate ' . $certificate->certificate_number . ' was reviewed.'
+        );
+
+        return redirect('/view-certificate/' . $certificate->id)
+            ->with('success', 'Certificate marked as Reviewed.');
     }
 
     // Function to approve a certificate
     public function approveCertificate($id)
     {
-        if (Auth::check()) {
-            $certificate = Certificate::find($id);
-            
-            if (!$certificate) {
-                return back()->with('error', 'Certificate not found.');
-            }
-            
-            if (Auth::user()->id != $certificate->approval_by_id) {
-                return back()->with('error', 'Unauthorized: You are not assigned to approve this certificate.');
-            }
-            
-            if ($certificate->status !== 'Pending Approval') {      
-                return back()->with('error', 'Certificate must be reviewed before approval.');
-            }
-            
-            $certificate->status = 'Approved';       /// Pending Review-> Pending Approval ->Approved
-            $certificate->approved_at = Carbon::now();
-            $certificate->updated_by = Auth::user()->name;
-            $certificate->updated_by_id = Auth::user()->id;
-            $certificate->updated_at = Carbon::now();
-            $certificate->save();
+        $certificate = Certificate::find($id);
 
-            $this->activityLog->record(
-                'certificate.approved',
-                'certificate',
-                $certificate->id,
-                'Certificate ' . $certificate->certificate_number . ' was approved.'
-            );
-            
-            return back()->with('success', 'Certificate approved successfully.');
+        if (!$certificate) {
+            return back()->with('error', 'Certificate not found.');
         }
 
-        return redirect()->route('certificate.search');
+        if (Auth::id() != $certificate->approval_by_id) {
+            return back()->with('error', 'Unauthorized: You are not assigned to approve this certificate.');
+        }
+
+        if ($certificate->status !== 'Pending Approval') {
+            return back()->with('error', 'Certificate must be reviewed before approval.');
+        }
+
+        $certificate->status = 'Approved';       /// Pending Review-> Pending Approval ->Approved
+        $certificate->approved_at = Carbon::now();
+        $certificate->updated_by = Auth::user()->name;
+        $certificate->updated_by_id = Auth::id();
+        $certificate->updated_at = Carbon::now();
+        $certificate->save();
+
+        $this->activityLog->record(
+            'certificate.approved',
+            'certificate',
+            $certificate->id,
+            'Certificate ' . $certificate->certificate_number . ' was approved.'
+        );
+
+        return back()->with('success', 'Certificate approved successfully.');
     }
 
     public function bulkReview()
     {
-        if (!Auth::check())
-        {
-            return redirect()->route('certificate.search');
-        }
-
         $user = Auth::user();
 
-        $updated = Certificate::where(
-            'status',
-            'Pending Review'
-        )
-            ->where(function ($query) use ($user) {
-                $query->where(
-                    'review_by_id',
-                    $user->id
-                )
-                ->orWhere(
-                    'review_by',
-                    $user->name
-                );
-            })
+        $updated = Certificate::where('status', 'Pending Review')
+            ->where('review_by_id', $user->id)
             ->update([
                 'status' => 'Pending Approval',
                 'reviewed_at' => Carbon::now(),
@@ -631,27 +581,10 @@ class CertificateController extends Controller
 
     public function bulkApprove()
     {
-        if (!Auth::check())
-        {
-            return redirect()->route('certificate.search');
-        }
-
         $user = Auth::user();
 
-        $updated = Certificate::where(
-            'status',
-            'Pending Approval'
-        )
-            ->where(function ($query) use ($user) {
-                $query->where(
-                    'approval_by_id',
-                    $user->id
-                )
-                ->orWhere(
-                    'approval_by',
-                    $user->name
-                );
-            })
+        $updated = Certificate::where('status', 'Pending Approval')
+            ->where('approval_by_id', $user->id)
             ->update([
                 'status' => 'Approved',
                 'approved_at' => Carbon::now(),
@@ -676,40 +609,35 @@ class CertificateController extends Controller
 
     public function deleteCertificate($id)
     {
-        if (Auth::check())
-        {
-            $certificate = Certificate::findOrFail($id);
+        $certificate = Certificate::findOrFail($id);
 
-            // Append "(Deleted)" to the certificate number to avoid duplicates
-            $certificate->certificate_number .= " (Deleted)";
+        // Append "(Deleted)" to the certificate number to avoid duplicates
+        $certificate->certificate_number .= " (Deleted)";
 
-            // Update status and deleted_by fields
-            $certificate->status = "Deleted";
-            $certificate->deleted_by = Auth::user()->name;
-            $certificate->deleted_by_id = Auth::user()->id;
-            $certificate->reviewed_at = null;
-            $certificate->approved_at = null;
-            $certificate->updated_by = Auth::user()->name;
-            $certificate->updated_by_id = Auth::user()->id;
-            $certificate->updated_at = Carbon::now();
+        // Update status and deleted_by fields
+        $certificate->status = "Deleted";
+        $certificate->deleted_by = Auth::user()->name;
+        $certificate->deleted_by_id = Auth::id();
+        $certificate->reviewed_at = null;
+        $certificate->approved_at = null;
+        $certificate->updated_by = Auth::user()->name;
+        $certificate->updated_by_id = Auth::id();
+        $certificate->updated_at = Carbon::now();
 
-            // Save the updates before soft-deleting
-            $certificate->save();
+        // Save the updates before soft-deleting
+        $certificate->save();
 
-            // Soft delete the certificate
-            $certificate->delete();
+        // Soft delete the certificate
+        $certificate->delete();
 
-            $this->activityLog->record(
-                'certificate.deleted',
-                'certificate',
-                $certificate->id,
-                'Certificate ' . $certificate->certificate_number . ' was deleted.'
-            );
+        $this->activityLog->record(
+            'certificate.deleted',
+            'certificate',
+            $certificate->id,
+            'Certificate ' . $certificate->certificate_number . ' was deleted.'
+        );
 
-            return back()->with('Certificate_Deleted', 'Certificate details have been deleted successfully');
-        }
-
-        return redirect()->route('certificate.search');
+        return back()->with('success', 'Certificate details have been deleted successfully');
     }
 
     public function uploadPdf(Request $request, $id)
@@ -719,40 +647,35 @@ class CertificateController extends Controller
         ]);
 
         $certificate = Certificate::findOrFail($id);
-        
+
         // Ensure only creator, reviewer, or approver can upload
         $user = Auth::user();
         $isAuthorized = (
             $user->id == $certificate->review_by_id ||
             $user->id == $certificate->approval_by_id ||
-            $user->id == $certificate->created_by_id ||
-            $user->name == $certificate->review_by ||
-            $user->name == $certificate->approval_by ||
-            $user->name == $certificate->created_by
+            $user->id == $certificate->created_by_id
         );
 
         if (!$isAuthorized) {
             return back()->with('error', 'You are not authorized to upload this certificate.');
         }
 
-        $destinationPath = public_path('Certificate PDFs'); // Now inside public
-        // Create directory if not exists
-        if (!file_exists($destinationPath)) {
-            mkdir($destinationPath, 0755, true);
-        }
-
         $pdfFile = $request->file('certificate_pdf');
         $timestamp = Carbon::now()->format('YmdHi');
-        $fileName = 'TUVAT Training Cert - ' . $certificate->participant_name . ' ' . $timestamp . '.' . $pdfFile->getClientOriginalExtension();
+        $safeParticipant = preg_replace('/[^A-Za-z0-9\-_. ]+/', '', $certificate->participant_name);
+        $fileName = 'TUVAT Training Cert - ' . $safeParticipant . ' ' . $timestamp . '.' . $pdfFile->getClientOriginalExtension();
 
-        $pdfFile->move($destinationPath, $fileName);
+        // Remove previous private/public copies when replacing.
+        $this->deleteCertificatePdfFiles($certificate);
+
+        Storage::putFileAs('certificate-pdfs', $pdfFile, $fileName);
 
         $certificate->certificate_pdf = $fileName;
         $certificate->pdf_uploaded_by = $user->name;
         $certificate->pdf_uploaded_by_id = $user->id;
         $certificate->pdf_uploaded_at = now();
-        $certificate->updated_by = Auth::user()->name;
-        $certificate->updated_by_id = Auth::user()->id;
+        $certificate->updated_by = $user->name;
+        $certificate->updated_by_id = $user->id;
         $certificate->updated_at = Carbon::now();
         $certificate->save();
 
@@ -769,10 +692,9 @@ class CertificateController extends Controller
     public function downloadPdf($id)
     {
         $certificate = Certificate::findOrFail($id);
-        
-        $filePath = public_path('Certificate PDFs/' . $certificate->certificate_pdf);
+        $filePath = $this->resolveCertificatePdfPath($certificate);
 
-        if (!file_exists($filePath)) {
+        if (!$filePath) {
             return back()->with('error', 'PDF file not found.');
         }
 
@@ -782,9 +704,9 @@ class CertificateController extends Controller
     public function viewPdf($id)
     {
         $certificate = Certificate::findOrFail($id);
-        $filePath = public_path('Certificate PDFs/' . $certificate->certificate_pdf);
+        $filePath = $this->resolveCertificatePdfPath($certificate);
 
-        if (!file_exists($filePath)) {
+        if (!$filePath) {
             abort(404, 'PDF not found.');
         }
 
@@ -794,48 +716,117 @@ class CertificateController extends Controller
         ]);
     }
 
-    public function generateCertificatePdf($id, CertificatePdfService $certificatePdfService)
+    /**
+     * Public PDF view/download for the verification page.
+     * Only non-deleted certificates with an uploaded PDF are served.
+     */
+    public function publicPdf($id)
     {
-        if (Auth::check())
-        {
-            $certificate = Certificate::findOrFail($id);
+        $certificate = Certificate::findOrFail($id);
 
-            /// Only approved certificates may be generated as PDF.
-            if ($certificate->status != 'Approved') {
-                return back()->with('pdf_error', 'Only approved certificates can be generated as PDF.');
-            }
-
-            /// Generate the PDF in memory without permanently storing it.
-            $pdfContent = $certificatePdfService->generateTestPdf($certificate);
-
-            /// Replace characters that are unsafe in downloaded filenames.
-            $safeCertificateNumber = preg_replace('/[^A-Za-z0-9\-_.]/', '-', $certificate->certificate_number);
-
-            $filename = 'Training-Certificate-' . $safeCertificateNumber . '.pdf';
-
-            $this->activityLog->record(
-                'certificate.pdf_generated',
-                'certificate',
-                $certificate->id,
-                'A PDF was generated for certificate ' . $certificate->certificate_number . '.'
-            );
-
-            return response($pdfContent, 200, [
-                'Content-Type' => 'application/pdf',
-                'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-                'Content-Length' => strlen($pdfContent),
-                'Cache-Control' => 'private, no-store, no-cache, must-revalidate',
-                'Pragma' => 'no-cache',
-            ]);
+        if ($certificate->status === 'Deleted' || empty($certificate->certificate_pdf)) {
+            abort(404, 'PDF not found.');
         }
 
-        return redirect()->route('certificate.search');
+        $filePath = $this->resolveCertificatePdfPath($certificate);
+
+        if (!$filePath) {
+            abort(404, 'PDF not found.');
+        }
+
+        $disposition = request()->boolean('download') ? 'attachment' : 'inline';
+
+        return response()->file($filePath, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => $disposition . '; filename="' . $certificate->certificate_pdf . '"'
+        ]);
+    }
+
+    private function certificatePdfStoragePath(string $fileName): string
+    {
+        return 'certificate-pdfs/' . $fileName;
+    }
+
+    /**
+     * Resolve a certificate PDF from private storage, migrating legacy public files when found.
+     */
+    private function resolveCertificatePdfPath(Certificate $certificate): ?string
+    {
+        if (empty($certificate->certificate_pdf)) {
+            return null;
+        }
+
+        $privatePath = $this->certificatePdfStoragePath($certificate->certificate_pdf);
+
+        if (Storage::exists($privatePath)) {
+            return Storage::path($privatePath);
+        }
+
+        $legacyPath = public_path('Certificate PDFs/' . $certificate->certificate_pdf);
+        if (is_file($legacyPath)) {
+            Storage::put($privatePath, file_get_contents($legacyPath));
+            @unlink($legacyPath);
+
+            return Storage::path($privatePath);
+        }
+
+        return null;
+    }
+
+    private function deleteCertificatePdfFiles(Certificate $certificate): void
+    {
+        if (empty($certificate->certificate_pdf)) {
+            return;
+        }
+
+        $privatePath = $this->certificatePdfStoragePath($certificate->certificate_pdf);
+        if (Storage::exists($privatePath)) {
+            Storage::delete($privatePath);
+        }
+
+        $legacyPath = public_path('Certificate PDFs/' . $certificate->certificate_pdf);
+        if (is_file($legacyPath)) {
+            @unlink($legacyPath);
+        }
+    }
+
+    public function generateCertificatePdf($id, CertificatePdfService $certificatePdfService)
+    {
+        $certificate = Certificate::findOrFail($id);
+
+        /// Only approved certificates may be generated as PDF.
+        if ($certificate->status != 'Approved') {
+            return back()->with('pdf_error', 'Only approved certificates can be generated as PDF.');
+        }
+
+        /// Generate the PDF in memory without permanently storing it.
+        $pdfContent = $certificatePdfService->generateTestPdf($certificate);
+
+        /// Replace characters that are unsafe in downloaded filenames.
+        $safeCertificateNumber = preg_replace('/[^A-Za-z0-9\-_.]/', '-', $certificate->certificate_number);
+
+        $filename = 'Training-Certificate-' . $safeCertificateNumber . '.pdf';
+
+        $this->activityLog->record(
+            'certificate.pdf_generated',
+            'certificate',
+            $certificate->id,
+            'A PDF was generated for certificate ' . $certificate->certificate_number . '.'
+        );
+
+        return response($pdfContent, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            'Content-Length' => strlen($pdfContent),
+            'Cache-Control' => 'private, no-store, no-cache, must-revalidate',
+            'Pragma' => 'no-cache',
+        ]);
     }
 
     ///Live-Search in Dashboard
     public function liveSearch(Request $request)
     {
-        if (Auth::check()) {
+
             $perPage = 100; // Number of certificates per page
             $userInput = $request->input('userInput', '');
     
@@ -863,14 +854,12 @@ class CertificateController extends Controller
             }
     
             return response()->json(['data' => $result]);
-        } else {
-            return redirect()->route('certificate.search');
-        }
+        
     }
 
     public function liveSearchDeleted(Request $request)     // To search within deleted certificates only
     {
-        if (Auth::check()) {
+
             $perPage = 100; // Number of certificates per page
             $userInput = $request->input('userInput', '');
     
@@ -899,64 +888,74 @@ class CertificateController extends Controller
             }
     
             return response()->json(['data' => $result]);
-        } else {
-            return redirect()->route('certificate.search');
-        }
+        
     }
 
     public function liveSearchPending(Request $request)
     {
-        if (Auth::check()) {
-            $perPage = 100;
-            $userInput = $request->input('userInput', '');
+        $perPage = 100;
+        $userInput = $request->input('userInput', '');
+        $assignment = $request->input('assignment');
 
-            $query = Certificate::where(function ($query) {
-                $query->whereIn('status', ['Pending Review', 'Pending'])
-                    ->orWhereIn('status', ['Pending Approval', 'Reviewed']);
+        $query = $this->pendingCertificatesQuery($assignment);
+
+        if (!empty($userInput)) {
+            $query->where(function ($search) use ($userInput) {
+                $search->whereRaw('LOWER(certificate_number) LIKE ?', ['%' . strtolower($userInput) . '%'])
+                    ->orWhereRaw('LOWER(participant_name) LIKE ?', ['%' . strtolower($userInput) . '%'])
+                    ->orWhereRaw('passport_nid = ?', [$userInput])
+                    ->orWhereRaw('driving_license = ?', [$userInput])
+                    ->orWhereRaw('LOWER(company) LIKE ?', ['%' . strtolower($userInput) . '%'])
+                    ->orWhereRaw('LOWER(training_name) LIKE ?', ['%' . strtolower($userInput) . '%'])
+                    ->orWhereRaw('LOWER(location) LIKE ?', ['%' . strtolower($userInput) . '%'])
+                    ->orWhereRaw('LOWER(trainer) LIKE ?', ['%' . strtolower($userInput) . '%'])
+                    ->orWhereRaw('training_date LIKE ?', ['%' . $userInput . '%'])
+                    ->orWhereRaw('training_end LIKE ?', ['%' . $userInput . '%'])
+                    ->orWhereRaw('issue_date LIKE ?', ['%' . $userInput . '%'])
+                    ->orWhereRaw('expiry_date LIKE ?', ['%' . $userInput . '%']);
             });
-
-            if (!empty($userInput)) {
-                $query->where(function ($search) use ($userInput) {
-                    $search->whereRaw('LOWER(certificate_number) LIKE ?', ['%' . strtolower($userInput) . '%'])
-                        ->orWhereRaw('LOWER(participant_name) LIKE ?', ['%' . strtolower($userInput) . '%'])
-                        ->orWhereRaw('passport_nid = ?', [$userInput])
-                        ->orWhereRaw('driving_license = ?', [$userInput])
-                        ->orWhereRaw('LOWER(company) LIKE ?', ['%' . strtolower($userInput) . '%'])
-                        ->orWhereRaw('LOWER(training_name) LIKE ?', ['%' . strtolower($userInput) . '%'])
-                        ->orWhereRaw('LOWER(location) LIKE ?', ['%' . strtolower($userInput) . '%'])
-                        ->orWhereRaw('LOWER(trainer) LIKE ?', ['%' . strtolower($userInput) . '%'])
-                        ->orWhereRaw('training_date LIKE ?', ['%' . $userInput . '%'])
-                        ->orWhereRaw('training_end LIKE ?', ['%' . $userInput . '%'])
-                        ->orWhereRaw('issue_date LIKE ?', ['%' . $userInput . '%'])
-                        ->orWhereRaw('expiry_date LIKE ?', ['%' . $userInput . '%']);
-                });
-            }
-
-            $result = $query
-                ->orderBy('created_at', 'DESC')
-                ->orderBy('id', 'DESC')
-                ->paginate($perPage);
-
-            return response()->json(['data' => $result]);
         }
 
-        return redirect()->route('certificate.search');
+        $result = $query
+            ->orderBy('created_at', 'DESC')
+            ->orderBy('id', 'DESC')
+            ->paginate($perPage);
+
+        return response()->json(['data' => $result]);
     }
-        
+
+    private function pendingCertificatesQuery(?string $assignment)
+    {
+        $userId = Auth::id();
+
+        if ($assignment === 'review' && $userId) {
+            return Certificate::assignedForReview($userId);
+        }
+
+        if ($assignment === 'approval' && $userId) {
+            return Certificate::assignedForApproval($userId);
+        }
+
+        if ($assignment === 'mine' && $userId) {
+            return Certificate::assignedToUser($userId);
+        }
+
+        return Certificate::where(function ($query) {
+            $query->whereIn('status', ['Pending Review', 'Pending'])
+                ->orWhereIn('status', ['Pending Approval', 'Reviewed']);
+        });
+    }
 
     public function importExportView()
     {
-        if (Auth::check())
-        {
+
             return view('imports-exports');
-        }
-       return redirect()->route('certificate.search');
+        
     }
 
     public function export() 
     {
-        if (Auth::check())
-        {
+
             $today = Carbon::now()->format('d-m-Y');   ///get current date
             $fileName = 'TUV Austria BIC Certificate DB on '.$today.'.xlsx';
             $this->activityLog->record(
@@ -967,87 +966,81 @@ class CertificateController extends Controller
                 ['file_name' => $fileName]
             );
             return Excel::download(new CertificateExport, $fileName);
-        }
-        return redirect()->route('certificate.search');
+        
     }
 
     public function import(Request $request)
     {
-        if (Auth::check())
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx,xls,csv|max:20480',
+        ]);
+
+        try
         {
-            $request->validate([
-                'file' => 'required|file|mimes:xlsx,xls,csv|max:20480',
-            ]);
-
-            try
-            {
-                DB::transaction(function () use ($request) {
-                    Excel::import(
-                        new CertificateImport,
-                        $request->file('file')
-                    );
-                });
-
-                $this->activityLog->record(
-                    'import.completed',
-                    'import',
-                    null,
-                    'Certificate data was imported.',
-                    ['file_name' => $request->file('file')->getClientOriginalName()]
+            DB::transaction(function () use ($request) {
+                Excel::import(
+                    new CertificateImport,
+                    $request->file('file')
                 );
+            });
 
-                return back()->with(
-                    'success',
-                    'Certificate data imported successfully.'
-                );
-            }
-            catch (\Throwable $e)
-            {
-                Log::error(
-                    'Certificate import failed.',
-                    [
-                        'user_id' => Auth::id(),
-                        'file_name' => $request->file('file')
-                            ? $request->file('file')->getClientOriginalName()
-                            : null,
-                        'error' => $e->getMessage(),
-                    ]
-                );
+            $this->activityLog->record(
+                'import.completed',
+                'import',
+                null,
+                'Certificate data was imported.',
+                ['file_name' => $request->file('file')->getClientOriginalName()]
+            );
 
-                $this->activityLog->record(
-                    'import.failed',
-                    'import',
-                    null,
-                    'A certificate import failed.',
-                    [
-                        'file_name' => $request->file('file')
-                            ? $request->file('file')->getClientOriginalName()
-                            : null,
-                    ]
-                );
-
-                $errorMessage = $e->getMessage();
-
-                /*
-                * Do not expose database queries or internal SQL errors
-                * on the import page.
-                */
-                if (
-                    strpos($errorMessage, 'SQLSTATE') !== false ||
-                    strpos($errorMessage, 'Integrity constraint') !== false
-                ) {
-                    $errorMessage =
-                        'The spreadsheet contains duplicate or invalid certificate data.';
-                }
-
-                return back()->with(
-                    'import_error',
-                    'Import failed: ' . $errorMessage
-                );
-            }
+            return back()->with(
+                'success',
+                'Certificate data imported successfully.'
+            );
         }
+        catch (\Throwable $e)
+        {
+            Log::error(
+                'Certificate import failed.',
+                [
+                    'user_id' => Auth::id(),
+                    'file_name' => $request->file('file')
+                        ? $request->file('file')->getClientOriginalName()
+                        : null,
+                    'error' => $e->getMessage(),
+                ]
+            );
 
-        return redirect()->route('certificate.search');
+            $this->activityLog->record(
+                'import.failed',
+                'import',
+                null,
+                'A certificate import failed.',
+                [
+                    'file_name' => $request->file('file')
+                        ? $request->file('file')->getClientOriginalName()
+                        : null,
+                ]
+            );
+
+            $errorMessage = $e->getMessage();
+
+            /*
+            * Do not expose database queries or internal SQL errors
+            * on the import page.
+            */
+            if (
+                strpos($errorMessage, 'SQLSTATE') !== false ||
+                strpos($errorMessage, 'Integrity constraint') !== false
+            ) {
+                $errorMessage =
+                    'The spreadsheet contains duplicate or invalid certificate data.';
+            }
+
+            return back()->with(
+                'import_error',
+                'Import failed: ' . $errorMessage
+            );
+        }
     }
 
 }

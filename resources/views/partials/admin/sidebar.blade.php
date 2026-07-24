@@ -23,7 +23,11 @@
             <i class="fa-solid fa-plus"></i><span>Add Certificate</span>
         </a>
         <a class="sidebar-link {{ request()->routeIs('pendingCertificates') ? 'active' : '' }}" href="{{ route('pendingCertificates') }}">
-            <i class="fa-regular fa-clock"></i><span>Pending Certificates</span>
+            <i class="fa-regular fa-clock"></i>
+            <span>Pending Certificates</span>
+            @if(($myAssignments['total'] ?? 0) > 0)
+                <span class="nav-count">{{ $myAssignments['total'] }}</span>
+            @endif
         </a>
         <a class="sidebar-link {{ request()->routeIs('deletedCertificates') ? 'active' : '' }}" href="{{ route('deletedCertificates') }}">
             <i class="fa-regular fa-trash-can"></i><span>Deleted Certificates</span>
@@ -95,6 +99,6 @@
 
     <div class="sidebar-footer">
         <small>Certificate Verification System</small>
-        <span>Version 5.0.0</span>
+        <span>Version 5.0.1</span>
     </div>
 </aside>

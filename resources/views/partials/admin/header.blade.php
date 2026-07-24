@@ -14,6 +14,13 @@
             <i class="fa-regular fa-clock"></i>
             <span>{{ now()->format('d M Y, h:i A') }}</span>
         </div>
+        @if(($myAssignments['total'] ?? 0) > 0)
+            <a class="assignment-badge" href="{{ route('pendingCertificates', ['assignment' => 'mine']) }}" title="Certificates assigned to you">
+                <i class="fa-solid fa-bell"></i>
+                <span class="d-none d-sm-inline">My assignments</span>
+                <span class="badge-count">{{ $myAssignments['total'] }}</span>
+            </a>
+        @endif
         <div class="dropdown">
             <button class="user-menu dropdown-toggle" data-bs-toggle="dropdown" type="button">
                 <span class="user-avatar">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</span>

@@ -44,6 +44,29 @@ class Certificate extends Model
         return $query->whereIn('status', ['Pending Approval', 'Reviewed']);
     }
 
+    public function scopeAssignedForReview(Builder $query, int $userId)
+    {
+        return $query->pendingReview()->where('review_by_id', $userId);
+    }
+
+    public function scopeAssignedForApproval(Builder $query, int $userId)
+    {
+        return $query->pendingApproval()->where('approval_by_id', $userId);
+    }
+
+    public function scopeAssignedToUser(Builder $query, int $userId)
+    {
+        return $query->where(function ($builder) use ($userId) {
+            $builder->where(function ($inner) use ($userId) {
+                $inner->whereIn('status', ['Pending Review', 'Pending'])
+                    ->where('review_by_id', $userId);
+            })->orWhere(function ($inner) use ($userId) {
+                $inner->whereIn('status', ['Pending Approval', 'Reviewed'])
+                    ->where('approval_by_id', $userId);
+            });
+        });
+    }
+
     public function trainerRecord()
     {
         return $this->belongsTo(Trainer::class, 'trainer_id');

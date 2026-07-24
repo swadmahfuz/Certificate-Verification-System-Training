@@ -2,127 +2,54 @@
 
 @section('title', 'Import / Export')
 
-@push('styles')
-<style>
-        body {
-            font-size: 13px;
-        }
-        .container {
-            max-width: 99%;
-        }
-        .table-container {
-            overflow-x: auto;
-        }
-        .table-striped tbody td, .table-striped thead th {
-            vertical-align: middle;
-        }
-        .table-striped thead th {
-            text-align: left;
-            position: sticky;
-            top: 0;
-            background-color: rgb(243, 243, 243);
-            border-right: 1px solid #dee2e6;
-        }
-        .table-striped thead th:last-child {
-            border-right: none;
-        }
-        .btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-        }
-        .btn i {
-            font-size: 14px;
-        }
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .import-export-actions {
-            display: flex;
-            flex-wrap: nowrap;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-            width: 100%;
-            overflow-x: auto;
-        }
-        .import-export-actions .btn {
-            flex: 0 0 auto;
-        }
-    </style>
-@endpush
-
 @section('content')
-<div class="container">
-    <div class="card bg-light mt-3">
-        <div class="card-header" style="padding-top: 20px; padding-bottom: 20px;">
-            <center>
-                <h3 style="padding-bottom: 5px">TÜV Austria BIC CVS | Import/Export Training Certificate Data</h3>
-                <div class="import-export-actions">
-                    <a href="{{ route('dashboard') }}" class="btn btn-success">
-                        <i class="fa-solid fa-table-columns me-1"></i> Dashboard
-                    </a>
-                    <a href="{{ route('export') }}" class="btn btn-primary">
-                        <i class="fa-solid fa-file-export me-1"></i> Export Database
-                    </a>
-                    <a href="{{ asset('downloads/TUVAT CVS Training - Data Import Template.xlsx') }}" class="btn btn-info">
-                        <i class="fa-solid fa-download me-1"></i> Download Blank Excel File
-                    </a>
-                    <a href="{{ asset('downloads/TUVAT CVS Training - Sample Data File.xlsx') }}" class="btn btn-secondary">
-                        <i class="fa-solid fa-file-lines me-1"></i> Download Sample Data
-                    </a>
-                    <a href="{{ route('legacy.logout') }}" class="btn btn-danger">
-                        <i class="fa-solid fa-right-from-bracket me-1"></i> Log Out
-                    </a>
-                </div>
-            </center>
-        </div>
-        <div class="card-body">
-
-            @if(session('success'))
-                <div class="alert alert-success">
-                    {{ session('success') }}
-                </div>
-            @endif
-
-            @if(session('import_error'))
-                <div class="alert alert-danger">
-                    {{ session('import_error') }}
-                </div>
-            @endif
-
-            @if($errors->any())
-                <div class="alert alert-danger">
-                    <ul class="mb-0">
-                        @foreach($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-
-            <form action="{{ route('import') }}" method="POST" enctype="multipart/form-data">
-                @csrf
-                <input type="file" name="file" class="form-control">
-                <h6 style="text-align: right; font-style:italic; margin-top:5px">Please upload MS Excel sheet as per the given import template given above.</h6>
-                <h6 style="text-align: right; font-style: italic; font-weight: bold; margin-top: 5px; color: red;">The Excel file must include the columns "certificate_type", "trainer_email" and "signatory_email".</h6>
-                <h6 style="text-align: right; font-style: italic; margin-top: 5px;">Allowed certificate types: Certificate, Certificate of Achievement, Certificate of Competency, Certificate of Attendance.</h6>
-                <h6 style="text-align: right; font-style: italic; margin-top: 5px;">The trainer email must exactly match an active trainer registered in Trainer Management.</h6>
-                <h6 style="text-align: right; font-style: italic; margin-top: 5px;">The signatory email is optional. Leave it blank for a trainer-only certificate. If provided, it must exactly match an active signatory registered in Signatory Management.</h6>
-                <h6 style="text-align: right; font-style: italic; font-weight: bold; margin-top: 5px; color: red;">Do not change template formatting.</h6>
-                <h6 style="text-align: right; font-style: italic; font-weight: bold; margin-top: 5px; color: red;">All dates in excel sheet must be given in YYYY-MM-DD Format.</h6>
-                <h6 style="text-align: right; font-style: italic; font-weight: bold; margin-top: 5px; color: red;">Example: "20 May 2024" → "2024-05-20"</h6>
-                <center><button class="btn btn-success" style="margin-top: 10px">Import Data</button></center>
-                <br>
-            </form>
-        </div>
+<div class="page-heading">
+    <div>
+        <h1>Import / Export</h1>
+        <p>Export certificate data or import records from the Excel template.</p>
+    </div>
+    <div class="d-flex flex-wrap gap-2">
+        <a href="{{ route('export') }}" class="btn btn-primary btn-sm">
+            <i class="fa-solid fa-file-export me-1"></i> Export Database
+        </a>
+        <a href="{{ asset('downloads/TUVAT CVS Training - Data Import Template.xlsx') }}" class="btn btn-info btn-sm">
+            <i class="fa-solid fa-download me-1"></i> Blank Excel Template
+        </a>
+        <a href="{{ asset('downloads/TUVAT CVS Training - Sample Data File.xlsx') }}" class="btn btn-secondary btn-sm">
+            <i class="fa-solid fa-file-lines me-1"></i> Sample Data
+        </a>
     </div>
 </div>
+
+@if(session('import_error'))
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ session('import_error') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+@endif
+
+<section class="admin-card">
+    <div class="admin-card-header">
+        <h2>Import Certificate Data</h2>
+    </div>
+    <div class="admin-card-body">
+        <form action="{{ route('import') }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            <div class="mb-3">
+                <label class="form-label" for="import-file">Excel file</label>
+                <input id="import-file" type="file" name="file" class="form-control" required>
+            </div>
+            <ul class="small text-muted mb-3">
+                <li>Upload an MS Excel sheet matching the import template.</li>
+                <li>Required columns include <strong>certificate_type</strong>, <strong>trainer_email</strong>, and <strong>signatory_email</strong>.</li>
+                <li>Allowed certificate types: Certificate, Certificate of Achievement, Certificate of Competency, Certificate of Attendance.</li>
+                <li>Trainer email must match an active trainer. Signatory email is optional.</li>
+                <li>Do not change template formatting. All dates must use <strong>YYYY-MM-DD</strong>.</li>
+            </ul>
+            <button class="btn btn-success" type="submit">
+                <i class="fa-solid fa-file-import me-1"></i> Import Data
+            </button>
+        </form>
+    </div>
+</section>
 @endsection

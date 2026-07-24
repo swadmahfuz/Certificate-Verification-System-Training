@@ -4,86 +4,40 @@
 
 @push('styles')
 <style>
-        body {
-            font-size: 13px;
-        }
-
-        .btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-        }
-
-        .btn i {
-            font-size: 14px;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .card-header {
-            background-color: #f4f4f4;
-            padding: 20px;
-        }
-
-        label {
-            font-weight: 600;
-        }
-
+        label { font-weight: 600; }
         .training-options {
             background-color: #f8f9fa;
             border: 1px solid #dee2e6;
             border-radius: 8px;
             padding: 15px 18px;
         }
-
-        .training-options .form-check-label {
-            font-weight: 500;
-        }
+        .training-options .form-check-label { font-weight: 500; }
     </style>
 @endpush
 
 @section('content')
-<section class="pt-5">
-    <div class="container">
-        <div class="card">
+<div class="page-heading">
+    <div>
+        <h1>Edit Certificate</h1>
+        <p>Update certificate information. * Required fields</p>
+    </div>
+    <div class="d-flex flex-wrap gap-2">
+        <a class="btn btn-outline-primary btn-sm" href="{{ route('certificate.view', $certificate->id) }}">
+            <i class="fa-solid fa-arrow-left me-1"></i> Back to Details
+        </a>
+        <form action="{{ route('certificate.delete', $certificate->id) }}" method="POST">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="btn btn-danger btn-sm" data-confirm="Delete this certificate?">
+                <i class="fa-solid fa-trash me-1"></i> Delete Certificate
+            </button>
+        </form>
+    </div>
+</div>
 
-            <div class="card-header text-center">
-                <h3>Edit Certificate Information</h3>
-
-                <div class="d-flex justify-content-center gap-2 flex-wrap mt-3">
-                    <a href="../dashboard" class="btn btn-primary">
-                        <i class="fa-solid fa-arrow-left me-1"></i>
-                        Go back to Dashboard
-                    </a>
-
-                    <a href="../delete-certificate/{{ $certificate->id }}" class="btn btn-danger">
-                        <i class="fa-solid fa-trash me-1"></i>
-                        Delete Certificate
-                    </a>
-                </div>
-
-                <p class="text-end mt-2 mb-0" style="font-style: italic;">
-                    * Required fields
-                </p>
-            </div>
-
-            <div class="card-body">
-
-                @if(session('success'))
-                    <div class="alert alert-success">
-                        {{ session('success') }}
-                    </div>
-                @endif
-
+<section class="admin-card">
+    <div class="admin-card-header"><h2>Certificate Details</h2></div>
+    <div class="admin-card-body">
                 <form action="{{ route('certificate.update') }}" method="POST">
                     @csrf
 
@@ -492,8 +446,6 @@
                     </div>
 
                 </form>
-            </div>
-        </div>
     </div>
 </section>
 @endsection

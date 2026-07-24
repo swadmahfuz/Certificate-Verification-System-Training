@@ -4,77 +4,31 @@
 
 @push('styles')
 <style>
-        body {
-            font-size: 13px;
-        }
-
-        .btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .card-header {
-            background-color: #f4f4f4;
-            padding: 20px;
-        }
-
-        label {
-            font-weight: 600;
-        }
-
+        label { font-weight: 600; }
         .training-options {
             background-color: #f8f9fa;
             border: 1px solid #dee2e6;
             border-radius: 8px;
             padding: 15px 18px;
         }
-
-        .training-options .form-check-label {
-            font-weight: 500;
-        }
+        .training-options .form-check-label { font-weight: 500; }
     </style>
 @endpush
 
 @section('content')
-<section class="pt-5">
-    <div class="container">
-        <div class="card">
+<div class="page-heading">
+    <div>
+        <h1>Add Certificate</h1>
+        <p>Create a new training certificate record. * Required fields</p>
+    </div>
+    <a class="btn btn-outline-primary btn-sm" href="{{ route('certificates.index') }}">
+        <i class="fa-solid fa-arrow-left me-1"></i> Back to Certificates
+    </a>
+</div>
 
-            <div class="card-header text-center">
-                <h3>TÜV Austria BIC CVS | Add New Certificate</h3>
-
-                <div class="mt-3 d-flex justify-content-center">
-                    <a href="./dashboard" class="btn btn-primary me-2">
-                        <i class="fa-solid fa-arrow-left me-1"></i>
-                        Go back to Dashboard
-                    </a>
-                </div>
-
-                <p class="text-end mt-2 mb-0" style="font-style: italic;">
-                    * Required fields
-                </p>
-            </div>
-
-            <div class="card-body">
-
-                @if(session('success'))
-                    <div class="alert alert-success">
-                        {{ session('success') }}
-                    </div>
-                @endif
-
+<section class="admin-card">
+    <div class="admin-card-header"><h2>Certificate Details</h2></div>
+    <div class="admin-card-body">
                 <form method="POST" action="{{ route('certificate.create') }}">
                     @csrf
 
@@ -591,8 +545,6 @@
                     </div>
 
                 </form>
-            </div>
-        </div>
     </div>
 </section>
 @endsection

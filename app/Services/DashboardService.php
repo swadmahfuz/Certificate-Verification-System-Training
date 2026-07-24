@@ -6,6 +6,7 @@ use App\Models\ActivityLog;
 use App\Models\Certificate;
 use App\Models\Trainer;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
 
 class DashboardService
@@ -33,6 +34,8 @@ class DashboardService
             'Expired' => $expired,
         ];
 
+        $myAssignments = $this->myAssignments();
+
         return [
             'stats' => [
                 'total' => $total,
@@ -42,6 +45,7 @@ class DashboardService
                 'expired' => $expired,
                 'active_trainers' => Trainer::where('is_active', true)->count(),
             ],
+            'myAssignments' => $myAssignments,
             'percentages' => collect($statusCounts)->map(function ($count) use ($total) {
                 return $total > 0 ? round(($count / $total) * 100, 1) : 0;
             })->all(),
@@ -58,6 +62,31 @@ class DashboardService
                 'issue_date',
             ]),
             'recentActivities' => $this->recentActivities(),
+        ];
+    }
+
+    /**
+     * Counts of certificates waiting on the current (or given) user.
+     */
+    public function myAssignments(?int $userId = null): array
+    {
+        $userId = $userId ?? Auth::id();
+
+        if (!$userId) {
+            return [
+                'review' => 0,
+                'approval' => 0,
+                'total' => 0,
+            ];
+        }
+
+        $review = Certificate::assignedForReview($userId)->count();
+        $approval = Certificate::assignedForApproval($userId)->count();
+
+        return [
+            'review' => $review,
+            'approval' => $approval,
+            'total' => $review + $approval,
         ];
     }
 

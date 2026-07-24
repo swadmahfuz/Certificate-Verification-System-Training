@@ -13,11 +13,37 @@
     </a>
 </div>
 
+@if(($myAssignments['total'] ?? 0) > 0)
+    <div class="assignment-banner">
+        <div>
+            <strong>You have {{ $myAssignments['total'] }} certificate{{ $myAssignments['total'] === 1 ? '' : 's' }} waiting on you.</strong>
+            <span>{{ $myAssignments['review'] }} for review · {{ $myAssignments['approval'] }} for approval</span>
+        </div>
+        <a class="btn btn-sm btn-primary" href="{{ route('pendingCertificates', ['assignment' => 'mine']) }}">
+            Open my assignments
+        </a>
+    </div>
+@endif
+
 <div class="stats-grid">
     <x-admin.stat-card label="Total Certificates" :value="$stats['total']" icon="fa-file-circle-check" color="blue" meta="Active records" />
     <x-admin.stat-card label="Approved Certificates" :value="$stats['approved']" icon="fa-check" color="green" :meta="$percentages['Approved'].'% of total'" />
-    <x-admin.stat-card label="Pending Review" :value="$stats['pending_review']" icon="fa-clock" color="orange" :meta="$percentages['Pending Review'].'% of total'" />
-    <x-admin.stat-card label="Pending Approval" :value="$stats['pending_approval']" icon="fa-pen" color="purple" :meta="$percentages['Pending Approval'].'% of total'" />
+    <x-admin.stat-card
+        label="Pending my review"
+        :value="$myAssignments['review']"
+        icon="fa-clock"
+        color="orange"
+        meta="Assigned to you"
+        :href="route('pendingCertificates', ['assignment' => 'review'])"
+    />
+    <x-admin.stat-card
+        label="Pending my approval"
+        :value="$myAssignments['approval']"
+        icon="fa-pen"
+        color="purple"
+        meta="Assigned to you"
+        :href="route('pendingCertificates', ['assignment' => 'approval'])"
+    />
     <x-admin.stat-card label="Expired Certificates" :value="$stats['expired']" icon="fa-circle-xmark" color="red" :meta="$percentages['Expired'].'% of total'" />
     <x-admin.stat-card label="Active Trainers" :value="$stats['active_trainers']" icon="fa-users" color="cyan" meta="Available trainers" />
 </div>

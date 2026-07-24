@@ -25,6 +25,8 @@ class DashboardServiceTest extends TestCase
             $table->string('status');
             $table->string('issue_date')->nullable();
             $table->string('expiry_date')->nullable();
+            $table->unsignedInteger('review_by_id')->nullable();
+            $table->unsignedInteger('approval_by_id')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -70,6 +72,53 @@ class DashboardServiceTest extends TestCase
         $this->assertSame(1, $data['stats']['expired']);
         $this->assertSame(1, $data['stats']['active_trainers']);
         $this->assertSame(4, array_sum($data['monthlyChart']['values']));
+        $this->assertSame(0, $data['myAssignments']['total']);
+    }
+
+    public function test_my_assignments_count_only_current_user_work()
+    {
+        $now = now();
+        DB::table('certificates_training')->insert([
+            [
+                'certificate_number' => 'TR-R1',
+                'participant_name' => 'Review Me',
+                'status' => 'Pending Review',
+                'issue_date' => $now->format('Y-m-d'),
+                'expiry_date' => null,
+                'review_by_id' => 7,
+                'approval_by_id' => 9,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ],
+            [
+                'certificate_number' => 'TR-A1',
+                'participant_name' => 'Approve Me',
+                'status' => 'Pending Approval',
+                'issue_date' => $now->format('Y-m-d'),
+                'expiry_date' => null,
+                'review_by_id' => 3,
+                'approval_by_id' => 7,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ],
+            [
+                'certificate_number' => 'TR-OTHER',
+                'participant_name' => 'Someone Else',
+                'status' => 'Pending Review',
+                'issue_date' => $now->format('Y-m-d'),
+                'expiry_date' => null,
+                'review_by_id' => 99,
+                'approval_by_id' => 98,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ],
+        ]);
+
+        $assignments = app(DashboardService::class)->myAssignments(7);
+
+        $this->assertSame(1, $assignments['review']);
+        $this->assertSame(1, $assignments['approval']);
+        $this->assertSame(2, $assignments['total']);
     }
 
     public function test_authenticated_user_can_render_dashboard()

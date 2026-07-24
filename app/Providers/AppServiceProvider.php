@@ -4,8 +4,11 @@ namespace App\Providers;
 
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\View;
+use App\Services\DashboardService;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -44,6 +47,16 @@ class AppServiceProvider extends ServiceProvider
         // Keep your existing UI/database defaults
         Paginator::useBootstrap();
         Schema::defaultStringLength(191);
+
+        View::composer(['partials.admin.header', 'partials.admin.sidebar'], function ($view) {
+            $assignments = ['review' => 0, 'approval' => 0, 'total' => 0];
+
+            if (Auth::check()) {
+                $assignments = app(DashboardService::class)->myAssignments(Auth::id());
+            }
+
+            $view->with('myAssignments', $assignments);
+        });
 
         // If SESSION_DOMAIN is explicitly set in .env (and thus in config), respect it.
         if (config('session.domain') !== null) {

@@ -24,11 +24,12 @@
         button.addEventListener('click', closeSidebar);
     });
 
-    document.querySelectorAll('[data-confirm]').forEach(function (element) {
-        element.addEventListener('click', function (event) {
-            if (!window.confirm(element.getAttribute('data-confirm'))) {
-                event.preventDefault();
-            }
-        });
+    // Delegated so dynamically rendered action buttons also confirm.
+    document.addEventListener('click', function (event) {
+        var element = event.target.closest('[data-confirm]');
+        if (!element) return;
+        if (!window.confirm(element.getAttribute('data-confirm'))) {
+            event.preventDefault();
+        }
     });
 }());

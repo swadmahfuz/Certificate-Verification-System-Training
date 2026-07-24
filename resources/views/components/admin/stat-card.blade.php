@@ -4,9 +4,14 @@
     'icon' => 'fa-file-lines',
     'color' => 'blue',
     'meta' => null,
+    'href' => null,
 ])
 
-<article class="stat-card">
+@php
+    $tag = $href ? 'a' : 'article';
+@endphp
+
+<{{ $tag }} @if($href) href="{{ $href }}" @endif {{ $attributes->class(['stat-card', 'stat-card-link' => (bool) $href]) }}>
     <div class="stat-icon stat-{{ $color }}">
         <i class="fa-solid {{ $icon }}"></i>
     </div>
@@ -17,4 +22,4 @@
             <small>{{ $meta }}</small>
         @endif
     </div>
-</article>
+</{{ $tag }}>

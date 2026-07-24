@@ -4,190 +4,98 @@
 
 @push('styles')
 <style>
-        body {
-            font-size: 13px;
-        }
-
-        .btn {
+        .certificate-actions {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-        }
-
-        .btn i {
-            font-size: 14px;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .btn-container {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
             flex-wrap: wrap;
-        }
-
-        .card-header {
-            background-color: #f4f4f4;
-            padding: 20px;
+            gap: 8px;
         }
     </style>
 @endpush
 
 @section('content')
-<section class="pt-5">
-    <div class="container">
-        <div class="card">
+<div class="page-heading">
+    <div>
+        <h1>Certificate Details</h1>
+        <p>{{ $certificate->certificate_number }} — {{ $certificate->participant_name }}</p>
+    </div>
+    <div class="certificate-actions">
+        <a href="{{ route('certificates.index') }}" class="btn btn-outline-primary btn-sm">
+            <i class="fa-solid fa-arrow-left me-1"></i> Back
+        </a>
 
-            <div class="card-header text-center">
-                <h3>
-                    TÜV Austria BIC CVS - Detailed Certificate Information
-                </h3>
+        @if($certificate->status !== 'Deleted')
+            <a href="{{ route('certificate.edit', $certificate->id) }}" class="btn btn-warning btn-sm">
+                <i class="fa-solid fa-pen-to-square me-1"></i> Edit
+            </a>
 
-                <div class="btn-container mt-3">
+            @if($certificate->certificate_pdf)
+                <a href="{{ route('certificate.downloadPdf', $certificate->id) }}" target="_blank" class="btn btn-secondary btn-sm">
+                    <i class="fa-solid fa-file-pdf me-1"></i> Download PDF
+                </a>
+            @endif
 
-                    <a href="../dashboard" class="btn btn-primary">
-                        <i class="fa-solid fa-arrow-left me-1"></i>
-                        Go back to Dashboard
-                    </a>
+            @if(Auth::user()->id == $certificate->review_by_id && $certificate->status == 'Pending Review')
+                <form action="{{ route('certificate.review', $certificate->id) }}" method="POST">
+                    @csrf
+                    <button type="submit" class="btn btn-info btn-sm" data-confirm="Mark this certificate as Reviewed?">
+                        <i class="fa-solid fa-thumbs-up me-1"></i> Mark as Reviewed
+                    </button>
+                </form>
+            @endif
 
-                    @if($certificate->status !== 'Deleted')
+            @if(Auth::user()->id == $certificate->approval_by_id && $certificate->status == 'Pending Approval')
+                <form action="{{ route('certificate.approve', $certificate->id) }}" method="POST">
+                    @csrf
+                    <button type="submit" class="btn btn-success btn-sm" data-confirm="Mark this certificate as Approved?">
+                        <i class="fa-solid fa-check me-1"></i> Mark as Approved
+                    </button>
+                </form>
+            @endif
 
-                        <a href="../add-certificate" class="btn btn-success">
-                            <i class="fa-solid fa-plus me-1"></i>
-                            Add New Certificate
-                        </a>
+            <form action="{{ route('certificate.delete', $certificate->id) }}" method="POST">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn btn-danger btn-sm" data-confirm="Delete this certificate?">
+                    <i class="fa-solid fa-trash me-1"></i> Delete
+                </button>
+            </form>
+        @endif
+    </div>
+</div>
 
-                        <a href="../edit-certificate/{{ $certificate->id }}" class="btn btn-warning">
-                            <i class="fa-solid fa-pen-to-square me-1"></i>
-                            Edit Certificate
-                        </a>
-
-                        @if($certificate->certificate_pdf)
-                            <a
-                                href="{{ route('certificate.downloadPdf', $certificate->id) }}"
-                                target="_blank"
-                                class="btn btn-secondary"
-                            >
-                                <i class="fa-solid fa-file-pdf me-1"></i>
-                                Download Certificate PDF
-                            </a>
-                        @endif
-
-                        @if(
-                            Auth::check() &&
-                            (
-                                Auth::user()->id == $certificate->review_by_id ||
-                                Auth::user()->name == $certificate->review_by
-                            ) &&
-                            $certificate->status == 'Pending Review'
-                        )
-                            <a
-                                href="{{ route('certificate.review', $certificate->id) }}"
-                                class="btn btn-info"
-                            >
-                                <i class="fa-solid fa-thumbs-up me-1"></i>
-                                Mark as Reviewed
-                            </a>
-                        @endif
-
-                        @if(
-                            Auth::check() &&
-                            (
-                                Auth::user()->id == $certificate->approval_by_id ||
-                                Auth::user()->name == $certificate->approval_by
-                            ) &&
-                            $certificate->status == 'Pending Approval'
-                        )
-                            <a
-                                href="{{ route('certificate.approve', $certificate->id) }}"
-                                class="btn btn-success"
-                            >
-                                <i class="fa-solid fa-check me-1"></i>
-                                Mark as Approved
-                            </a>
-                        @endif
-
-                        <a
-                            href="../delete-certificate/{{ $certificate->id }}"
-                            class="btn btn-danger"
-                        >
-                            <i class="fa-solid fa-trash me-1"></i>
-                            Delete Certificate
-                        </a>
-
-                    @endif
-                </div>
-
-                {{-- PDF Upload Form --}}
+<section class="admin-card">
+    <div class="admin-card-header"><h2>Record Summary</h2></div>
+    <div class="admin-card-body">
                 @if(
-                    Auth::check() &&
-                    (
-                        Auth::user()->id == $certificate->created_by_id ||
-                        Auth::user()->name == $certificate->created_by ||
-                        Auth::user()->id == $certificate->review_by_id ||
-                        Auth::user()->name == $certificate->review_by ||
-                        Auth::user()->id == $certificate->approval_by_id ||
-                        Auth::user()->name == $certificate->approval_by
-                    )
+                    Auth::user()->id == $certificate->created_by_id ||
+                    Auth::user()->id == $certificate->review_by_id ||
+                    Auth::user()->id == $certificate->approval_by_id
                 )
                     <form
                         action="{{ route('certificate.uploadPdf', $certificate->id) }}"
                         method="POST"
                         enctype="multipart/form-data"
-                        class="mt-3"
+                        class="mb-3"
                     >
                         @csrf
-
-                        <div
-                            class="input-group justify-content-center"
-                            style="max-width: 600px; margin: 0 auto;"
-                        >
-                            <input
-                                type="file"
-                                name="certificate_pdf"
-                                class="form-control"
-                                accept="application/pdf"
-                                required
-                            >
-
+                        <div class="input-group" style="max-width: 600px;">
+                            <input type="file" name="certificate_pdf" class="form-control" accept="application/pdf" required>
                             <button class="btn btn-primary" type="submit">
                                 <i class="fa-solid fa-upload me-1"></i>
-
-                                {{ $certificate->certificate_pdf
-                                    ? 'Re-upload Certificate'
-                                    : 'Upload Certificate'
-                                }}
+                                {{ $certificate->certificate_pdf ? 'Re-upload Certificate' : 'Upload Certificate' }}
                             </button>
                         </div>
                     </form>
                 @endif
 
                 @if($certificate->certificate_pdf)
-                    <div class="mt-2 text-muted small">
-                        Last Uploaded by:
-
-                        <strong>
-                            {{ $certificate->pdf_uploaded_by }}
-                        </strong>
-
-                        on
-
-                        {{ \Carbon\Carbon::parse($certificate->pdf_uploaded_at)->format('d M Y \a\t H:i') }}
+                    <div class="mb-3 text-muted small">
+                        Last uploaded by <strong>{{ $certificate->pdf_uploaded_by }}</strong>
+                        on {{ \Carbon\Carbon::parse($certificate->pdf_uploaded_at)->format('d M Y \a\t H:i') }}
                     </div>
                 @endif
-            </div>
 
-            <div class="card-body table-responsive">
+                <div class="table-responsive">
 
                 <table class="table table-striped table-bordered w-100">
                     <tbody>
@@ -709,43 +617,17 @@
 
                     </tbody>
                 </table>
+                </div>
 
                 {{-- Toggleable Inline PDF Viewer --}}
                 @if($certificate->certificate_pdf)
-
                     @php
-                        // Build ViewerJS URL.
-                        // If the server exposes /laraview/ directly,
-                        // change this to asset('laraview/index.html').
-
-                        $viewerBase = asset(
-                            'public/laraview/index.html'
-                        );
-
-                        $pdfFolder = 'Certificate PDFs';
-
-                        $viewerSrc =
-                            $viewerBase .
-                            '#../' .
-                            rawurlencode($pdfFolder) .
-                            '/' .
-                            rawurlencode(
-                                $certificate->certificate_pdf
-                            );
-
-                        $collapseId =
-                            'pdfViewerCollapse-' .
-                            $certificate->id;
-
-                        $toggleId =
-                            'togglePdfHeaderBtn-' .
-                            $certificate->id;
+                        $collapseId = 'pdfViewerCollapse-' . $certificate->id;
+                        $toggleId = 'togglePdfHeaderBtn-' . $certificate->id;
                     @endphp
 
                     <div class="card mt-4">
-
                         <div class="card-header d-flex justify-content-between align-items-center">
-
                             <button
                                 id="{{ $toggleId }}"
                                 class="btn btn-link header-toggle d-flex align-items-center"
@@ -756,56 +638,31 @@
                                 aria-controls="{{ $collapseId }}"
                             >
                                 <i class="fa-solid fa-chevron-right me-2 chev"></i>
-
-                                <span>
-                                    Certificate PDF Preview
-                                </span>
+                                <span>Certificate PDF Preview</span>
                             </button>
-
                             <small class="text-muted">
                                 If it doesn’t load,
-
-                                <a
-                                    href="{{ route('certificate.downloadPdf', $certificate->id) }}"
-                                    target="_blank"
-                                >
-                                    download
-                                </a>.
+                                <a href="{{ route('certificate.downloadPdf', $certificate->id) }}" target="_blank">download</a>.
                             </small>
-
                         </div>
-
                         <div class="collapse" id="{{ $collapseId }}">
-
-                            <div
-                                class="card-body p-0"
-                                style="height: 75vh;"
-                            >
+                            <div class="card-body p-0" style="height: 75vh;">
                                 <iframe
-                                    data-viewer-src="{{ $viewerSrc }}"
+                                    data-viewer-src="{{ route('certificate.viewPdf', $certificate->id) }}"
                                     title="Certificate PDF"
                                     style="width: 100%; height: 100%; border: 0;"
                                     allow="fullscreen"
                                     loading="lazy"
                                 ></iframe>
                             </div>
-
                         </div>
                     </div>
-
-                    
-
                 @else
-
                     <div class="alert alert-warning mt-4">
                         <i class="fa-solid fa-triangle-exclamation me-2"></i>
                         No certificate PDF uploaded yet.
                     </div>
-
                 @endif
-
-            </div>
-        </div>
     </div>
 </section>
 @endsection
