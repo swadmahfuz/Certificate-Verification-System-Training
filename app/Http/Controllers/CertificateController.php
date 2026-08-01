@@ -25,7 +25,7 @@ use Carbon\Carbon;
 | Developed by: Swad Ahmed Mahfuz (Head of Divison - Business Assurance & Training, Bangladesh)
 | Contact: swad.mahfuz@gmail.com, +1-725-867-7718, +88 01733 023 008
 | Project Start: 12 October 2022
-| Latest Stable Release: v5.0.1 -  25 July 2026
+| Latest Stable Release: v5.0.2 -  1 August 2026
 |--------------------------------------------------------------------------
 */
 
@@ -607,28 +607,122 @@ class CertificateController extends Controller
         );
     }
 
+    public function bulkReviewSelected(Request $request)
+    {
+        $ids = $this->validatedSelectedCertificateIds($request);
+        $user = Auth::user();
+
+        $eligibleIds = Certificate::whereIn('id', $ids)
+            ->assignedForReview($user->id)
+            ->pluck('id')
+            ->all();
+
+        $updated = Certificate::whereIn('id', $eligibleIds)->update([
+            'status' => 'Pending Approval',
+            'reviewed_at' => Carbon::now(),
+            'updated_by' => $user->name,
+            'updated_by_id' => $user->id,
+            'updated_at' => Carbon::now(),
+        ]);
+        $skipped = count($ids) - $updated;
+
+        $this->activityLog->record(
+            'certificate.selected_bulk_reviewed',
+            'certificate',
+            null,
+            $updated . ' selected certificate(s) were bulk reviewed.',
+            [
+                'selected_ids' => $ids,
+                'updated_ids' => $eligibleIds,
+                'updated_count' => $updated,
+                'skipped_count' => $skipped,
+            ]
+        );
+
+        return back()
+            ->with('success', $updated . ' certificate(s) reviewed; ' . $skipped . ' skipped.')
+            ->with('bulk_action_completed', true);
+    }
+
+    public function bulkApproveSelected(Request $request)
+    {
+        $ids = $this->validatedSelectedCertificateIds($request);
+        $user = Auth::user();
+
+        $eligibleIds = Certificate::whereIn('id', $ids)
+            ->assignedForApproval($user->id)
+            ->pluck('id')
+            ->all();
+
+        $updated = Certificate::whereIn('id', $eligibleIds)->update([
+            'status' => 'Approved',
+            'approved_at' => Carbon::now(),
+            'updated_by' => $user->name,
+            'updated_by_id' => $user->id,
+            'updated_at' => Carbon::now(),
+        ]);
+        $skipped = count($ids) - $updated;
+
+        $this->activityLog->record(
+            'certificate.selected_bulk_approved',
+            'certificate',
+            null,
+            $updated . ' selected certificate(s) were bulk approved.',
+            [
+                'selected_ids' => $ids,
+                'updated_ids' => $eligibleIds,
+                'updated_count' => $updated,
+                'skipped_count' => $skipped,
+            ]
+        );
+
+        return back()
+            ->with('success', $updated . ' certificate(s) approved; ' . $skipped . ' skipped.')
+            ->with('bulk_action_completed', true);
+    }
+
+    public function bulkDeleteSelected(Request $request)
+    {
+        $ids = $this->validatedSelectedCertificateIds($request);
+        $user = Auth::user();
+
+        $deletedIds = DB::transaction(function () use ($ids, $user) {
+            $certificates = Certificate::whereIn('id', $ids)
+                ->lockForUpdate()
+                ->get();
+            $deletedIds = [];
+
+            foreach ($certificates as $certificate) {
+                $this->softDeleteCertificate($certificate, $user);
+                $deletedIds[] = $certificate->id;
+            }
+
+            return $deletedIds;
+        });
+        $skipped = count($ids) - count($deletedIds);
+
+        $this->activityLog->record(
+            'certificate.selected_bulk_deleted',
+            'certificate',
+            null,
+            count($deletedIds) . ' selected certificate(s) were deleted.',
+            [
+                'selected_ids' => $ids,
+                'deleted_ids' => $deletedIds,
+                'deleted_count' => count($deletedIds),
+                'skipped_count' => $skipped,
+            ]
+        );
+
+        return back()
+            ->with('success', count($deletedIds) . ' certificate(s) deleted; ' . $skipped . ' skipped.')
+            ->with('bulk_action_completed', true);
+    }
+
     public function deleteCertificate($id)
     {
         $certificate = Certificate::findOrFail($id);
-
-        // Append "(Deleted)" to the certificate number to avoid duplicates
-        $certificate->certificate_number .= " (Deleted)";
-
-        // Update status and deleted_by fields
-        $certificate->status = "Deleted";
-        $certificate->deleted_by = Auth::user()->name;
-        $certificate->deleted_by_id = Auth::id();
-        $certificate->reviewed_at = null;
-        $certificate->approved_at = null;
-        $certificate->updated_by = Auth::user()->name;
-        $certificate->updated_by_id = Auth::id();
-        $certificate->updated_at = Carbon::now();
-
-        // Save the updates before soft-deleting
-        $certificate->save();
-
-        // Soft delete the certificate
-        $certificate->delete();
+        $this->softDeleteCertificate($certificate, Auth::user());
 
         $this->activityLog->record(
             'certificate.deleted',
@@ -638,6 +732,31 @@ class CertificateController extends Controller
         );
 
         return back()->with('success', 'Certificate details have been deleted successfully');
+    }
+
+    private function validatedSelectedCertificateIds(Request $request): array
+    {
+        $validated = $request->validate([
+            'certificate_ids' => 'required|array|min:1|max:500',
+            'certificate_ids.*' => 'required|integer|distinct|exists:certificates_training,id',
+        ]);
+
+        return array_map('intval', $validated['certificate_ids']);
+    }
+
+    private function softDeleteCertificate(Certificate $certificate, User $user): void
+    {
+        $certificate->certificate_number .= ' (Deleted)';
+        $certificate->status = 'Deleted';
+        $certificate->deleted_by = $user->name;
+        $certificate->deleted_by_id = $user->id;
+        $certificate->reviewed_at = null;
+        $certificate->approved_at = null;
+        $certificate->updated_by = $user->name;
+        $certificate->updated_by_id = $user->id;
+        $certificate->updated_at = Carbon::now();
+        $certificate->save();
+        $certificate->delete();
     }
 
     public function uploadPdf(Request $request, $id)
@@ -821,6 +940,118 @@ class CertificateController extends Controller
             'Cache-Control' => 'private, no-store, no-cache, must-revalidate',
             'Pragma' => 'no-cache',
         ]);
+    }
+
+    public function bulkGenerateCertificatePdfs(
+        Request $request,
+        CertificatePdfService $certificatePdfService
+    ) {
+        $ids = $this->validatedSelectedCertificateIds($request);
+
+        $certificates = Certificate::whereIn('id', $ids)
+            ->where('status', 'Approved')
+            ->whereNotNull('certificate_type')
+            ->where('certificate_type', '<>', '')
+            ->whereNotNull('trainer_id')
+            ->get()
+            ->sortBy(function ($certificate) use ($ids) {
+                return array_search($certificate->id, $ids);
+            })
+            ->values();
+
+        if ($certificates->isEmpty()) {
+            return back()->with(
+                'error',
+                'None of the selected certificates are eligible for PDF generation.'
+            );
+        }
+
+        if (!class_exists(\ZipArchive::class)) {
+            return back()->with(
+                'error',
+                'The PHP ZIP extension is required to download multiple certificates.'
+            );
+        }
+
+        $temporaryPath = tempnam(storage_path('app'), 'certificate-pdfs-');
+        $zip = new \ZipArchive();
+        $zipIsOpen = false;
+
+        try {
+            $openResult = $zip->open(
+                $temporaryPath,
+                \ZipArchive::CREATE | \ZipArchive::OVERWRITE
+            );
+
+            if ($openResult !== true) {
+                throw new \RuntimeException('Unable to create the certificate ZIP archive.');
+            }
+            $zipIsOpen = true;
+
+            foreach ($certificates as $certificate) {
+                $pdfContent = $certificatePdfService->generateTestPdf($certificate);
+                $safeCertificateNumber = preg_replace(
+                    '/[^A-Za-z0-9\-_.]/',
+                    '-',
+                    $certificate->certificate_number
+                );
+                $filename = 'Training-Certificate-' .
+                    $safeCertificateNumber . '-' . $certificate->id . '.pdf';
+
+                if (!$zip->addFromString($filename, $pdfContent)) {
+                    throw new \RuntimeException(
+                        'Unable to add certificate ' .
+                        $certificate->certificate_number . ' to the ZIP archive.'
+                    );
+                }
+            }
+
+            $zip->close();
+            $zipIsOpen = false;
+        } catch (\Throwable $exception) {
+            if ($zipIsOpen) {
+                $zip->close();
+            }
+            if (is_file($temporaryPath)) {
+                @unlink($temporaryPath);
+            }
+
+            Log::error('Bulk certificate PDF generation failed.', [
+                'certificate_ids' => $ids,
+                'exception' => $exception,
+            ]);
+
+            return back()->with(
+                'error',
+                'The certificate PDF archive could not be generated. Please try again.'
+            );
+        }
+
+        $generatedIds = $certificates->pluck('id')->all();
+        $skipped = count($ids) - count($generatedIds);
+
+        $this->activityLog->record(
+            'certificate.selected_bulk_pdf_generated',
+            'certificate',
+            null,
+            count($generatedIds) . ' selected certificate PDF(s) were generated.',
+            [
+                'selected_ids' => $ids,
+                'generated_ids' => $generatedIds,
+                'generated_count' => count($generatedIds),
+                'skipped_count' => $skipped,
+            ]
+        );
+
+        $downloadName = 'Training-Certificates-' .
+            Carbon::now()->format('Ymd-His') . '.zip';
+
+        return response()
+            ->download($temporaryPath, $downloadName, [
+                'Cache-Control' => 'private, no-store, no-cache, must-revalidate',
+                'Pragma' => 'no-cache',
+            ])
+            ->deleteFileAfterSend(true);
     }
 
     ///Live-Search in Dashboard

@@ -2,8 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Http\Middleware\VerifyCsrfToken;
 use App\Models\Certificate;
 use App\Models\User;
+use App\Services\CertificatePdfService;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
@@ -16,6 +18,7 @@ class CertificateWorkflowSecurityTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        $this->withoutMiddleware(VerifyCsrfToken::class);
 
         config([
             'database.default' => 'sqlite',
@@ -48,6 +51,7 @@ class CertificateWorkflowSecurityTest extends TestCase
             $table->string('training_name')->nullable();
             $table->string('location')->nullable();
             $table->string('trainer')->nullable();
+            $table->unsignedInteger('trainer_id')->nullable();
             $table->string('training_date')->nullable();
             $table->string('training_end')->nullable();
             $table->string('issue_date')->nullable();
@@ -150,5 +154,166 @@ class CertificateWorkflowSecurityTest extends TestCase
         $this->assertNotEmpty($certificate->certificate_pdf);
         Storage::disk('local')->assertExists('certificate-pdfs/' . $certificate->certificate_pdf);
         $this->assertFileDoesNotExist(public_path('Certificate PDFs/' . $certificate->certificate_pdf));
+    }
+
+    public function test_selected_bulk_routes_reject_get_requests()
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)->get('/certificates/bulk-review')->assertStatus(405);
+        $this->actingAs($user)->get('/certificates/bulk-approve')->assertStatus(405);
+        $this->actingAs($user)->get('/certificates/bulk-delete')->assertStatus(405);
+        $this->actingAs($user)->get('/certificates/bulk-pdf')->assertStatus(405);
+    }
+
+    public function test_selected_bulk_review_only_updates_eligible_assignments()
+    {
+        $reviewer = User::factory()->create();
+        $otherReviewer = User::factory()->create();
+        $eligible = Certificate::factory()->create([
+            'status' => 'Pending Review',
+            'review_by_id' => $reviewer->id,
+        ]);
+        $wrongReviewer = Certificate::factory()->create([
+            'status' => 'Pending Review',
+            'review_by_id' => $otherReviewer->id,
+        ]);
+        $wrongStatus = Certificate::factory()->create([
+            'status' => 'Pending Approval',
+            'review_by_id' => $reviewer->id,
+        ]);
+
+        $this->actingAs($reviewer)
+            ->post(route('certificates.bulkReviewSelected'), [
+                'certificate_ids' => [
+                    $eligible->id,
+                    $wrongReviewer->id,
+                    $wrongStatus->id,
+                ],
+            ])
+            ->assertRedirect()
+            ->assertSessionHas('bulk_action_completed', true);
+
+        $this->assertEquals('Pending Approval', $eligible->fresh()->status);
+        $this->assertEquals('Pending Review', $wrongReviewer->fresh()->status);
+        $this->assertEquals('Pending Approval', $wrongStatus->fresh()->status);
+    }
+
+    public function test_selected_bulk_approve_only_updates_eligible_assignments()
+    {
+        $approver = User::factory()->create();
+        $otherApprover = User::factory()->create();
+        $eligible = Certificate::factory()->create([
+            'status' => 'Pending Approval',
+            'approval_by_id' => $approver->id,
+        ]);
+        $wrongApprover = Certificate::factory()->create([
+            'status' => 'Pending Approval',
+            'approval_by_id' => $otherApprover->id,
+        ]);
+        $wrongStatus = Certificate::factory()->create([
+            'status' => 'Pending Review',
+            'approval_by_id' => $approver->id,
+        ]);
+
+        $this->actingAs($approver)
+            ->post(route('certificates.bulkApproveSelected'), [
+                'certificate_ids' => [
+                    $eligible->id,
+                    $wrongApprover->id,
+                    $wrongStatus->id,
+                ],
+            ])
+            ->assertRedirect()
+            ->assertSessionHas('bulk_action_completed', true);
+
+        $this->assertEquals('Approved', $eligible->fresh()->status);
+        $this->assertEquals('Pending Approval', $wrongApprover->fresh()->status);
+        $this->assertEquals('Pending Review', $wrongStatus->fresh()->status);
+    }
+
+    public function test_selected_bulk_delete_only_soft_deletes_requested_certificates()
+    {
+        $user = User::factory()->create();
+        $selected = Certificate::factory()->create([
+            'certificate_number' => 'TR-SELECTED',
+        ]);
+        $unselected = Certificate::factory()->create([
+            'certificate_number' => 'TR-UNSELECTED',
+        ]);
+
+        $this->actingAs($user)
+            ->post(route('certificates.bulkDelete'), [
+                'certificate_ids' => [$selected->id],
+            ])
+            ->assertRedirect()
+            ->assertSessionHas('bulk_action_completed', true);
+
+        $this->assertSoftDeleted('certificates_training', ['id' => $selected->id]);
+        $this->assertDatabaseHas('certificates_training', [
+            'id' => $selected->id,
+            'certificate_number' => 'TR-SELECTED (Deleted)',
+            'status' => 'Deleted',
+            'deleted_by_id' => $user->id,
+        ]);
+        $this->assertDatabaseHas('certificates_training', [
+            'id' => $unselected->id,
+            'deleted_at' => null,
+        ]);
+    }
+
+    public function test_selected_bulk_actions_require_certificate_ids()
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->from(route('certificates.index'))
+            ->post(route('certificates.bulkDelete'), [])
+            ->assertRedirect(route('certificates.index'))
+            ->assertSessionHasErrors('certificate_ids');
+    }
+
+    public function test_selected_bulk_pdf_download_contains_only_eligible_certificates()
+    {
+        if (!class_exists(\ZipArchive::class)) {
+            $this->markTestSkipped('The PHP ZIP extension is not available.');
+        }
+
+        $user = User::factory()->create();
+        $eligible = Certificate::factory()->approved()->create([
+            'certificate_number' => 'TR-PDF-ELIGIBLE',
+            'certificate_type' => 'Certificate',
+            'trainer_id' => 1,
+        ]);
+        $ineligible = Certificate::factory()->create([
+            'certificate_number' => 'TR-PDF-INELIGIBLE',
+            'status' => 'Pending Review',
+            'certificate_type' => 'Certificate',
+            'trainer_id' => 1,
+        ]);
+
+        $pdfService = \Mockery::mock(CertificatePdfService::class);
+        $pdfService->shouldReceive('generateTestPdf')
+            ->once()
+            ->with(\Mockery::on(function ($certificate) use ($eligible) {
+                return $certificate->id === $eligible->id;
+            }))
+            ->andReturn('%PDF-1.4 test');
+        $this->app->instance(CertificatePdfService::class, $pdfService);
+
+        $response = $this->actingAs($user)
+            ->post(route('certificates.bulkPdf'), [
+                'certificate_ids' => [$eligible->id, $ineligible->id],
+            ])
+            ->assertOk()
+            ->assertHeader('content-disposition');
+
+        $archivePath = $response->baseResponse->getFile()->getPathname();
+        $zip = new \ZipArchive();
+        $this->assertTrue($zip->open($archivePath) === true);
+        $this->assertEquals(1, $zip->numFiles);
+        $this->assertStringContainsString('TR-PDF-ELIGIBLE', $zip->getNameIndex(0));
+        $zip->close();
+        @unlink($archivePath);
     }
 }

@@ -56,6 +56,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/update-certificate', [CertificateController::class, 'updateCertificate'])->name('certificate.update'); /// Save certificate updates
     Route::delete('/delete-certificate/{id}', [CertificateController::class, 'deleteCertificate'])
         ->name('certificate.delete'); /// Soft-delete certificate
+    Route::post('/certificates/bulk-delete', [CertificateController::class, 'bulkDeleteSelected'])
+        ->name('certificates.bulkDelete'); /// Soft-delete selected certificates
 
     /// --- Review & Approval ---
     Route::post('/review-certificate/{id}', [CertificateController::class, 'reviewCertificate'])
@@ -64,6 +66,10 @@ Route::middleware('auth')->group(function () {
         ->name('certificate.approve'); /// Mark one certificate as approved
     Route::post('/bulk-review', [CertificateController::class, 'bulkReview'])->name('bulkReview'); /// Review all assigned to current user
     Route::post('/bulk-approve', [CertificateController::class, 'bulkApprove'])->name('bulkApprove'); /// Approve all assigned to current user
+    Route::post('/certificates/bulk-review', [CertificateController::class, 'bulkReviewSelected'])
+        ->name('certificates.bulkReviewSelected'); /// Review eligible selected certificates
+    Route::post('/certificates/bulk-approve', [CertificateController::class, 'bulkApproveSelected'])
+        ->name('certificates.bulkApproveSelected'); /// Approve eligible selected certificates
 
     /// --- PDF Handling ---
     Route::post('/upload-pdf/{id}', [CertificateController::class, 'uploadPdf'])->name('certificate.uploadPdf'); /// Upload certificate PDF
@@ -71,6 +77,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/view-pdf/{id}', [CertificateController::class, 'viewPdf'])->name('certificate.viewPdf'); /// View uploaded PDF inline
     Route::get('/generate-certificate-pdf/{id}', [CertificateController::class, 'generateCertificatePdf'])
         ->name('certificate.generatePdf'); /// Generate and download system PDF
+    Route::post('/certificates/bulk-pdf', [CertificateController::class, 'bulkGenerateCertificatePdfs'])
+        ->name('certificates.bulkPdf'); /// Generate selected certificate PDFs as a ZIP
 
     /// --- Import / Export ---
     Route::get('/imports-exports', [CertificateController::class, 'importExportView'])->name('importsExports'); /// Import/export page

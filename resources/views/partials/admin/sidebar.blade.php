@@ -99,6 +99,6 @@
 
     <div class="sidebar-footer">
         <small>Certificate Verification System</small>
-        <span>Version 5.0.1</span>
+        <span>Version 5.0.2</span>
     </div>
 </aside>

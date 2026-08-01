@@ -23,10 +23,38 @@
             </div>
         </div>
     </div>
+    <form id="bulk-action-form" method="POST" class="d-flex flex-wrap align-items-center gap-2 p-3 border-bottom">
+        @csrf
+        <div id="bulk-certificate-ids"></div>
+        <span class="text-muted me-2"><strong id="selected-count">0</strong> selected</span>
+        <button id="clear-selection" class="btn btn-outline-secondary btn-sm" type="button" disabled>
+            <i class="fa-solid fa-xmark me-1"></i> Clear selection
+        </button>
+        <button class="btn btn-info btn-sm bulk-action-button" type="submit"
+            formaction="{{ route('certificates.bulkReviewSelected') }}" data-action="review" disabled>
+            <i class="fa-solid fa-thumbs-up me-1"></i> Review
+        </button>
+        <button class="btn btn-success btn-sm bulk-action-button" type="submit"
+            formaction="{{ route('certificates.bulkApproveSelected') }}" data-action="approve" disabled>
+            <i class="fa-solid fa-check me-1"></i> Approve
+        </button>
+        <button class="btn btn-outline-danger btn-sm bulk-action-button" type="submit"
+            formaction="{{ route('certificates.bulkPdf') }}" data-action="pdf" disabled>
+            <i class="fa-solid fa-file-zipper me-1"></i> Download PDFs
+        </button>
+        <button class="btn btn-danger btn-sm bulk-action-button" type="submit"
+            formaction="{{ route('certificates.bulkDelete') }}" data-action="delete" disabled>
+            <i class="fa-solid fa-trash me-1"></i> Delete
+        </button>
+    </form>
     <div class="table-responsive">
         <table class="table table-hover admin-table search-result">
             <thead>
                 <tr>
+                    <th>
+                        <input id="select-all-visible" class="form-check-input" type="checkbox"
+                            aria-label="Select all visible certificates">
+                    </th>
                     <th>Sl.</th>
                     <th>Certificate ID</th>
                     <th>Name</th>
@@ -43,6 +71,11 @@
                 @php $offset = ($certificates->currentPage() - 1) * $certificates->perPage(); @endphp
                 @forelse($certificates as $certificate)
                     <tr>
+                        <td>
+                            <input class="form-check-input certificate-select" type="checkbox"
+                                value="{{ $certificate->id }}"
+                                aria-label="Select certificate {{ $certificate->certificate_number }}">
+                        </td>
                         <td>{{ $loop->iteration + $offset }}</td>
                         <td>{{ $certificate->certificate_number }}</td>
                         <td>{{ $certificate->participant_name }}</td>
@@ -70,7 +103,7 @@
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="10" class="text-center text-muted py-4">No certificates found.</td></tr>
+                    <tr><td colspan="11" class="text-center text-muted py-4">No certificates found.</td></tr>
                 @endforelse
             </tbody>
         </table>
@@ -88,6 +121,106 @@ $(function () {
     var editBase = @json(url('/edit-certificate'));
     var pdfBase = @json(url('/generate-certificate-pdf'));
     var deleteBase = @json(url('/delete-certificate'));
+    var selectionStorageKey = 'certificates.selectedIds';
+    var pendingBulkAction = null;
+
+    @if(session('bulk_action_completed'))
+        sessionStorage.removeItem(selectionStorageKey);
+    @endif
+
+    var selectedIds = loadSelectedIds();
+
+    function loadSelectedIds() {
+        try {
+            return new Set(JSON.parse(sessionStorage.getItem(selectionStorageKey) || '[]').map(String));
+        } catch (error) {
+            return new Set();
+        }
+    }
+
+    function persistSelectedIds() {
+        sessionStorage.setItem(selectionStorageKey, JSON.stringify(Array.from(selectedIds)));
+    }
+
+    function syncSelectionUi() {
+        $('.certificate-select').each(function () {
+            this.checked = selectedIds.has(String(this.value));
+        });
+
+        var visibleCheckboxes = $('.certificate-select');
+        var selectedVisible = visibleCheckboxes.filter(':checked').length;
+        var selectAll = $('#select-all-visible').get(0);
+        if (selectAll) {
+            selectAll.checked = visibleCheckboxes.length > 0 && selectedVisible === visibleCheckboxes.length;
+            selectAll.indeterminate = selectedVisible > 0 && selectedVisible < visibleCheckboxes.length;
+        }
+
+        $('#selected-count').text(selectedIds.size);
+        $('.bulk-action-button').prop('disabled', selectedIds.size === 0);
+        $('#clear-selection').prop('disabled', selectedIds.size === 0);
+
+        var hiddenInputs = Array.from(selectedIds).map(function (id) {
+            return '<input type="hidden" name="certificate_ids[]" value="' + escapeHtml(id) + '">';
+        }).join('');
+        $('#bulk-certificate-ids').html(hiddenInputs);
+    }
+
+    $(document).on('change', '.certificate-select', function () {
+        var id = String(this.value);
+        if (this.checked) {
+            selectedIds.add(id);
+        } else {
+            selectedIds.delete(id);
+        }
+        persistSelectedIds();
+        syncSelectionUi();
+    });
+
+    $('#select-all-visible').on('change', function () {
+        var shouldSelect = this.checked;
+        $('.certificate-select').each(function () {
+            var id = String(this.value);
+            if (shouldSelect) {
+                selectedIds.add(id);
+            } else {
+                selectedIds.delete(id);
+            }
+        });
+        persistSelectedIds();
+        syncSelectionUi();
+    });
+
+    $('#clear-selection').on('click', function () {
+        selectedIds.clear();
+        persistSelectedIds();
+        syncSelectionUi();
+    });
+
+    $('.bulk-action-button').on('click', function () {
+        pendingBulkAction = $(this).data('action');
+    });
+
+    $('#bulk-action-form').on('submit', function (event) {
+        if (selectedIds.size === 0) {
+            event.preventDefault();
+            return;
+        }
+
+        var labels = {
+            review: 'mark as reviewed',
+            approve: 'approve',
+            pdf: 'generate PDFs for',
+            delete: 'delete'
+        };
+        var action = pendingBulkAction || 'process';
+        var message = 'Are you sure you want to ' + (labels[action] || action) + ' ' +
+            selectedIds.size + ' selected certificate(s)?';
+
+        if (!window.confirm(message)) {
+            event.preventDefault();
+        }
+        pendingBulkAction = null;
+    });
 
     $('.search-input').on('input', function () {
         var query = this.value;
@@ -109,7 +242,9 @@ $(function () {
                             '<button class="danger" type="submit" title="Delete" data-confirm="Delete this certificate?"><i class="fa-solid fa-trash"></i></button>' +
                         '</form></div>';
 
-                    return '<tr><td>' + (index + 1) + '</td>' +
+                    return '<tr><td><input class="form-check-input certificate-select" type="checkbox" value="' +
+                        item.id + '" aria-label="Select certificate ' + escapeHtml(item.certificate_number) + '"></td>' +
+                        '<td>' + (index + 1) + '</td>' +
                         '<td>' + escapeHtml(item.certificate_number) + '</td>' +
                         '<td>' + escapeHtml(item.participant_name) + '</td>' +
                         '<td>' + escapeHtml(item.company || 'N/A') + '</td>' +
@@ -120,7 +255,8 @@ $(function () {
                         '<td><img width="38" height="38" src="https://api.qrserver.com/v1/create-qr-code/?size=76x76&data=' + encodeURIComponent(verification) + '"></td>' +
                         '<td>' + actions + '</td></tr>';
                 }).join('');
-                $('.search-result tbody').html(rows || '<tr><td colspan="10" class="text-center py-4">No matching certificates.</td></tr>');
+                $('.search-result tbody').html(rows || '<tr><td colspan="11" class="text-center py-4">No matching certificates.</td></tr>');
+                syncSelectionUi();
             });
         }, 250);
     });
@@ -133,6 +269,8 @@ $(function () {
         var parts = value.split('-');
         return parts.length === 3 ? parts[2] + '-' + parts[1] + '-' + parts[0] : value;
     }
+
+    syncSelectionUi();
 });
 </script>
 @endpush
