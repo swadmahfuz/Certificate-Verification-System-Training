@@ -102,9 +102,10 @@ $(function () {
         return ('0' + d.getDate()).slice(-2) + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + d.getFullYear();
     }
 
-    function postButton(url, title, iconClass, confirmMsg, danger) {
+    function postButton(url, title, iconClass, confirmMsg, danger, method) {
         return '<form action="' + url + '" method="POST" class="d-inline">' +
             '<input type="hidden" name="_token" value="' + csrfToken + '">' +
+            (method ? '<input type="hidden" name="_method" value="' + method + '">' : '') +
             '<button type="submit" class="' + (danger ? 'danger' : '') + '" title="' + title + '" data-confirm="' + confirmMsg + '">' +
             '<i class="' + iconClass + '"></i></button></form>';
     }
@@ -131,9 +132,9 @@ $(function () {
                         : d.training_name;
                     var verification = verifyBase + '?search=' + encodeURIComponent(d.certificate_number);
                     var actions = '<div class="table-actions">' +
-                        '<a href="' + viewBase + '/' + d.id + '" title="View"><i class="fa-solid fa-circle-info"></i></a>' +
-                        '<a href="' + editBase + '/' + d.id + '" title="Edit"><i class="fa-solid fa-pen-to-square"></i></a>' +
-                        postButton(deleteBase + '/' + d.id, 'Delete', 'fa-solid fa-trash', 'Delete this certificate?', true) +
+                        '<a href="' + viewBase + '/' + d.id + '" target="_blank" rel="noopener noreferrer" title="View"><i class="fa-solid fa-circle-info"></i></a>' +
+                        '<a href="' + editBase + '/' + d.id + '" target="_blank" rel="noopener noreferrer" title="Edit"><i class="fa-solid fa-pen-to-square"></i></a>' +
+                        postButton(deleteBase + '/' + d.id, 'Delete', 'fa-solid fa-trash', 'Delete this certificate?', true, 'DELETE') +
                         (canReview ? postButton(reviewBase + '/' + d.id, 'Mark as Reviewed', 'fa-solid fa-thumbs-up', 'Mark this certificate as Reviewed?') : '') +
                         (canApprove ? postButton(approveBase + '/' + d.id, 'Mark as Approved', 'fa-solid fa-check', 'Mark this certificate as Approved?') : '') +
                         '</div>';

@@ -63,7 +63,7 @@
                         </td>
                         <td>
                             <div class="table-actions">
-                                <a href="{{ route('certificate.view', $certificate->id) }}" title="View"><i class="fa-solid fa-circle-info"></i></a>
+                                <a href="{{ route('certificate.view', $certificate->id) }}" target="_blank" rel="noopener noreferrer" title="View"><i class="fa-solid fa-circle-info"></i></a>
                             </div>
                         </td>
                     </tr>
@@ -123,7 +123,7 @@ $(function () {
                         '<td>' + formatDate(data.expiry_date) + '</td>' +
                         '<td><span class="status-pill">' + escapeHtml(data.status) + '</span></td>' +
                         '<td><img width="38" height="38" src="https://api.qrserver.com/v1/create-qr-code/?size=76x76&data=' + encodeURIComponent(verification) + '"></td>' +
-                        '<td><div class="table-actions"><a href="' + viewBase + '/' + data.id + '" title="View"><i class="fa-solid fa-circle-info"></i></a></div></td>' +
+                        '<td><div class="table-actions"><a href="' + viewBase + '/' + data.id + '" target="_blank" rel="noopener noreferrer" title="View"><i class="fa-solid fa-circle-info"></i></a></div></td>' +
                         '</tr>';
                 });
                 $('.search-result tbody').html(html || '<tr><td colspan="12" class="text-center text-muted py-4">No matching certificates found.</td></tr>');

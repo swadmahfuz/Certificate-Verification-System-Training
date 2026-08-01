@@ -56,8 +56,8 @@
                         </td>
                         <td>
                             <div class="table-actions">
-                                <a href="{{ route('certificate.view', $certificate->id) }}" title="View"><i class="fa-solid fa-circle-info"></i></a>
-                                <a href="{{ route('certificate.edit', $certificate->id) }}" title="Edit"><i class="fa-solid fa-pen-to-square"></i></a>
+                                <a href="{{ route('certificate.view', $certificate->id) }}" target="_blank" rel="noopener noreferrer" title="View"><i class="fa-solid fa-circle-info"></i></a>
+                                <a href="{{ route('certificate.edit', $certificate->id) }}" target="_blank" rel="noopener noreferrer" title="Edit"><i class="fa-solid fa-pen-to-square"></i></a>
                                 @if($certificate->status === 'Approved' && $certificate->certificate_type && $certificate->trainer_id)
                                     <a class="danger" href="{{ route('certificate.generatePdf', $certificate->id) }}" title="Generate PDF"><i class="fa-solid fa-file-pdf"></i></a>
                                 @endif
@@ -83,6 +83,12 @@
 <script>
 $(function () {
     var timer;
+    var csrfToken = @json(csrf_token());
+    var viewBase = @json(url('/view-certificate'));
+    var editBase = @json(url('/edit-certificate'));
+    var pdfBase = @json(url('/generate-certificate-pdf'));
+    var deleteBase = @json(url('/delete-certificate'));
+
     $('.search-input').on('input', function () {
         var query = this.value;
         clearTimeout(timer);
@@ -91,6 +97,18 @@ $(function () {
                 var rows = response.data.data.map(function (item, index) {
                     var title = (item.internal_audit_training ? 'Internal Auditor - ' : '') + item.training_name;
                     var verification = @json(url('/')) + '?search=' + encodeURIComponent(item.certificate_number);
+                    var actions = '<div class="table-actions">' +
+                        '<a href="' + viewBase + '/' + item.id + '" target="_blank" rel="noopener noreferrer" title="View"><i class="fa-solid fa-circle-info"></i></a>' +
+                        '<a href="' + editBase + '/' + item.id + '" target="_blank" rel="noopener noreferrer" title="Edit"><i class="fa-solid fa-pen-to-square"></i></a>' +
+                        (item.status === 'Approved' && item.certificate_type && item.trainer_id
+                            ? '<a class="danger" href="' + pdfBase + '/' + item.id + '" title="Generate PDF"><i class="fa-solid fa-file-pdf"></i></a>'
+                            : '') +
+                        '<form action="' + deleteBase + '/' + item.id + '" method="POST">' +
+                            '<input type="hidden" name="_token" value="' + csrfToken + '">' +
+                            '<input type="hidden" name="_method" value="DELETE">' +
+                            '<button class="danger" type="submit" title="Delete" data-confirm="Delete this certificate?"><i class="fa-solid fa-trash"></i></button>' +
+                        '</form></div>';
+
                     return '<tr><td>' + (index + 1) + '</td>' +
                         '<td>' + escapeHtml(item.certificate_number) + '</td>' +
                         '<td>' + escapeHtml(item.participant_name) + '</td>' +
@@ -100,8 +118,7 @@ $(function () {
                         '<td>' + formatDate(item.issue_date) + '</td>' +
                         '<td><span class="status-pill">' + escapeHtml(item.status) + '</span></td>' +
                         '<td><img width="38" height="38" src="https://api.qrserver.com/v1/create-qr-code/?size=76x76&data=' + encodeURIComponent(verification) + '"></td>' +
-                        '<td><div class="table-actions"><a href="' + @json(url('/view-certificate')) + '/' + item.id + '"><i class="fa-solid fa-circle-info"></i></a>' +
-                        '<a href="' + @json(url('/edit-certificate')) + '/' + item.id + '"><i class="fa-solid fa-pen-to-square"></i></a></div></td></tr>';
+                        '<td>' + actions + '</td></tr>';
                 }).join('');
                 $('.search-result tbody').html(rows || '<tr><td colspan="10" class="text-center py-4">No matching certificates.</td></tr>');
             });
