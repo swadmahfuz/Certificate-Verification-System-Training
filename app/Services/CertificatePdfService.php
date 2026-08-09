@@ -342,34 +342,35 @@ class CertificatePdfService
             165
         );
 
-        /// Company introduction.
-        $pdf->SetFont(
-            'Palatino',
-            '',
-            13
-        );
+        /// Company introduction and name (only when a company is present).
+        $company = trim((string) $certificate->company);
 
-        $this->drawCenteredLine(
-            $pdf,
-            'of',
-            101.8,
-            170,
-            20
-        );
+        if ($company !== '') {
+            $pdf->SetFont(
+                'Palatino',
+                '',
+                13
+            );
 
-        /// Company name.
-        $this->drawCenteredFittedLine(
-            $pdf,
-            trim(
-                (string) $certificate->company
-            ),
-            109,
-            'Palatino',
-            'B',
-            15,
-            10,
-            170
-        );
+            $this->drawCenteredLine(
+                $pdf,
+                'of',
+                101.8,
+                170,
+                20
+            );
+
+            $this->drawCenteredFittedLine(
+                $pdf,
+                $company,
+                109,
+                'Palatino',
+                'B',
+                15,
+                10,
+                170
+            );
+        }
 
         /// Certificate-type-specific wording.
         $this->drawCenteredFittedLine(
