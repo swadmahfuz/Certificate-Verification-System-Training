@@ -90,16 +90,12 @@
                             <tr><td><strong>Training Start Date</strong></td><td>{{ \Carbon\Carbon::createFromFormat('Y-m-d', $certificate->training_date)->format('d M Y') }}</td></tr>
                             <tr><td><strong>Training End Date</strong></td><td>{{ \Carbon\Carbon::createFromFormat('Y-m-d', $certificate->training_end)->format('d M Y') }}</td></tr>
                             <tr><td><strong>Issue Date</strong></td><td>{{ \Carbon\Carbon::createFromFormat('Y-m-d', $certificate->issue_date)->format('d M Y') }}</td></tr>
-                            <tr>
-                                <td><strong>Expiry Date</strong></td>
-                                <td>
-                                    @if (!empty($certificate->expiry_date))
-                                        {{ \Carbon\Carbon::createFromFormat('Y-m-d', $certificate->expiry_date)->format('d M Y') }}
-                                    @else
-                                        No Expiry Date
-                                    @endif
-                                </td>
-                            </tr>
+                            @if (!empty($certificate->expiry_date))
+                                <tr>
+                                    <td><strong>Expiry Date</strong></td>
+                                    <td>{{ \Carbon\Carbon::createFromFormat('Y-m-d', $certificate->expiry_date)->format('d M Y') }}</td>
+                                </tr>
+                            @endif
                         </table>
 
                         @if ($certificate->certificate_pdf)
