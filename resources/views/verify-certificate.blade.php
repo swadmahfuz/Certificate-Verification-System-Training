@@ -56,7 +56,9 @@
                         <table class="table table-bordered mt-3">
                             <tr><td><strong>Certificate Number</strong></td><td>{{ $certificate->certificate_number }}</td></tr>
                             <tr><td><strong>Participant Name</strong></td><td>{{ $certificate->participant_name }}</td></tr>
-                            <tr><td><strong>Company</strong></td><td>{{ $certificate->company }}</td></tr>
+                            @if(trim((string) $certificate->company) !== '')
+                                <tr><td><strong>Company</strong></td><td>{{ $certificate->company }}</td></tr>
+                            @endif
                             <tr>
                                 <td><strong>Training Title</strong></td>
                                 <td>
@@ -79,17 +81,12 @@
                                 </td>
                             </tr>
 
-                            <tr>
-                                <td><strong>Training Location</strong></td>
-                                <td>
-                                    @if($certificate->online_training)
-                                        Not Applicable
-                                    @else
-                                        {{ $certificate->location }}
-                                    @endif
-                                </td>
-                            </tr>
-                            <tr><td><strong>Trainer</strong></td><td>{{ $certificate->trainer }}</td></tr>
+                            @unless($certificate->online_training)
+                                <tr>
+                                    <td><strong>Training Location</strong></td>
+                                    <td>{{ $certificate->location }}</td>
+                                </tr>
+                            @endunless
                             <tr><td><strong>Training Start Date</strong></td><td>{{ \Carbon\Carbon::createFromFormat('Y-m-d', $certificate->training_date)->format('d M Y') }}</td></tr>
                             <tr><td><strong>Training End Date</strong></td><td>{{ \Carbon\Carbon::createFromFormat('Y-m-d', $certificate->training_end)->format('d M Y') }}</td></tr>
                             <tr><td><strong>Issue Date</strong></td><td>{{ \Carbon\Carbon::createFromFormat('Y-m-d', $certificate->issue_date)->format('d M Y') }}</td></tr>
