@@ -25,7 +25,7 @@ use Carbon\Carbon;
 | Developed by: Swad Ahmed Mahfuz (Head of Divison - Business Assurance & Training, Bangladesh)
 | Contact: swad.mahfuz@gmail.com, +1-725-867-7718, +88 01733 023 008
 | Project Start: 12 October 2022
-| Latest Stable Release: v5.0.2 -  1 August 2026
+| Latest Stable Release: v5.1.0 -  29 August 2026
 |--------------------------------------------------------------------------
 */
 
@@ -53,39 +53,34 @@ class CertificateController extends Controller
     public function addCredentials(Request $request)
     {
         $credentials = $request->only('email', 'password');
+        $email = $credentials['email'] ?? null;
+
+        if ($email) {
+            $existing = User::where('email', $email)->first();
+
+            if ($existing && !$existing->isActive()) {
+                return redirect('/admin')->with('error', 'Your account has been deactivated. Contact an administrator.');
+            }
+        }
 
         if (Auth::attempt($credentials)) {
-            $this->activityLog->record(
-                'auth.login',
-                'auth',
-                Auth::id(),
-                Auth::user()->name . ' logged in.'
-            );
+            $user = Auth::user();
+
+            if (!$user->hasVerifiedEmail()) {
+                return redirect()->route('verification.notice');
+            }
+
+            if ($user->mustChangePassword()) {
+                return redirect()->route('account.password.edit')
+                    ->with('warning', 'You must set a new password before continuing.');
+            }
+
             return redirect('/dashboard')->with('success', 'Thank You for authorizing. Please proceed.');
         }
-        else{
-            return redirect('/admin')->with('error', 'You entered the wrong credentials');
-        }
 
+        return redirect('/admin')->with('error', 'You entered the wrong credentials');
     }
 
-    public function logout()
-    {
-        if (Auth::check())
-        {
-            $this->activityLog->record(
-                'auth.logout',
-                'auth',
-                Auth::id(),
-                Auth::user()->name . ' logged out.'
-            );
-            Auth::logout();
-            return redirect('/admin');
-        }
-
-        return redirect()->route('certificate.search');
-    }
-    
     
     ////Admin functions
     public function getDashboard(DashboardService $dashboardService)
@@ -103,7 +98,8 @@ class CertificateController extends Controller
 
     public function showAllUsers()
     {
-        $users = \App\Models\User::withCount([
+        $users = \App\Models\User::with('departmentRelation')
+            ->withCount([
             'certificatesCreated',
             'certificatesReviewed',
             'certificatesApproved',
@@ -148,7 +144,7 @@ class CertificateController extends Controller
     {
 
             $validate = $request->validate([
-                'certificate_number' => 'required|unique:certificates_training',
+                'certificate_number' => 'required|unique:training_certificates',
                 'certificate_type' => 'required|in:Certificate,Certificate of Achievement,Certificate of Competency,Certificate of Attendance',
                 'has_practical' => 'nullable|boolean',
                 'is_refresher' => 'nullable|boolean',
@@ -158,8 +154,8 @@ class CertificateController extends Controller
                 'passport_nid' => 'required',
                 'training_name' => 'required',
                 'location' => 'required',
-                'trainer_id' => 'required|integer|exists:certificates_training_trainers,id',
-                'signatory_id' => 'nullable|integer|exists:certificates_training_signatories,id',
+                'trainer_id' => 'required|integer|exists:training_trainers,id',
+                'signatory_id' => 'nullable|integer|exists:training_signatories,id',
                 'training_date' => 'required',
                 'training_end' => 'required',
                 'issue_date' => 'required',
@@ -334,7 +330,7 @@ class CertificateController extends Controller
     {
 
             $validate = $request->validate([
-                'certificate_number' => 'required|unique:certificates_training,certificate_number,' . $request->id,
+                'certificate_number' => 'required|unique:training_certificates,certificate_number,' . $request->id,
                 'certificate_type' => 'required|in:Certificate,Certificate of Achievement,Certificate of Competency,Certificate of Attendance',
                 'has_practical' => 'nullable|boolean',
                 'is_refresher' => 'nullable|boolean',
@@ -344,8 +340,8 @@ class CertificateController extends Controller
                 'passport_nid' => 'required',
                 'training_name' => 'required',
                 'location' => 'required',
-                'trainer_id' => 'required|integer|exists:certificates_training_trainers,id',
-                'signatory_id' => 'nullable|integer|exists:certificates_training_signatories,id',
+                'trainer_id' => 'required|integer|exists:training_trainers,id',
+                'signatory_id' => 'nullable|integer|exists:training_signatories,id',
                 'training_date' => 'required',
                 'training_end' => 'required',
                 'issue_date' => 'required',
@@ -738,7 +734,7 @@ class CertificateController extends Controller
     {
         $validated = $request->validate([
             'certificate_ids' => 'required|array|min:1|max:500',
-            'certificate_ids.*' => 'required|integer|distinct|exists:certificates_training,id',
+            'certificate_ids.*' => 'required|integer|distinct|exists:training_certificates,id',
         ]);
 
         return array_map('intval', $validated['certificate_ids']);

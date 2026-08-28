@@ -58,7 +58,7 @@ class TrainerController extends Controller
                 'required',
                 'email',
                 'max:255',
-                'unique:certificates_training_trainers,email',
+                'unique:training_trainers,email',
             ],
 
             'designation' => [
@@ -138,7 +138,7 @@ class TrainerController extends Controller
                 'email',
                 'max:255',
                 Rule::unique(
-                    'certificates_training_trainers',
+                    'training_trainers',
                     'email'
                 )->ignore($trainer->id),
             ],

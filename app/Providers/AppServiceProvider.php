@@ -5,10 +5,12 @@ namespace App\Providers;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\View;
 use App\Services\DashboardService;
+use App\Services\PermissionService;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -48,14 +50,31 @@ class AppServiceProvider extends ServiceProvider
         Paginator::useBootstrap();
         Schema::defaultStringLength(191);
 
-        View::composer(['partials.admin.header', 'partials.admin.sidebar'], function ($view) {
+        View::composer(['partials.admin.header', 'partials.admin.sidebar', 'layouts.admin'], function ($view) {
             $assignments = ['review' => 0, 'approval' => 0, 'total' => 0];
+            $canMutate = false;
+            $isSuperAdmin = false;
 
             if (Auth::check()) {
+                $permissions = app(PermissionService::class);
                 $assignments = app(DashboardService::class)->myAssignments(Auth::id());
+                $canMutate = $permissions->canMutate();
+                $isSuperAdmin = $permissions->isSuperAdmin();
             }
 
-            $view->with('myAssignments', $assignments);
+            $view->with([
+                'myAssignments' => $assignments,
+                'canMutate' => $canMutate,
+                'isSuperAdmin' => $isSuperAdmin,
+            ]);
+        });
+
+        Blade::if('canMutate', function () {
+            return Auth::check() && app(PermissionService::class)->canMutate();
+        });
+
+        Blade::if('superAdmin', function () {
+            return Auth::check() && app(PermissionService::class)->isSuperAdmin();
         });
 
         // If SESSION_DOMAIN is explicitly set in .env (and thus in config), respect it.

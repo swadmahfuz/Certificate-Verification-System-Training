@@ -8,7 +8,7 @@ class ActivityLog extends Model
 {
     public $timestamps = false;
 
-    protected $table = 'certificates_training_activity_logs';
+    protected $table = 'training_activity_logs';
 
     protected $fillable = [
         'event',

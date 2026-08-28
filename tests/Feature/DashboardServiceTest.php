@@ -18,7 +18,7 @@ class DashboardServiceTest extends TestCase
         DB::purge('sqlite');
         DB::reconnect('sqlite');
 
-        Schema::create('certificates_training', function (Blueprint $table) {
+        Schema::create('training_certificates', function (Blueprint $table) {
             $table->increments('id');
             $table->string('certificate_number')->unique();
             $table->string('participant_name');
@@ -30,7 +30,7 @@ class DashboardServiceTest extends TestCase
             $table->timestamps();
             $table->softDeletes();
         });
-        Schema::create('certificates_training_trainers', function (Blueprint $table) {
+        Schema::create('training_trainers', function (Blueprint $table) {
             $table->increments('id');
             $table->boolean('is_active')->default(true);
             $table->timestamps();
@@ -48,7 +48,7 @@ class DashboardServiceTest extends TestCase
         ];
 
         foreach ($rows as $row) {
-            DB::table('certificates_training')->insert([
+            DB::table('training_certificates')->insert([
                 'certificate_number' => $row[0],
                 'participant_name' => 'Test Participant',
                 'status' => $row[1],
@@ -58,7 +58,7 @@ class DashboardServiceTest extends TestCase
                 'updated_at' => $now,
             ]);
         }
-        DB::table('certificates_training_trainers')->insert([
+        DB::table('training_trainers')->insert([
             ['is_active' => true, 'created_at' => $now, 'updated_at' => $now],
             ['is_active' => false, 'created_at' => $now, 'updated_at' => $now],
         ]);
@@ -78,7 +78,7 @@ class DashboardServiceTest extends TestCase
     public function test_my_assignments_count_only_current_user_work()
     {
         $now = now();
-        DB::table('certificates_training')->insert([
+        DB::table('training_certificates')->insert([
             [
                 'certificate_number' => 'TR-R1',
                 'participant_name' => 'Review Me',

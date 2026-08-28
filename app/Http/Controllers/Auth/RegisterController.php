@@ -3,75 +3,64 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Providers\RouteServiceProvider;
+use App\Models\Department;
 use App\Models\User;
+use App\Providers\RouteServiceProvider;
+use App\Services\PermissionService;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class RegisterController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Register Controller
-    |--------------------------------------------------------------------------
-    |
-    | This controller handles the registration of new users as well as their
-    | validation and creation. By default this controller uses a trait to
-    | provide this functionality without requiring any additional code.
-    |
-    */
-
     use RegistersUsers;
 
-    /**
-     * Where to redirect users after registration.
-     *
-     * @var string
-     */
-    protected $redirectTo = RouteServiceProvider::HOME;
-
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
+    public function __construct(private PermissionService $permissions)
     {
         $this->middleware('guest');
     }
 
-    /**
-     * Get a validator for an incoming registration request.
-     *
-     * @param  array  $data
-     * @return \Illuminate\Contracts\Validation\Validator
-     */
+    public function showRegistrationForm()
+    {
+        $departments = Department::active()->orderBy('name')->get();
+
+        return view('auth.register', compact('departments'));
+    }
+
+    protected $redirectTo = RouteServiceProvider::HOME;
+
     protected function validator(array $data)
     {
         return Validator::make($data, [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'department' => ['required', 'string', 'max:255'],
+            'department_id' => ['required', 'exists:departments,id'],
             'designation' => ['required', 'string', 'max:255'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
     }
 
-    /**
-     * Create a new user instance after a valid registration.
-     *
-     * @param  array  $data
-     * @return \App\Models\User
-     */
     protected function create(array $data)
     {
-        return User::create([
+        $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
-            'department' => $data['department'],
+            'department_id' => $data['department_id'],
             'designation' => $data['designation'],
             'password' => Hash::make($data['password']),
+            'is_active' => true,
+            'password_must_change' => false,
         ]);
+
+        $this->permissions->grantDefaultRegistrationAccess($user);
+        $user->sendEmailVerificationNotification();
+
+        return $user;
+    }
+
+    protected function registered(Request $request, $user)
+    {
+        return redirect()->route('verification.notice');
     }
 }

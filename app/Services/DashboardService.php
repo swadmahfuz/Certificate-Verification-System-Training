@@ -119,7 +119,7 @@ class DashboardService
 
     private function recentActivities()
     {
-        if (!Schema::hasTable('certificates_training_activity_logs')) {
+        if (!Schema::hasTable('training_activity_logs')) {
             return collect();
         }
 

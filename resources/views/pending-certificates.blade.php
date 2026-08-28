@@ -18,6 +18,7 @@
             @endif
         </p>
     </div>
+    @canMutate
     <div class="d-flex flex-wrap gap-2">
         <form action="{{ route('bulkReview') }}" method="POST">
             @csrf
@@ -32,6 +33,7 @@
             </button>
         </form>
     </div>
+    @endcanMutate
 </div>
 
 <div class="filter-chips mb-3">

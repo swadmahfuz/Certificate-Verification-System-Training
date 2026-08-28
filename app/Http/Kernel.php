@@ -64,5 +64,10 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'littlegatekeeper' => \Spatie\LittleGateKeeper\AuthMiddleware::class,
+        'app.access' => \App\Http\Middleware\EnsureAppAccess::class,
+        'app.mutate' => \App\Http\Middleware\EnsureAppMutate::class,
+        'super.admin' => \App\Http\Middleware\EnsureSuperAdmin::class,
+        'user.active' => \App\Http\Middleware\EnsureUserIsActive::class,
+        'password.changed' => \App\Http\Middleware\EnsurePasswordChanged::class,
     ];
 }

@@ -47,7 +47,7 @@
             </main>
 
             <footer class="admin-footer">
-                <span>Certificate Verification System v5.0.2</span>
+                <span>Certificate Verification System v5.1.0</span>
                 <span>&copy; {{ date('Y') }} TÜV Austria BIC</span>
             </footer>
         </div>

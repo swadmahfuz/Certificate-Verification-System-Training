@@ -34,13 +34,16 @@ class CertificateWorkflowSecurityTest extends TestCase
             $table->string('email')->unique();
             $table->string('password');
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('department')->nullable();
+            $table->unsignedBigInteger('department_id')->nullable();
             $table->string('designation')->nullable();
+            $table->boolean('is_super_admin')->default(false);
+            $table->boolean('is_active')->default(true);
+            $table->boolean('password_must_change')->default(false);
             $table->rememberToken();
             $table->timestamps();
         });
 
-        Schema::create('certificates_training', function (Blueprint $table) {
+        Schema::create('training_certificates', function (Blueprint $table) {
             $table->increments('id');
             $table->string('certificate_number')->unique();
             $table->string('certificate_type')->nullable();
@@ -77,7 +80,7 @@ class CertificateWorkflowSecurityTest extends TestCase
             $table->softDeletes();
         });
 
-        Schema::create('certificates_training_activity_logs', function (Blueprint $table) {
+        Schema::create('training_activity_logs', function (Blueprint $table) {
             $table->increments('id');
             $table->string('event');
             $table->string('subject_type');
@@ -249,14 +252,14 @@ class CertificateWorkflowSecurityTest extends TestCase
             ->assertRedirect()
             ->assertSessionHas('bulk_action_completed', true);
 
-        $this->assertSoftDeleted('certificates_training', ['id' => $selected->id]);
-        $this->assertDatabaseHas('certificates_training', [
+        $this->assertSoftDeleted('training_certificates', ['id' => $selected->id]);
+        $this->assertDatabaseHas('training_certificates', [
             'id' => $selected->id,
             'certificate_number' => 'TR-SELECTED (Deleted)',
             'status' => 'Deleted',
             'deleted_by_id' => $user->id,
         ]);
-        $this->assertDatabaseHas('certificates_training', [
+        $this->assertDatabaseHas('training_certificates', [
             'id' => $unselected->id,
             'deleted_at' => null,
         ]);

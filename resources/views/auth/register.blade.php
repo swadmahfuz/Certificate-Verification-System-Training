@@ -28,12 +28,16 @@
 
                         {{-- Department --}}
                         <div class="row mb-3">
-                            <label for="department" class="col-md-4 col-form-label text-md-end">{{ __('Department') }}</label>
+                            <label for="department_id" class="col-md-4 col-form-label text-md-end">{{ __('Department') }}</label>
                             <div class="col-md-6">
-                                <input id="department" type="text"
-                                    class="form-control @error('department') is-invalid @enderror"
-                                    name="department" value="{{ old('department') }}" required autocomplete="organization-title">
-                                @error('department')
+                                <select id="department_id" name="department_id"
+                                    class="form-select @error('department_id') is-invalid @enderror" required>
+                                    <option value="">Select department</option>
+                                    @foreach(($departments ?? []) as $department)
+                                        <option value="{{ $department->id }}" {{ old('department_id') == $department->id ? 'selected' : '' }}>{{ $department->name }}</option>
+                                    @endforeach
+                                </select>
+                                @error('department_id')
                                     <span class="invalid-feedback d-block" role="alert"><strong>{{ $message }}</strong></span>
                                 @enderror
                             </div>

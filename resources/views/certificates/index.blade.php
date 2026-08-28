@@ -8,9 +8,11 @@
         <h1>Certificates</h1>
         <p>Search, verify, and manage all training certificates.</p>
     </div>
+    @canMutate
     <a class="btn btn-primary" href="{{ route('certificate.createForm') }}">
         <i class="fa-solid fa-plus me-1"></i> Add Certificate
     </a>
+    @endcanMutate
 </div>
 
 <section class="admin-card">
@@ -23,6 +25,7 @@
             </div>
         </div>
     </div>
+    @canMutate
     <form id="bulk-action-form" method="POST" class="d-flex flex-wrap align-items-center gap-2 p-3 border-bottom">
         @csrf
         <div id="bulk-certificate-ids"></div>
@@ -47,14 +50,17 @@
             <i class="fa-solid fa-trash me-1"></i> Delete
         </button>
     </form>
+    @endcanMutate
     <div class="table-responsive">
         <table class="table table-hover admin-table search-result">
             <thead>
                 <tr>
+                    @canMutate
                     <th>
                         <input id="select-all-visible" class="form-check-input" type="checkbox"
                             aria-label="Select all visible certificates">
                     </th>
+                    @endcanMutate
                     <th>Sl.</th>
                     <th>Certificate ID</th>
                     <th>Name</th>
@@ -71,11 +77,13 @@
                 @php $offset = ($certificates->currentPage() - 1) * $certificates->perPage(); @endphp
                 @forelse($certificates as $certificate)
                     <tr>
+                        @canMutate
                         <td>
                             <input class="form-check-input certificate-select" type="checkbox"
                                 value="{{ $certificate->id }}"
                                 aria-label="Select certificate {{ $certificate->certificate_number }}">
                         </td>
+                        @endcanMutate
                         <td>{{ $loop->iteration + $offset }}</td>
                         <td>{{ $certificate->certificate_number }}</td>
                         <td>{{ $certificate->participant_name }}</td>
@@ -90,6 +98,7 @@
                         <td>
                             <div class="table-actions">
                                 <a href="{{ route('certificate.view', $certificate->id) }}" target="_blank" rel="noopener noreferrer" title="View"><i class="fa-solid fa-circle-info"></i></a>
+                                @canMutate
                                 <a href="{{ route('certificate.edit', $certificate->id) }}" target="_blank" rel="noopener noreferrer" title="Edit"><i class="fa-solid fa-pen-to-square"></i></a>
                                 @if($certificate->status === 'Approved' && $certificate->certificate_type && $certificate->trainer_id)
                                     <a class="danger" href="{{ route('certificate.generatePdf', $certificate->id) }}" title="Generate PDF"><i class="fa-solid fa-file-pdf"></i></a>
@@ -99,6 +108,7 @@
                                     @method('DELETE')
                                     <button class="danger" type="submit" title="Delete" data-confirm="Delete this certificate?"><i class="fa-solid fa-trash"></i></button>
                                 </form>
+                                @endcanMutate
                             </div>
                         </td>
                     </tr>

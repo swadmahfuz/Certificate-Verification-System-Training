@@ -47,6 +47,12 @@
                 </div>
             @endif
 
+            @if(session('success'))
+                <div class="alert alert-success text-center">
+                    {{ session('success') }}
+                </div>
+            @endif
+
             <form method="POST" action="{{ route('certificate.login') }}">
                 @csrf
                 <div class="mb-3">
@@ -61,6 +67,12 @@
                     <button type="submit" class="btn btn-primary">Log in</button>
                 </div>
             </form>
+
+            @if(config('cvs.registration_enabled') && Route::has('register'))
+                <div class="text-center mt-3">
+                    <a href="{{ route('register') }}">Create an account</a>
+                </div>
+            @endif
         </div>
     </div>
 

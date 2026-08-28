@@ -34,7 +34,7 @@
                         <td>{{ $index + 1 }}</td>
                         <td>{{ $user->name }}</td>
                         <td>{{ $user->email }}</td>
-                        <td>{{ $user->department ?? 'N/A' }}</td>
+                        <td>{{ $user->departmentRelation?->name ?? 'N/A' }}</td>
                         <td>{{ $user->designation ?? 'N/A' }}</td>
                         <td>{{ $user->certificates_created_count }}</td>
                         <td>{{ $user->certificates_reviewed_count }}</td>

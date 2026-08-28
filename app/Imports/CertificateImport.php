@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Auth;
 | Developed by: Swad Ahmed Mahfuz (Assistant Manager - Sales & Operations, Bangladesh)
 | Contact: swad.mahfuz@gmail.com, +1-725-867-7718, +88 01733 023 008
 | Project Start: 12 October 2022
+| Latest Stable Release: v5.1.0 -  29 August 2026
 |--------------------------------------------------------------------------
 */
 

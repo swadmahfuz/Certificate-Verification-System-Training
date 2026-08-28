@@ -11,7 +11,7 @@ class Trainer extends Model
      *
      * @var string
      */
-    protected $table = 'certificates_training_trainers';
+    protected $table = 'training_trainers';
 
     /**
      * The attributes that may be mass assigned.

@@ -19,9 +19,11 @@
         <a class="sidebar-link {{ request()->routeIs('certificates.index') ? 'active' : '' }}" href="{{ route('certificates.index') }}">
             <i class="fa-regular fa-file-lines"></i><span>All Certificates</span>
         </a>
+        @canMutate
         <a class="sidebar-link {{ request()->routeIs('certificate.createForm') ? 'active' : '' }}" href="{{ route('certificate.createForm') }}">
             <i class="fa-solid fa-plus"></i><span>Add Certificate</span>
         </a>
+        @endcanMutate
         <a class="sidebar-link {{ request()->routeIs('pendingCertificates') ? 'active' : '' }}" href="{{ route('pendingCertificates') }}">
             <i class="fa-regular fa-clock"></i>
             <span>Pending Certificates</span>
@@ -34,18 +36,25 @@
         </a>
 
         <div class="sidebar-label">People & Data</div>
+        @canMutate
         <a class="sidebar-link {{ request()->routeIs('trainers.*') ? 'active' : '' }}" href="{{ route('trainers.index') }}">
             <i class="fa-solid fa-person-chalkboard"></i><span>Trainers</span>
         </a>
         <a class="sidebar-link {{ request()->routeIs('signatories.*') ? 'active' : '' }}" href="{{ route('signatories.index') }}">
             <i class="fa-solid fa-signature"></i><span>Signatories</span>
         </a>
-        <a class="sidebar-link {{ request()->routeIs('allUsers') ? 'active' : '' }}" href="{{ route('allUsers') }}">
-            <i class="fa-solid fa-users"></i><span>Users</span>
-        </a>
         <a class="sidebar-link {{ request()->routeIs('importsExports') ? 'active' : '' }}" href="{{ route('importsExports') }}">
             <i class="fa-solid fa-file-import"></i><span>Import / Export</span>
         </a>
+        @endcanMutate
+        @superAdmin
+        <a class="sidebar-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}" href="{{ route('admin.users.index') }}">
+            <i class="fa-solid fa-users"></i><span>User Management</span>
+        </a>
+        <a class="sidebar-link {{ request()->routeIs('admin.departments.*') ? 'active' : '' }}" href="{{ route('admin.departments.index') }}">
+            <i class="fa-solid fa-building"></i><span>Departments</span>
+        </a>
+        @endsuperAdmin
         <a class="sidebar-link {{ request()->routeIs('activity-log.*') ? 'active' : '' }}" href="{{ route('activity-log.index') }}">
             <i class="fa-solid fa-clock-rotate-left"></i><span>Activity Log</span>
         </a>
@@ -99,6 +108,6 @@
 
     <div class="sidebar-footer">
         <small>Certificate Verification System</small>
-        <span>Version 5.0.2</span>
+        <span>Version 5.1.0</span>
     </div>
 </aside>

@@ -35,7 +35,7 @@ class SignatoryController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:certificates_training_signatories,email',
+            'email' => 'required|email|max:255|unique:training_signatories,email',
             'designation' => 'required|string|max:255',
             'department' => 'nullable|string|max:255',
             'signature' => 'required|file|mimes:png,jpg,jpeg,webp|max:2048',
@@ -81,7 +81,7 @@ class SignatoryController extends Controller
                 'required',
                 'email',
                 'max:255',
-                Rule::unique('certificates_training_signatories', 'email')->ignore($signatory->id),
+                Rule::unique('training_signatories', 'email')->ignore($signatory->id),
             ],
             'designation' => 'required|string|max:255',
             'department' => 'nullable|string|max:255',

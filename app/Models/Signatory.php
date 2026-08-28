@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Signatory extends Model
 {
-    protected $table = 'certificates_training_signatories';
+    protected $table = 'training_signatories';
 
     protected $fillable = [
         'name',
