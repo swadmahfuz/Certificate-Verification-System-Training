@@ -118,7 +118,7 @@
             </tbody>
         </table>
     </div>
-    <div class="p-3 border-top">{{ $certificates->links() }}</div>
+    <div class="p-3 border-top search-pagination">{{ $certificates->links() }}</div>
 </section>
 @endsection
 
@@ -232,13 +232,22 @@ $(function () {
         pendingBulkAction = null;
     });
 
-    $('.search-input').on('input', function () {
-        var query = this.value;
-        clearTimeout(timer);
-        timer = setTimeout(function () {
-            $.get(@json(route('liveSearch')), { userInput: query }, function (response) {
-                var rows = response.data.data.map(function (item, index) {
-                    var title = (item.internal_audit_training ? 'Internal Auditor - ' : '') + item.training_name;
+    function fetchCertificates(page, userInput) {
+        page = page || 1;
+        userInput = userInput || '';
+        $.ajax({
+            url: @json(route('liveSearch')),
+            data: { userInput: userInput, page: page },
+            dataType: 'json',
+            beforeSend: function () {
+                $('.search-result tbody').html('<tr><td colspan="11" class="text-center text-muted py-4">Searching...</td></tr>');
+            },
+            success: function (res) {
+                var html = '';
+                $.each(res.data.data, function (i, item) {
+                    var title = (item.internal_audit_training === true || item.internal_audit_training == 1)
+                        ? 'Internal Auditor - ' + item.training_name
+                        : item.training_name;
                     var verification = @json(url('/')) + '?search=' + encodeURIComponent(item.certificate_number);
                     var actions = '<div class="table-actions">' +
                         '<a href="' + viewBase + '/' + item.id + '" target="_blank" rel="noopener noreferrer" title="View"><i class="fa-solid fa-circle-info"></i></a>' +
@@ -252,9 +261,9 @@ $(function () {
                             '<button class="danger" type="submit" title="Delete" data-confirm="Delete this certificate?"><i class="fa-solid fa-trash"></i></button>' +
                         '</form></div>';
 
-                    return '<tr><td><input class="form-check-input certificate-select" type="checkbox" value="' +
+                    html += '<tr><td><input class="form-check-input certificate-select" type="checkbox" value="' +
                         item.id + '" aria-label="Select certificate ' + escapeHtml(item.certificate_number) + '"></td>' +
-                        '<td>' + (index + 1) + '</td>' +
+                        '<td>' + (i + 1 + (res.data.current_page - 1) * res.data.per_page) + '</td>' +
                         '<td>' + escapeHtml(item.certificate_number) + '</td>' +
                         '<td>' + escapeHtml(item.participant_name) + '</td>' +
                         '<td>' + escapeHtml(item.company || 'N/A') + '</td>' +
@@ -264,11 +273,39 @@ $(function () {
                         '<td><span class="status-pill">' + escapeHtml(item.status) + '</span></td>' +
                         '<td><img width="38" height="38" src="https://api.qrserver.com/v1/create-qr-code/?size=76x76&data=' + encodeURIComponent(verification) + '"></td>' +
                         '<td>' + actions + '</td></tr>';
-                }).join('');
-                $('.search-result tbody').html(rows || '<tr><td colspan="11" class="text-center py-4">No matching certificates.</td></tr>');
+                });
+                $('.search-result tbody').html(html || '<tr><td colspan="11" class="text-center text-muted py-4">No matching certificates found.</td></tr>');
+                $('.search-pagination').html(generatePaginationLinks(res.data));
                 syncSelectionUi();
-            });
+            }
+        });
+    }
+
+    function generatePaginationLinks(data) {
+        var links = '<nav><ul class="pagination mb-0">';
+        if (data.current_page > 1) {
+            links += '<li class="page-item"><a class="page-link" href="#" data-page="' + (data.current_page - 1) + '">&laquo;</a></li>';
+        }
+        for (var i = 1; i <= data.last_page; i++) {
+            links += '<li class="page-item' + (i === data.current_page ? ' active' : '') + '"><a class="page-link" href="#" data-page="' + i + '">' + i + '</a></li>';
+        }
+        if (data.current_page < data.last_page) {
+            links += '<li class="page-item"><a class="page-link" href="#" data-page="' + (data.current_page + 1) + '">&raquo;</a></li>';
+        }
+        return links + '</ul></nav>';
+    }
+
+    $('.search-input').on('input', function () {
+        var query = this.value;
+        clearTimeout(timer);
+        timer = setTimeout(function () {
+            fetchCertificates(1, query);
         }, 250);
+    });
+
+    $(document).on('click', '.search-pagination .page-link', function (e) {
+        e.preventDefault();
+        fetchCertificates($(this).data('page'), $('.search-input').val());
     });
 
     function escapeHtml(value) {
@@ -281,6 +318,7 @@ $(function () {
     }
 
     syncSelectionUi();
+    fetchCertificates();
 });
 </script>
 @endpush
