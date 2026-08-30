@@ -70,6 +70,102 @@ body.admin-body {
 }
 .sidebar-link i { width: 19px; text-align: center; }
 .sidebar-link:hover, .sidebar-link.active { color: #fff; background: #1976d2; }
+.sidebar-nav .sidebar-link-disabled {
+    color: #8ea3b2 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    cursor: not-allowed;
+    opacity: 1;
+}
+.sidebar-nav .sidebar-link-disabled i {
+    color: #8ea3b2;
+}
+.sidebar-nav .sidebar-link-disabled:hover,
+.sidebar-nav .sidebar-link-disabled:focus {
+    color: #a3b5c2 !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    box-shadow: none !important;
+}
+.btn-disabled-permission,
+.btn.btn-disabled-permission {
+    opacity: 1;
+    cursor: not-allowed;
+    pointer-events: auto;
+    color: #6d7785 !important;
+    background-color: #eef1f5 !important;
+    border: 1px solid #d5dbe3 !important;
+    box-shadow: none !important;
+}
+.btn-disabled-permission:hover,
+.btn-disabled-permission:focus,
+.btn-disabled-permission:active {
+    color: #6d7785 !important;
+    background-color: #eef1f5 !important;
+    border-color: #d5dbe3 !important;
+    box-shadow: none !important;
+}
+.permission-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+.permission-modal[hidden] {
+    display: none !important;
+}
+.permission-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(6, 39, 68, 0.55);
+}
+.permission-modal-dialog {
+    position: relative;
+    z-index: 1;
+    width: min(420px, 100%);
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 16px 40px rgba(23, 32, 51, 0.25);
+    overflow: hidden;
+}
+.permission-modal-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 18px 20px 12px;
+    border-bottom: 1px solid var(--border);
+}
+.permission-modal-header i {
+    color: #856404;
+    font-size: 18px;
+}
+.permission-modal-header h2 {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 700;
+}
+.permission-modal-body {
+    padding: 16px 20px 20px;
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.55;
+}
+.permission-modal-body p {
+    margin: 0;
+}
+.permission-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    padding: 0 20px 18px;
+}
+body.permission-modal-open {
+    overflow: hidden;
+}
+.sidebar-nav .sidebar-link-disabled {
+    pointer-events: auto;
+}
 .sidebar-footer {
     display: flex;
     flex-direction: column;

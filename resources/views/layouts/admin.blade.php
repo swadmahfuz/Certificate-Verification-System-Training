@@ -9,7 +9,7 @@
     <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
-    <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin.css') }}?v=4">
     @stack('styles')
 </head>
 <body class="admin-body">
@@ -54,9 +54,26 @@
     </div>
 
     <div class="sidebar-backdrop" data-sidebar-close></div>
+
+    <div id="permissionModal" class="permission-modal" hidden aria-hidden="true">
+        <div class="permission-modal-backdrop"></div>
+        <div class="permission-modal-dialog" role="alertdialog" aria-modal="true" aria-labelledby="permissionModalTitle">
+            <div class="permission-modal-header">
+                <i class="fa-solid fa-lock" aria-hidden="true"></i>
+                <h2 id="permissionModalTitle">Access Restricted</h2>
+            </div>
+            <div class="permission-modal-body">
+                <p id="permissionModalMessage"></p>
+            </div>
+            <div class="permission-modal-footer">
+                <button type="button" class="btn btn-primary btn-sm" id="permissionModalOk">OK</button>
+            </div>
+        </div>
+    </div>
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{{ asset('js/admin.js') }}"></script>
+    <script src="{{ asset('js/admin.js') }}?v=4"></script>
     @stack('scripts')
 </body>
 </html>

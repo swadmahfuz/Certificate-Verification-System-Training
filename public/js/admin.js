@@ -24,12 +24,91 @@
         button.addEventListener('click', closeSidebar);
     });
 
-    // Delegated so dynamically rendered action buttons also confirm.
     document.addEventListener('click', function (event) {
         var element = event.target.closest('[data-confirm]');
         if (!element) return;
         if (!window.confirm(element.getAttribute('data-confirm'))) {
             event.preventDefault();
         }
+    });
+
+    function hidePermissionPopup() {
+        var modal = document.getElementById('permissionModal');
+        if (!modal) {
+            return;
+        }
+
+        modal.hidden = true;
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('permission-modal-open');
+    }
+
+    window.showPermissionPopup = function (message) {
+        if (!message) {
+            return;
+        }
+
+        var modal = document.getElementById('permissionModal');
+        var messageEl = document.getElementById('permissionModalMessage');
+
+        if (!modal || !messageEl) {
+            window.alert(message);
+            return;
+        }
+
+        messageEl.textContent = message;
+        modal.hidden = false;
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('permission-modal-open');
+
+        var okButton = document.getElementById('permissionModalOk');
+        if (okButton) {
+            okButton.focus();
+        }
+    };
+
+    window.hidePermissionPopup = hidePermissionPopup;
+
+    document.addEventListener('click', function (event) {
+        var okButton = event.target.closest('#permissionModalOk');
+        if (okButton) {
+            event.preventDefault();
+            hidePermissionPopup();
+            return;
+        }
+
+        if (event.target.classList.contains('permission-modal-backdrop')) {
+            hidePermissionPopup();
+            return;
+        }
+
+        var element = event.target.closest('[data-permission-message]');
+        if (!element) {
+            return;
+        }
+
+        event.preventDefault();
+        event.stopPropagation();
+        window.showPermissionPopup(element.getAttribute('data-permission-message'));
+    });
+
+    document.addEventListener('keydown', function (event) {
+        var modal = document.getElementById('permissionModal');
+        if (modal && !modal.hidden && event.key === 'Escape') {
+            hidePermissionPopup();
+            return;
+        }
+
+        if (event.key !== 'Enter' && event.key !== ' ') {
+            return;
+        }
+
+        var element = event.target.closest('[data-permission-message][role="button"]');
+        if (!element) {
+            return;
+        }
+
+        event.preventDefault();
+        window.showPermissionPopup(element.getAttribute('data-permission-message'));
     });
 }());

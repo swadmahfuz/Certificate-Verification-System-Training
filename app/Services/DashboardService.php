@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Models\ActivityLog;
 use App\Models\Certificate;
 use App\Models\Trainer;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -13,6 +12,10 @@ use Illuminate\Support\Facades\Schema;
 
 class DashboardService
 {
+    public function __construct(private CertificateFilterService $certificateFilters)
+    {
+    }
+
     public function data(): array
     {
         $ttl = config('cvs.cache_ttl.dashboard', 300);
@@ -27,19 +30,15 @@ class DashboardService
 
     private function buildData(): array
     {
-        $total = Certificate::count();
+        $baseQuery = Certificate::query();
+        $total = (clone $baseQuery)->count();
         $pendingReview = Certificate::pendingReview()->count();
         $pendingApproval = Certificate::pendingApproval()->count();
-        $expired = Certificate::approved()
-            ->whereNotNull('expiry_date')
-            ->where('expiry_date', '<', now()->format('Y-m-d'))
-            ->count();
-        $approved = Certificate::approved()
-            ->where(function ($query) {
-                $query->whereNull('expiry_date')
-                    ->orWhere('expiry_date', '>=', now()->format('Y-m-d'));
-            })
-            ->count();
+        $expired = $this->certificateFilters->countExpired(clone $baseQuery);
+        $approved = $this->certificateFilters->countApproved(clone $baseQuery);
+        $expiring30 = $this->certificateFilters->countExpiringWithin(clone $baseQuery, 30);
+        $expiring60 = $this->certificateFilters->countExpiringWithin(clone $baseQuery, 60);
+        $expiring90 = $this->certificateFilters->countExpiringWithin(clone $baseQuery, 90);
 
         $statusCounts = [
             'Approved' => $approved,
@@ -57,7 +56,10 @@ class DashboardService
                 'pending_review' => $pendingReview,
                 'pending_approval' => $pendingApproval,
                 'expired' => $expired,
-                'active_trainers' => Trainer::where('is_active', true)->count(),
+                'expiring_30' => $expiring30,
+                'expiring_60' => $expiring60,
+                'expiring_90' => $expiring90,
+                'total_trainers' => Trainer::count(),
             ],
             'myAssignments' => $myAssignments,
             'percentages' => collect($statusCounts)->map(function ($count) use ($total) {
@@ -146,19 +148,19 @@ class DashboardService
 
     private function expiringSoon(int $withinDays = 30)
     {
-        $today = now()->format('Y-m-d');
-        $until = now()->addDays($withinDays)->format('Y-m-d');
+        $column = $this->certificateFilters->expiryColumn();
+        $query = Certificate::query();
+        $this->certificateFilters->applyExpiringWithin($query, $withinDays);
 
-        return Certificate::approved()
-            ->whereNotNull('expiry_date')
-            ->whereBetween('expiry_date', [$today, $until])
-            ->orderBy('expiry_date')
+        return $query
+            ->orderBy($column)
             ->limit(10)
-            ->get([
+            ->select([
                 'id',
                 'certificate_number',
                 'participant_name',
-                'expiry_date',
-            ]);
+                DB::raw($column . ' as expiry_date'),
+            ])
+            ->get();
     }
 }

@@ -61,6 +61,14 @@ class PermissionService
         return $this->accessLevelFor($user, $appKey) === 'full';
     }
 
+    public static function deniedMessage(string $type = 'mutate'): string
+    {
+        return match ($type) {
+            'super_admin' => 'Only super administrators can access this area.',
+            default => 'You have view-only access and cannot perform this action.',
+        };
+    }
+
     public function accessibleApps(?User $user = null): array
     {
         $user = $user ?: Auth::user();

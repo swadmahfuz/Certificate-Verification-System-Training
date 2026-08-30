@@ -8,9 +8,11 @@
         <h1>User Management</h1>
         <p>Manage staff accounts and per-app access levels.</p>
     </div>
+    @superAdmin
     <a href="{{ route('admin.users.create') }}" class="btn btn-primary btn-sm">
         <i class="fa-solid fa-user-plus me-1"></i> Add User
     </a>
+    @endsuperAdmin
 </div>
 
 <section class="admin-card">
@@ -79,6 +81,7 @@
                         </td>
                         <td>{{ $user->certificates_created_count }}</td>
                         <td class="text-nowrap">
+                            @superAdmin
                             <a href="{{ route('admin.users.edit', $user) }}" class="btn btn-sm btn-outline-primary">Edit</a>
                             @if(!$user->hasVerifiedEmail())
                                 <form action="{{ route('admin.users.resend-verification', $user) }}" method="POST" class="d-inline">
@@ -90,6 +93,9 @@
                                 @csrf
                                 <button type="submit" class="btn btn-sm btn-outline-warning">Reset pwd</button>
                             </form>
+                            @else
+                            <span class="text-muted small">View only</span>
+                            @endsuperAdmin
                         </td>
                     </tr>
                 @empty

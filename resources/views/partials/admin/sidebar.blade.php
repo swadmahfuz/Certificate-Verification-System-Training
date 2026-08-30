@@ -16,14 +16,16 @@
         </a>
 
         <div class="sidebar-label">Certificates</div>
-        <a class="sidebar-link {{ request()->routeIs('certificates.index') ? 'active' : '' }}" href="{{ route('certificates.index') }}">
+        <a class="sidebar-link {{ request()->routeIs('certificates.index') && !request('filter') ? 'active' : '' }}" href="{{ route('certificates.index') }}">
             <i class="fa-regular fa-file-lines"></i><span>All Certificates</span>
         </a>
-        @canMutate
-        <a class="sidebar-link {{ request()->routeIs('certificate.createForm') ? 'active' : '' }}" href="{{ route('certificate.createForm') }}">
-            <i class="fa-solid fa-plus"></i><span>Add Certificate</span>
-        </a>
-        @endcanMutate
+        <x-admin.disabled-action
+            permission="mutate"
+            :href="route('certificate.createForm')"
+            :active="request()->routeIs('certificate.createForm')"
+            icon="fa-plus">
+            Add Certificate
+        </x-admin.disabled-action>
         <a class="sidebar-link {{ request()->routeIs('pendingCertificates') ? 'active' : '' }}" href="{{ route('pendingCertificates') }}">
             <i class="fa-regular fa-clock"></i>
             <span>Pending Certificates</span>
@@ -36,34 +38,38 @@
         </a>
 
         <div class="sidebar-label">People & Data</div>
-        @canMutate
         <a class="sidebar-link {{ request()->routeIs('trainers.*') ? 'active' : '' }}" href="{{ route('trainers.index') }}">
             <i class="fa-solid fa-person-chalkboard"></i><span>Trainers</span>
         </a>
         <a class="sidebar-link {{ request()->routeIs('signatories.*') ? 'active' : '' }}" href="{{ route('signatories.index') }}">
             <i class="fa-solid fa-signature"></i><span>Signatories</span>
         </a>
-        <a class="sidebar-link {{ request()->routeIs('importsExports') ? 'active' : '' }}" href="{{ route('importsExports') }}">
-            <i class="fa-solid fa-file-import"></i><span>Import / Export</span>
-        </a>
-        @endcanMutate
-        @superAdmin
+        <x-admin.disabled-action
+            permission="mutate"
+            :href="route('importsExports')"
+            :active="request()->routeIs('importsExports')"
+            icon="fa-file-import">
+            Import / Export
+        </x-admin.disabled-action>
         <a class="sidebar-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}" href="{{ route('admin.users.index') }}">
             <i class="fa-solid fa-users"></i><span>User Management</span>
         </a>
-        <a class="sidebar-link {{ request()->routeIs('admin.departments.*') ? 'active' : '' }}" href="{{ route('admin.departments.index') }}">
-            <i class="fa-solid fa-building"></i><span>Departments</span>
-        </a>
-        @endsuperAdmin
-        @superAdmin
-        <a class="sidebar-link {{ request()->routeIs('activity-log.*') ? 'active' : '' }}" href="{{ route('activity-log.index') }}">
-            <i class="fa-solid fa-clock-rotate-left"></i><span>Activity Log</span>
-        </a>
-        @endsuperAdmin
+        <x-admin.disabled-action
+            permission="super_admin"
+            :href="route('admin.departments.index')"
+            :active="request()->routeIs('admin.departments.*')"
+            icon="fa-building">
+            Departments
+        </x-admin.disabled-action>
+        <x-admin.disabled-action
+            permission="super_admin"
+            :href="route('activity-log.index')"
+            :active="request()->routeIs('activity-log.*')"
+            icon="fa-clock-rotate-left">
+            Activity Log
+        </x-admin.disabled-action>
 
         @php
-            // Derive registrable base domain so portal links stay on *.tuvbd.com
-            // even when the user is on www.training.tuvbd.com (not training.tuvbd.com).
             $host = strtolower(request()->getHost());
             if (strpos($host, 'www.') === 0) {
                 $host = substr($host, 4);

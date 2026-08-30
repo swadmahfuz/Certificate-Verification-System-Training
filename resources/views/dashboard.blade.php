@@ -8,11 +8,14 @@
         <h1>Dashboard</h1>
         <p>Welcome back, {{ auth()->user()->name }}.</p>
     </div>
-    @canMutate
-    <a class="btn btn-primary btn-sm" href="{{ route('certificate.createForm') }}">
-        <i class="fa-solid fa-plus me-1"></i> Add Certificate
-    </a>
-    @endcanMutate
+    <x-admin.disabled-action
+        permission="mutate"
+        :href="route('certificate.createForm')"
+        variant="button"
+        class="btn-primary btn-sm"
+        icon="fa-plus">
+        Add Certificate
+    </x-admin.disabled-action>
 </div>
 
 @if(($myAssignments['total'] ?? 0) > 0)
@@ -28,8 +31,8 @@
 @endif
 
 <div class="stats-grid">
-    <x-admin.stat-card label="Total Certificates" :value="$stats['total']" icon="fa-file-circle-check" color="blue" meta="Active records" />
-    <x-admin.stat-card label="Approved Certificates" :value="$stats['approved']" icon="fa-check" color="green" :meta="$percentages['Approved'].'% of total'" />
+    <x-admin.stat-card label="Total Certificates" :value="$stats['total']" icon="fa-file-circle-check" color="blue" meta="Active records" :href="route('certificates.index')" />
+    <x-admin.stat-card label="Approved Certificates" :value="$stats['approved']" icon="fa-check" color="green" :meta="$percentages['Approved'].'% of total'" :href="route('certificates.index', ['filter' => 'approved'])" />
     <x-admin.stat-card
         label="Pending review (all)"
         :value="$stats['pending_review']"
@@ -62,8 +65,11 @@
         meta="Assigned to you"
         :href="route('pendingCertificates', ['assignment' => 'approval'])"
     />
-    <x-admin.stat-card label="Expired Certificates" :value="$stats['expired']" icon="fa-circle-xmark" color="red" :meta="$percentages['Expired'].'% of total'" />
-    <x-admin.stat-card label="Active Trainers" :value="$stats['active_trainers']" icon="fa-users" color="cyan" meta="Available trainers" />
+    <x-admin.stat-card label="Expired Certificates" :value="$stats['expired']" icon="fa-circle-xmark" color="red" :meta="$percentages['Expired'].'% of total'" :href="route('certificates.index', ['filter' => 'expired'])" />
+    <x-admin.stat-card label="Expiring in 30 days" :value="$stats['expiring_30']" icon="fa-hourglass-half" color="orange" meta="Approved, expiry within 30 days" :href="route('certificates.index', ['filter' => 'expiring_30'])" />
+    <x-admin.stat-card label="Expiring in 60 days" :value="$stats['expiring_60']" icon="fa-hourglass-half" color="purple" meta="Approved, expiry within 60 days" :href="route('certificates.index', ['filter' => 'expiring_60'])" />
+    <x-admin.stat-card label="Expiring in 90 days" :value="$stats['expiring_90']" icon="fa-hourglass-half" color="cyan" meta="Approved, expiry within 90 days" :href="route('certificates.index', ['filter' => 'expiring_90'])" />
+    <x-admin.stat-card label="Trainers" :value="$stats['total_trainers']" icon="fa-users" color="cyan" meta="All trainers" :href="route('trainers.index')" />
 </div>
 
 <div class="dashboard-grid">
