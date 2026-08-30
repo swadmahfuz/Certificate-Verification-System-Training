@@ -81,9 +81,7 @@ Route::get('/login', function () {
 })->name('login');
 
 Route::post('/login/addCredentials', [CertificateController::class, 'addCredentials'])
-
-    ->middleware('guest')
-
+    ->middleware(['guest', 'throttle:5,1'])
     ->name('certificate.login');
 
 
@@ -112,8 +110,11 @@ Route::middleware(['auth', 'user.active'])->group(function () {
             Route::get('/users/{user}/edit', [UserManagementController::class, 'edit'])->name('users.edit');
             Route::put('/users/{user}', [UserManagementController::class, 'update'])->name('users.update');
             Route::post('/users/{user}/send-password-reset', [UserManagementController::class, 'sendPasswordReset'])->name('users.send-password-reset');
-            Route::get('/users/{user}/permissions', [UserManagementController::class, 'editPermissions'])->name('users.permissions.edit');
-            Route::post('/users/{user}/permissions', [UserManagementController::class, 'updatePermissions'])->name('users.permissions.update');
+            Route::post('/users/{user}/resend-verification', [UserManagementController::class, 'resendVerification'])->name('users.resend-verification');
+        });
+
+        Route::middleware('super.admin')->group(function () {
+            Route::get('/activity-log', [ActivityLogController::class, 'index'])->name('activity-log.index');
         });
 
         Route::middleware('app.access')->group(function () {
@@ -128,25 +129,25 @@ Route::middleware(['auth', 'user.active'])->group(function () {
 
 
 
-        Route::get('/add-certificate', [CertificateController::class, 'addCertificate'])->name('certificate.createForm');
-
         Route::get('/view-certificate/{id}', [CertificateController::class, 'viewCertificate'])->name('certificate.view');
 
-        Route::get('/edit-certificate/{id}', [CertificateController::class, 'editCertificate'])->name('certificate.edit');
+        Route::middleware('app.mutate')->group(function () {
+            Route::get('/add-certificate', [CertificateController::class, 'addCertificate'])->name('certificate.createForm');
+            Route::get('/edit-certificate/{id}', [CertificateController::class, 'editCertificate'])->name('certificate.edit');
+            Route::get('/imports-exports', [CertificateController::class, 'importExportView'])->name('importsExports');
+            Route::get('/generate-certificate-pdf/{id}', [CertificateController::class, 'generateCertificatePdf'])
+                ->name('certificate.generatePdf');
+            Route::get('/trainers/create', [TrainerController::class, 'create'])->name('trainers.create');
+            Route::get('/trainers/{id}/edit', [TrainerController::class, 'edit'])->name('trainers.edit');
+            Route::get('/signatories/create', [SignatoryController::class, 'create'])->name('signatories.create');
+            Route::get('/signatories/{id}/edit', [SignatoryController::class, 'edit'])->name('signatories.edit');
+        });
 
 
 
         Route::get('/download-pdf/{id}', [CertificateController::class, 'downloadPdf'])->name('certificate.downloadPdf');
 
         Route::get('/view-pdf/{id}', [CertificateController::class, 'viewPdf'])->name('certificate.viewPdf');
-
-        Route::get('/generate-certificate-pdf/{id}', [CertificateController::class, 'generateCertificatePdf'])
-
-            ->name('certificate.generatePdf');
-
-
-
-        Route::get('/imports-exports', [CertificateController::class, 'importExportView'])->name('importsExports');
 
 
 
@@ -158,25 +159,13 @@ Route::middleware(['auth', 'user.active'])->group(function () {
 
 
 
-        Route::get('/activity-log', [ActivityLogController::class, 'index'])->name('activity-log.index');
-
-
-
         Route::get('/trainers', [TrainerController::class, 'index'])->name('trainers.index');
-
-        Route::get('/trainers/create', [TrainerController::class, 'create'])->name('trainers.create');
-
-        Route::get('/trainers/{id}/edit', [TrainerController::class, 'edit'])->name('trainers.edit');
 
         Route::get('/trainers/{id}/signature', [TrainerController::class, 'signature'])->name('trainers.signature');
 
 
 
         Route::get('/signatories', [SignatoryController::class, 'index'])->name('signatories.index');
-
-        Route::get('/signatories/create', [SignatoryController::class, 'create'])->name('signatories.create');
-
-        Route::get('/signatories/{id}/edit', [SignatoryController::class, 'edit'])->name('signatories.edit');
 
         Route::get('/signatories/{id}/signature', [SignatoryController::class, 'signature'])->name('signatories.signature');
 

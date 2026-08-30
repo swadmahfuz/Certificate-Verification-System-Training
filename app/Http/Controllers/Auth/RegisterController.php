@@ -7,6 +7,7 @@ use App\Models\Department;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use App\Services\PermissionService;
+use App\Support\PasswordRules;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -37,7 +38,7 @@ class RegisterController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'department_id' => ['required', 'exists:departments,id'],
             'designation' => ['required', 'string', 'max:255'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'password' => PasswordRules::requiredConfirmed(),
         ]);
     }
 

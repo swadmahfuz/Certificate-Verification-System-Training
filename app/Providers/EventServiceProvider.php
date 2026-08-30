@@ -3,10 +3,12 @@
 namespace App\Providers;
 
 use App\Listeners\LogAuthenticationActivity;
+use App\Listeners\LogPasswordResetActivity;
 use App\Listeners\LogUserRegistrationActivity;
 use App\Listeners\SendPasswordSetupLinkAfterVerification;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Logout;
+use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -32,6 +34,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         Logout::class => [
             LogAuthenticationActivity::class . '@handleLogout',
+        ],
+        PasswordReset::class => [
+            LogPasswordResetActivity::class,
         ],
     ];
 

@@ -6,6 +6,7 @@ use App\Models\Department;
 use App\Models\User;
 use App\Services\ActivityLogService;
 use App\Services\PermissionService;
+use App\Support\PasswordRules;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -20,18 +21,28 @@ class UserManagementController extends Controller
     ) {
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::with('departmentRelation')
+        $query = User::with(['departmentRelation', 'appPermissions'])
             ->withCount([
                 'certificatesCreated',
                 'certificatesReviewed',
                 'certificatesApproved',
             ])
-            ->orderBy('name')
-            ->get();
+            ->orderBy('name');
 
-        return view('admin.users.index', compact('users'));
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($builder) use ($search) {
+                $builder->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('email', 'like', '%' . $search . '%');
+            });
+        }
+
+        $users = $query->paginate(25)->withQueryString();
+        $apps = config('cvs.apps', []);
+
+        return view('admin.users.index', compact('users', 'apps'));
     }
 
     public function create()
@@ -94,7 +105,7 @@ class UserManagementController extends Controller
             'email' => 'required|email|max:255|unique:users,email,' . $user->id,
             'department_id' => 'required|exists:departments,id',
             'designation' => 'required|string|max:255',
-            'password' => 'nullable|string|min:8|confirmed',
+            'password' => PasswordRules::optionalConfirmed(),
             'permissions' => 'nullable|array',
             'permissions.*' => 'nullable|in:view,full',
             'is_super_admin' => 'nullable|boolean',
@@ -170,14 +181,22 @@ class UserManagementController extends Controller
         return back()->with('success', 'Password reset email sent.');
     }
 
-    public function editPermissions(User $user)
+    public function resendVerification(User $user)
     {
-        return redirect()->route('admin.users.edit', $user);
-    }
+        if ($user->hasVerifiedEmail()) {
+            return back()->with('error', 'This user is already verified.');
+        }
 
-    public function updatePermissions(Request $request, User $user)
-    {
-        return redirect()->route('admin.users.edit', $user);
+        $user->sendEmailVerificationNotification();
+
+        $this->activityLog->record(
+            'user.verification_resent',
+            'user',
+            $user->id,
+            'Verification email resent to "' . $user->name . '" by ' . Auth::user()->name . '.'
+        );
+
+        return back()->with('success', 'Verification email sent.');
     }
 
     private function superAdminCount(): int

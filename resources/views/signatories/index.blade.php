@@ -22,9 +22,11 @@
         <h1>Signatories</h1>
         <p>Manage authorizing signatories and signature images.</p>
     </div>
+    @canMutate
     <a class="btn btn-primary" href="{{ route('signatories.create') }}">
         <i class="fa-solid fa-user-plus me-1"></i> Add Signatory
     </a>
+    @endcanMutate
 </div>
 
 <section class="admin-card">
@@ -72,6 +74,7 @@
                         </td>
                         <td>
                             <div class="table-actions">
+                                @canMutate
                                 <a href="{{ route('signatories.edit', $signatory->id) }}" title="Edit"><i class="fa-solid fa-pen-to-square"></i></a>
                                 <form method="POST" action="{{ route('signatories.toggleStatus', $signatory->id) }}">
                                     @csrf
@@ -79,6 +82,7 @@
                                         <i class="fa-solid {{ $signatory->is_active ? 'fa-user-slash' : 'fa-user-check' }}"></i>
                                     </button>
                                 </form>
+                                @endcanMutate
                             </div>
                         </td>
                     </tr>

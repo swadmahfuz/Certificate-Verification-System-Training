@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\User;
 use App\Models\UserAppPermission;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 class PermissionService
 {
@@ -85,17 +86,12 @@ class PermissionService
 
     public function syncPermissions(User $user, array $permissions): void
     {
+        $previous = $this->permissionMapFor($user);
+        $normalized = $this->normalizePermissions($permissions);
+
         UserAppPermission::where('user_id', $user->id)->delete();
 
-        foreach ($permissions as $appKey => $level) {
-            if (!in_array($level, ['view', 'full'], true)) {
-                continue;
-            }
-
-            if (!array_key_exists($appKey, config('cvs.apps', []))) {
-                continue;
-            }
-
+        foreach ($normalized as $appKey => $level) {
             UserAppPermission::create([
                 'user_id' => $user->id,
                 'app_key' => $appKey,
@@ -103,7 +99,20 @@ class PermissionService
             ]);
         }
 
-        unset($this->cache[$user->id]);
+        $this->forgetPermissionCache($user);
+
+        if ($previous !== $normalized && Auth::check()) {
+            app(ActivityLogService::class)->record(
+                'user.permissions_updated',
+                'user',
+                $user->id,
+                'Permissions for "' . $user->name . '" were updated by ' . Auth::user()->name . '.',
+                [
+                    'previous' => $previous,
+                    'current' => $normalized,
+                ]
+            );
+        }
     }
 
     public function grantDefaultRegistrationAccess(User $user, ?string $appKey = null): void
@@ -120,7 +129,7 @@ class PermissionService
             ]
         );
 
-        unset($this->cache[$user->id]);
+        $this->forgetPermissionCache($user);
     }
 
     private function accessLevelFor(User $user, ?string $appKey = null): ?string
@@ -133,12 +142,52 @@ class PermissionService
     /** @return array<string, string> */
     private function permissionMapFor(User $user): array
     {
-        if (!isset($this->cache[$user->id])) {
-            $this->cache[$user->id] = UserAppPermission::where('user_id', $user->id)
-                ->pluck('access_level', 'app_key')
-                ->all();
+        if (isset($this->cache[$user->id])) {
+            return $this->cache[$user->id];
         }
 
+        $cacheKey = $this->permissionCacheKey($user->id);
+        $ttl = config('cvs.cache_ttl.permissions', 900);
+
+        $this->cache[$user->id] = Cache::remember($cacheKey, $ttl, function () use ($user) {
+            return UserAppPermission::where('user_id', $user->id)
+                ->pluck('access_level', 'app_key')
+                ->all();
+        });
+
         return $this->cache[$user->id];
+    }
+
+    /** @return array<string, string> */
+    private function normalizePermissions(array $permissions): array
+    {
+        $normalized = [];
+
+        foreach ($permissions as $appKey => $level) {
+            if (!in_array($level, ['view', 'full'], true)) {
+                continue;
+            }
+
+            if (!array_key_exists($appKey, config('cvs.apps', []))) {
+                continue;
+            }
+
+            $normalized[$appKey] = $level;
+        }
+
+        ksort($normalized);
+
+        return $normalized;
+    }
+
+    private function forgetPermissionCache(User $user): void
+    {
+        Cache::forget($this->permissionCacheKey($user->id));
+        unset($this->cache[$user->id]);
+    }
+
+    private function permissionCacheKey(int $userId): string
+    {
+        return 'cvs.permissions.' . config('cvs.app_key') . '.' . $userId;
     }
 }

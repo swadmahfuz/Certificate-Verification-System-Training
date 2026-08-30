@@ -7,7 +7,16 @@ use Illuminate\Http\Request;
 
 class TrustProxies extends Middleware
 {
-    protected $proxies = '*'; // trust all (shared hosting friendly)
+    protected $proxies;
+
+    public function __construct()
+    {
+        $configured = env('TRUSTED_PROXIES');
+
+        $this->proxies = $configured === null || $configured === ''
+            ? '*'
+            : array_map('trim', explode(',', $configured));
+    }
 
     protected $headers = Request::HEADER_X_FORWARDED_ALL;
     // If you're behind Cloudflare, you can also use:

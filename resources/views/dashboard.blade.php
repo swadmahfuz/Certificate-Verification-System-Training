@@ -8,9 +8,11 @@
         <h1>Dashboard</h1>
         <p>Welcome back, {{ auth()->user()->name }}.</p>
     </div>
+    @canMutate
     <a class="btn btn-primary btn-sm" href="{{ route('certificate.createForm') }}">
         <i class="fa-solid fa-plus me-1"></i> Add Certificate
     </a>
+    @endcanMutate
 </div>
 
 @if(($myAssignments['total'] ?? 0) > 0)
@@ -28,6 +30,22 @@
 <div class="stats-grid">
     <x-admin.stat-card label="Total Certificates" :value="$stats['total']" icon="fa-file-circle-check" color="blue" meta="Active records" />
     <x-admin.stat-card label="Approved Certificates" :value="$stats['approved']" icon="fa-check" color="green" :meta="$percentages['Approved'].'% of total'" />
+    <x-admin.stat-card
+        label="Pending review (all)"
+        :value="$stats['pending_review']"
+        icon="fa-clock"
+        color="orange"
+        meta="Organization-wide"
+        :href="route('pendingCertificates')"
+    />
+    <x-admin.stat-card
+        label="Pending approval (all)"
+        :value="$stats['pending_approval']"
+        icon="fa-pen"
+        color="purple"
+        meta="Organization-wide"
+        :href="route('pendingCertificates')"
+    />
     <x-admin.stat-card
         label="Pending my review"
         :value="$myAssignments['review']"
@@ -72,6 +90,35 @@
 <div class="dashboard-bottom">
     <section class="admin-card">
         <div class="admin-card-header">
+            <h2>Expiring Soon</h2>
+            <span class="small text-muted">Next 30 days</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table admin-table">
+                <thead>
+                    <tr>
+                        <th>Certificate</th>
+                        <th>Participant</th>
+                        <th>Expiry</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($expiringSoon as $certificate)
+                        <tr>
+                            <td><a href="{{ route('certificate.view', $certificate->id) }}">{{ $certificate->certificate_number }}</a></td>
+                            <td>{{ $certificate->participant_name }}</td>
+                            <td>{{ $certificate->expiry_date ? \Carbon\Carbon::parse($certificate->expiry_date)->format('d M Y') : 'N/A' }}</td>
+                        </tr>
+                    @empty
+                        <tr><td colspan="3" class="text-center text-muted py-4">No certificates expiring in the next 30 days.</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="admin-card">
+        <div class="admin-card-header">
             <h2>Recent Certificates</h2>
             <a class="btn btn-outline-primary btn-sm" href="{{ route('certificates.index') }}">View all</a>
         </div>
@@ -104,16 +151,23 @@
     <section class="admin-card">
         <div class="admin-card-header">
             <h2>Recent Activities</h2>
+            @superAdmin
             <a class="btn btn-outline-primary btn-sm" href="{{ route('activity-log.index') }}">View all</a>
+            @endsuperAdmin
         </div>
         <div class="admin-card-body">
             <ul class="activity-list">
                 @forelse($recentActivities as $activity)
+                    @php
+                        $sourceApp = $activity->properties['source_app'] ?? null;
+                        $apps = config('cvs.apps', []);
+                        $sourceLabel = $sourceApp ? ($apps[$sourceApp] ?? $sourceApp) : null;
+                    @endphp
                     <li class="activity-item">
                         <span class="activity-dot"><i class="fa-solid fa-clock-rotate-left"></i></span>
                         <div class="activity-text">
                             <p>{{ $activity->description }}</p>
-                            <time>{{ $activity->created_at->diffForHumans() }}</time>
+                            <time>{{ $activity->created_at->diffForHumans() }}@if($sourceLabel) · {{ $sourceLabel }}@endif</time>
                         </div>
                     </li>
                 @empty

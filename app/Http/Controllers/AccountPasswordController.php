@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\ActivityLogService;
+use App\Support\PasswordRules;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -22,7 +23,7 @@ class AccountPasswordController extends Controller
         $user = $request->user();
 
         $validated = $request->validate([
-            'password' => 'required|string|min:8|confirmed',
+            'password' => PasswordRules::requiredConfirmed(),
         ]);
 
         if ($user->mustChangePassword()) {

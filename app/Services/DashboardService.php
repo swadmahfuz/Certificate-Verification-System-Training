@@ -7,11 +7,25 @@ use App\Models\Certificate;
 use App\Models\Trainer;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 class DashboardService
 {
     public function data(): array
+    {
+        $ttl = config('cvs.cache_ttl.dashboard', 300);
+        $userId = Auth::id() ?? 0;
+
+        return Cache::remember(
+            'cvs.dashboard.' . config('cvs.app_key') . '.' . $userId,
+            $ttl,
+            fn () => $this->buildData()
+        );
+    }
+
+    private function buildData(): array
     {
         $total = Certificate::count();
         $pendingReview = Certificate::pendingReview()->count();
@@ -62,6 +76,7 @@ class DashboardService
                 'issue_date',
             ]),
             'recentActivities' => $this->recentActivities(),
+            'expiringSoon' => $this->expiringSoon(),
         ];
     }
 
@@ -92,37 +107,58 @@ class DashboardService
 
     private function monthlyIssues(): array
     {
-        $months = collect(range(11, 1))->map(function ($monthsAgo) {
+        $months = collect(range(11, 0))->map(function ($monthsAgo) {
             return now()->startOfMonth()->subMonths($monthsAgo);
-        })->push(now()->startOfMonth());
+        });
 
         $start = $months->first()->format('Y-m-d');
-        $counts = Certificate::whereNotNull('issue_date')
+
+        $driver = DB::connection()->getDriverName();
+        $monthExpression = $driver === 'sqlite'
+            ? "strftime('%Y-%m', issue_date)"
+            : "DATE_FORMAT(issue_date, '%Y-%m')";
+
+        $counts = Certificate::query()
+            ->whereNotNull('issue_date')
             ->where('issue_date', '>=', $start)
-            ->get(['issue_date'])
-            ->groupBy(function ($certificate) {
-                try {
-                    return Carbon::parse($certificate->issue_date)->format('Y-m');
-                } catch (\Throwable $exception) {
-                    return 'invalid';
-                }
-            })
-            ->map->count();
+            ->selectRaw($monthExpression . ' as month_key, COUNT(*) as total')
+            ->groupBy('month_key')
+            ->pluck('total', 'month_key');
 
         return [
             'labels' => $months->map->format('M')->all(),
             'values' => $months->map(function ($month) use ($counts) {
-                return $counts->get($month->format('Y-m'), 0);
+                return (int) $counts->get($month->format('Y-m'), 0);
             })->all(),
         ];
     }
 
     private function recentActivities()
     {
-        if (!Schema::hasTable('training_activity_logs')) {
+        $table = config('cvs.app_key', 'training') . '_activity_logs';
+
+        if (!Schema::hasTable($table)) {
             return collect();
         }
 
         return ActivityLog::latest('created_at')->limit(6)->get();
+    }
+
+    private function expiringSoon(int $withinDays = 30)
+    {
+        $today = now()->format('Y-m-d');
+        $until = now()->addDays($withinDays)->format('Y-m-d');
+
+        return Certificate::approved()
+            ->whereNotNull('expiry_date')
+            ->whereBetween('expiry_date', [$today, $until])
+            ->orderBy('expiry_date')
+            ->limit(10)
+            ->get([
+                'id',
+                'certificate_number',
+                'participant_name',
+                'expiry_date',
+            ]);
     }
 }

@@ -24,9 +24,11 @@
         </a>
 
         @if($certificate->status !== 'Deleted')
+            @canMutate
             <a href="{{ route('certificate.edit', $certificate->id) }}" class="btn btn-warning btn-sm">
                 <i class="fa-solid fa-pen-to-square me-1"></i> Edit
             </a>
+            @endcanMutate
 
             @if($certificate->certificate_pdf)
                 <a href="{{ route('certificate.downloadPdf', $certificate->id) }}" target="_blank" class="btn btn-secondary btn-sm">
@@ -34,6 +36,7 @@
                 </a>
             @endif
 
+            @canMutate
             @if(Auth::user()->id == $certificate->review_by_id && $certificate->status == 'Pending Review')
                 <form action="{{ route('certificate.review', $certificate->id) }}" method="POST">
                     @csrf
@@ -59,6 +62,7 @@
                     <i class="fa-solid fa-trash me-1"></i> Delete
                 </button>
             </form>
+            @endcanMutate
         @endif
     </div>
 </div>
@@ -66,6 +70,7 @@
 <section class="admin-card">
     <div class="admin-card-header"><h2>Record Summary</h2></div>
     <div class="admin-card-body">
+                @canMutate
                 @if(
                     Auth::user()->id == $certificate->created_by_id ||
                     Auth::user()->id == $certificate->review_by_id ||
@@ -87,6 +92,7 @@
                         </div>
                     </form>
                 @endif
+                @endcanMutate
 
                 @if($certificate->certificate_pdf)
                     <div class="mb-3 text-muted small">

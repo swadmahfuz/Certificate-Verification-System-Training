@@ -7,17 +7,17 @@ use Illuminate\Http\Request;
 
 class ActivityLogController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
-
     public function index(Request $request)
     {
         $query = ActivityLog::latest('created_at');
 
         if ($request->filled('event')) {
             $query->where('event', $request->event);
+        }
+
+        if ($request->filled('source_app')) {
+            $sourceApp = $request->source_app;
+            $query->where('properties', 'like', '%"source_app":"' . $sourceApp . '"%');
         }
 
         if ($request->filled('search')) {
@@ -30,7 +30,8 @@ class ActivityLogController extends Controller
 
         $activities = $query->paginate(30)->withQueryString();
         $eventTypes = ActivityLog::distinct()->orderBy('event')->pluck('event');
+        $apps = config('cvs.apps', []);
 
-        return view('activity-log.index', compact('activities', 'eventTypes'));
+        return view('activity-log.index', compact('activities', 'eventTypes', 'apps'));
     }
 }

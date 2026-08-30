@@ -22,9 +22,11 @@
         <h1>Trainers</h1>
         <p>Manage trainer profiles and signature images for certificates.</p>
     </div>
+    @canMutate
     <a class="btn btn-primary" href="{{ route('trainers.create') }}">
         <i class="fa-solid fa-user-plus me-1"></i> Add Trainer
     </a>
+    @endcanMutate
 </div>
 
 <section class="admin-card">
@@ -70,6 +72,7 @@
                         </td>
                         <td>
                             <div class="table-actions">
+                                @canMutate
                                 <a href="{{ route('trainers.edit', $trainer->id) }}" title="Edit"><i class="fa-solid fa-pen-to-square"></i></a>
                                 <form method="POST" action="{{ route('trainers.toggleStatus', $trainer->id) }}">
                                     @csrf
@@ -77,6 +80,7 @@
                                         <i class="fa-solid {{ $trainer->is_active ? 'fa-user-slash' : 'fa-user-check' }}"></i>
                                     </button>
                                 </form>
+                                @endcanMutate
                             </div>
                         </td>
                     </tr>

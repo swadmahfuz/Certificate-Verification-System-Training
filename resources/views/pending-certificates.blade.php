@@ -92,6 +92,7 @@ $(function () {
     var approveBase = @json(url('/approve-certificate'));
     var verifyBase = @json(url('/'));
     var assignmentFilter = @json($assignment ?? null);
+    var canMutate = @json(auth()->check() && app(\App\Services\PermissionService::class)->canMutate());
 
     function escapeHtml(value) {
         return $('<div>').text(value == null ? '' : value).html();
@@ -134,12 +135,14 @@ $(function () {
                         : d.training_name;
                     var verification = verifyBase + '?search=' + encodeURIComponent(d.certificate_number);
                     var actions = '<div class="table-actions">' +
-                        '<a href="' + viewBase + '/' + d.id + '" target="_blank" rel="noopener noreferrer" title="View"><i class="fa-solid fa-circle-info"></i></a>' +
-                        '<a href="' + editBase + '/' + d.id + '" target="_blank" rel="noopener noreferrer" title="Edit"><i class="fa-solid fa-pen-to-square"></i></a>' +
-                        postButton(deleteBase + '/' + d.id, 'Delete', 'fa-solid fa-trash', 'Delete this certificate?', true, 'DELETE') +
-                        (canReview ? postButton(reviewBase + '/' + d.id, 'Mark as Reviewed', 'fa-solid fa-thumbs-up', 'Mark this certificate as Reviewed?') : '') +
-                        (canApprove ? postButton(approveBase + '/' + d.id, 'Mark as Approved', 'fa-solid fa-check', 'Mark this certificate as Approved?') : '') +
-                        '</div>';
+                        '<a href="' + viewBase + '/' + d.id + '" target="_blank" rel="noopener noreferrer" title="View"><i class="fa-solid fa-circle-info"></i></a>';
+                    if (canMutate) {
+                        actions += '<a href="' + editBase + '/' + d.id + '" target="_blank" rel="noopener noreferrer" title="Edit"><i class="fa-solid fa-pen-to-square"></i></a>' +
+                            postButton(deleteBase + '/' + d.id, 'Delete', 'fa-solid fa-trash', 'Delete this certificate?', true, 'DELETE') +
+                            (canReview ? postButton(reviewBase + '/' + d.id, 'Mark as Reviewed', 'fa-solid fa-thumbs-up', 'Mark this certificate as Reviewed?') : '') +
+                            (canApprove ? postButton(approveBase + '/' + d.id, 'Mark as Approved', 'fa-solid fa-check', 'Mark this certificate as Approved?') : '');
+                    }
+                    actions += '</div>';
 
                     html += '<tr>' +
                         '<td>' + (i + 1 + (res.data.current_page - 1) * res.data.per_page) + '</td>' +

@@ -131,6 +131,8 @@ $(function () {
     var editBase = @json(url('/edit-certificate'));
     var pdfBase = @json(url('/generate-certificate-pdf'));
     var deleteBase = @json(url('/delete-certificate'));
+    var canMutate = @json(auth()->check() && app(\App\Services\PermissionService::class)->canMutate());
+    var tableColspan = canMutate ? 11 : 10;
     var selectionStorageKey = 'certificates.selectedIds';
     var pendingBulkAction = null;
 
@@ -240,7 +242,7 @@ $(function () {
             data: { userInput: userInput, page: page },
             dataType: 'json',
             beforeSend: function () {
-                $('.search-result tbody').html('<tr><td colspan="11" class="text-center text-muted py-4">Searching...</td></tr>');
+                $('.search-result tbody').html('<tr><td colspan="' + tableColspan + '" class="text-center text-muted py-4">Searching...</td></tr>');
             },
             success: function (res) {
                 var html = '';
@@ -250,19 +252,24 @@ $(function () {
                         : item.training_name;
                     var verification = @json(url('/')) + '?search=' + encodeURIComponent(item.certificate_number);
                     var actions = '<div class="table-actions">' +
-                        '<a href="' + viewBase + '/' + item.id + '" target="_blank" rel="noopener noreferrer" title="View"><i class="fa-solid fa-circle-info"></i></a>' +
-                        '<a href="' + editBase + '/' + item.id + '" target="_blank" rel="noopener noreferrer" title="Edit"><i class="fa-solid fa-pen-to-square"></i></a>' +
-                        (item.status === 'Approved' && item.certificate_type && item.trainer_id
-                            ? '<a class="danger" href="' + pdfBase + '/' + item.id + '" title="Generate PDF"><i class="fa-solid fa-file-pdf"></i></a>'
-                            : '') +
-                        '<form action="' + deleteBase + '/' + item.id + '" method="POST">' +
-                            '<input type="hidden" name="_token" value="' + csrfToken + '">' +
-                            '<input type="hidden" name="_method" value="DELETE">' +
-                            '<button class="danger" type="submit" title="Delete" data-confirm="Delete this certificate?"><i class="fa-solid fa-trash"></i></button>' +
-                        '</form></div>';
+                        '<a href="' + viewBase + '/' + item.id + '" target="_blank" rel="noopener noreferrer" title="View"><i class="fa-solid fa-circle-info"></i></a>';
+                    if (canMutate) {
+                        actions += '<a href="' + editBase + '/' + item.id + '" target="_blank" rel="noopener noreferrer" title="Edit"><i class="fa-solid fa-pen-to-square"></i></a>' +
+                            (item.status === 'Approved' && item.certificate_type && item.trainer_id
+                                ? '<a class="danger" href="' + pdfBase + '/' + item.id + '" title="Generate PDF"><i class="fa-solid fa-file-pdf"></i></a>'
+                                : '') +
+                            '<form action="' + deleteBase + '/' + item.id + '" method="POST">' +
+                                '<input type="hidden" name="_token" value="' + csrfToken + '">' +
+                                '<input type="hidden" name="_method" value="DELETE">' +
+                                '<button class="danger" type="submit" title="Delete" data-confirm="Delete this certificate?"><i class="fa-solid fa-trash"></i></button>' +
+                            '</form>';
+                    }
+                    actions += '</div>';
 
-                    html += '<tr><td><input class="form-check-input certificate-select" type="checkbox" value="' +
-                        item.id + '" aria-label="Select certificate ' + escapeHtml(item.certificate_number) + '"></td>' +
+                    html += (canMutate
+                        ? '<tr><td><input class="form-check-input certificate-select" type="checkbox" value="' +
+                            item.id + '" aria-label="Select certificate ' + escapeHtml(item.certificate_number) + '"></td>'
+                        : '<tr>') +
                         '<td>' + (i + 1 + (res.data.current_page - 1) * res.data.per_page) + '</td>' +
                         '<td>' + escapeHtml(item.certificate_number) + '</td>' +
                         '<td>' + escapeHtml(item.participant_name) + '</td>' +
@@ -274,7 +281,7 @@ $(function () {
                         '<td><img width="38" height="38" src="https://api.qrserver.com/v1/create-qr-code/?size=76x76&data=' + encodeURIComponent(verification) + '"></td>' +
                         '<td>' + actions + '</td></tr>';
                 });
-                $('.search-result tbody').html(html || '<tr><td colspan="11" class="text-center text-muted py-4">No matching certificates found.</td></tr>');
+                $('.search-result tbody').html(html || '<tr><td colspan="' + tableColspan + '" class="text-center text-muted py-4">No matching certificates found.</td></tr>');
                 $('.search-pagination').html(generatePaginationLinks(res.data));
                 syncSelectionUi();
             }
